@@ -11,6 +11,12 @@
 	</style>
 	<script>
 
+// keys
+var keys = {
+	n: false,
+	m: false
+};
+
 
 window.onload = function() {
 
@@ -39,34 +45,34 @@ var animator =
 
 
 
-//										variables
+//      variables
 
 // mouse
 var mouseX = 0, mouseY = 0, mouseDown = false, mouseOver = false;
 
-// keys
-var keys = {
-	n: false,
-	m: false
-}
+// crayon pattern
+var crayonImg = new Image();
+crayonImg.src = "thomasm1248.github.io/mywidgets/media/black_crayon.png";
+var crayon = ctx.createPattern(crayonImg, "repeat");
 
 
 
 
-//										util functions
+//	util functions
 
 function line(x1, y1, x2, y2) {
 	ctx.beginPath();
 	ctx.moveTo(x1, y1);
 	ctx.lineTo(x2, y2);
-	ctx.strokeStyle = "black";
+	ctx.strokeStyle = crayon;
+        ctx.lineWidth = 3;
 	ctx.stroke();
 }
 
 
 
 
-//										objects
+//	objects
 
 // states
 var Playing, Animating;
@@ -75,27 +81,7 @@ var state;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*		 ###  #   # ### #   #  ###  ##### ### #   #  ###
-		#   # ##  #  #  ## ## #   #   #    #  ##  # #   #
-		##### # # #  #  # # # #####   #    #  # # # #
-		#   # #  ##  #  #   # #   #   #    #  #  ## # ###
-		#   # #   # ### #   # #   #   #   ### #   #  ###
-*/
+//	Animating
 
 Animating = function(movie) {
 	this.movie = movie;
@@ -154,30 +140,7 @@ Animating = function(movie) {
 	this.onionSkin();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*		####  #      ###  #   # ### #   #  ###
-		#   # #     #   #  # #   #  ##  # #   #
-		####  #     #####   #    #  # # # #
-		#     #     #   #   #    #  #  ## # ###
-		#     ##### #   #   #   ### #   #  ###
-*/
+//		Playing
 
 Playing = function(movie) {
 	this.movie = movie;
@@ -223,27 +186,7 @@ Playing = function(movie) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*		####  ####   ###  #   #     ##### #   # #   #  ###  ##### ###  ###  #   #
-		#   # #   # #   # #   #     #     #   # ##  # #   #   #    #  #   # ##  #
-		#   # ####  ##### # # #     ##### #   # # # # #       #    #  #   # # # #
-		#   # #   # #   # ## ##     #     #   # #  ## #   #   #    #  #   # #  ##
-		####  #   # #   # #   #     #      ###  #   #  ###    #   ###  ###  #   #
-*/
+//										draw function
 
 state = new Animating([[]]);
 
@@ -256,27 +199,7 @@ function draw() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*		##### #   # ##### #   # #####  ###
-		#     #   # #     ##  #   #   #   
-		#####  # #  ##### # # #   #    ###
-		#      # #  #     #  ##   #       #
-		#####   #   ##### #   #   #    ###
-*/
+//										events
 
 canvas.addEventListener("mousemove", ifMouseMove, false);
 canvas.addEventListener("mousedown", ifMouseDown, false);
@@ -324,27 +247,7 @@ function ifKeyUp(e) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*		##### #   # #####     ####  #####  ###  #####
-		  #   #   # #         #   # #     #       #
-		  #   ##### #####     ####  #####  ###    #
-		  #   #   # #         #   # #         #   #
-		  #   #   # #####     #   # #####  ###    #
-*/
+//										startup
 
 draw();
 
