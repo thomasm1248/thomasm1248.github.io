@@ -1,0 +1,265 @@
+
+ <style type="text/css">
+
+#canvas {
+ cursor: crosshair;
+}
+
+ </style>
+ <script>
+
+// keys
+var keys = {
+ n: false,
+ m: false
+};
+
+
+window.onload = function() {
+
+
+
+
+//          settings
+
+var ost = 50;
+var frameTimer = 3;
+
+
+
+
+//          setup
+
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+
+var animator = 
+ window.requestAnimationFrame ||
+ window.msRequestAnimationFrame ||
+ window.mozRequestAnimationFrame ||
+ window.webkitRequestAnimationFrame;
+
+
+
+
+//      variables
+
+// mouse
+var mouseX = 0, mouseY = 0, mouseDown = false, mouseOver = false;
+
+// crayon pattern
+var crayonImg = new Image();
+crayonImg.src = "https://raw.githubusercontent.com/thomasm1248/filehosting/master/black_crayon.png";
+var crayon = ctx.createPattern(crayonImg, "repeat");
+
+
+
+
+// util functions
+
+function line(x1, y1, x2, y2) {
+ ctx.beginPath();
+ ctx.moveTo(x1, y1);
+ ctx.lineTo(x2, y2);
+ ctx.strokeStyle = crayon;
+        ctx.lineWidth = 3;
+ ctx.stroke();
+}
+
+
+
+
+// objects
+
+// states
+var Playing, Animating;
+var state;
+
+
+
+
+// Animating
+
+Animating = function(movie) {
+ this.movie = movie;
+ this.start = true;
+ this.drawing = false;
+ this.px = 0;
+ this.py = 0;
+
+
+
+
+ // methods
+
+ this.draw = function() {
+  if(this.drawing && mouseDown) {
+   line(this.px, this.py, mouseX, mouseY);
+   this.movie[this.movie.length - 1].push([this.px, this.py, mouseX, mouseY]);
+  } else if(this.drawing) {
+   this.drawing = false;
+  } else if(mouseDown) {
+   this.drawing = true;
+  }
+ }
+
+ this.onionSkin = function() {
+  ctx.globalAlpha = ost / 100;
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.globalAlpha = 1;
+ }
+
+ this.updateMouse = function() {
+  this.px = mouseX;
+  this.py = mouseY;
+ }
+
+ this.control = function() {
+  if(keys.m) {
+   keys.m = false;
+
+   state = new Playing(this.movie);
+  } else if(keys.n) {
+   keys.n = false;
+
+   this.movie.push([]);
+   this.onionSkin();
+  }
+ }
+
+ this.update = function() {
+  this.draw();
+  this.control();
+  this.updateMouse();
+ }
+
+ this.onionSkin();
+}
+
+//  Playing
+
+Playing = function(movie) {
+ this.movie = movie;
+ this.frameNum = 0;
+ this.timer = frameTimer;
+
+
+
+
+ // methods
+
+ this.background = function() {
+  ctx.fillStyle = "white";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+ }
+
+ this.drawFrame = function() {
+  var thisFrame = this.movie[this.frameNum];
+
+  ctx.strokeStyle = "black";
+  for(var i = 0; i < thisFrame.length; i++) {
+   line(thisFrame[i][0], thisFrame[i][1], thisFrame[i][2], thisFrame[i][3])
+  }
+ }
+
+ this.update = function() {
+  if(this.timer === 0) {
+   this.background();
+   this.drawFrame();
+
+   this.frameNum++;
+   if(this.frameNum >= this.movie.length) {
+    state = new Animating(this.movie);
+   }
+
+   this.timer = frameTimer;
+  }
+  
+  this.timer--;
+ }
+}
+
+
+
+
+//          draw function
+
+state = new Animating([[]]);
+
+function draw() {
+ state.update();
+
+ animator(draw);
+}
+
+
+
+
+//          events
+
+canvas.addEventListener("mousemove", ifMouseMove, false);
+canvas.addEventListener("mousedown", ifMouseDown, false);
+canvas.addEventListener("mouseup", ifMouseUp, false);
+window.addEventListener("keydown", ifKeyDown, false);
+window.addEventListener("keyup", ifKeyUp, false);
+
+function ifMouseMove(e) {
+ var rect = canvas.getBoundingClientRect();
+
+ mouseX = e.clientX - rect.left;
+ mouseY = e.clientY - rect.top;
+}
+
+function ifMouseDown() {
+ mouseDown = true;
+}
+
+function ifMouseUp() {
+ mouseDown = false;
+}
+
+function ifKeyDown(e) {
+ switch(e.keyCode) {
+  case 78:
+   keys.n = true;
+   break;
+  case 77:
+   keys.m = true;
+   break;
+ }
+}
+
+function ifKeyUp(e) {
+ switch(e.keyCode) {
+  case 78:
+   keys.n = false;
+   break;
+  case 77:
+   keys.m = false;
+   break;
+ }
+}
+
+
+
+
+//          startup
+
+draw();
+
+
+
+
+}
+
+
+ </script>
+ <br />
+<h1>
+Animator</h1>
+<canvas height="400" id="canvas" style="border: 1px solid black;" width="400">
+  Sorry. Your browser doesn't currently support HTML5 canvas.
+ </canvas><br />
+<button onclick="keys.n = true;">Next</button>
+        <button onclick="keys.m = true;">Play</button>
