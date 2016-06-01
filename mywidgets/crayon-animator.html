@@ -14,7 +14,10 @@
 // keys
 var keys = {
 	n: false,
-	m: false
+	m: false,
+        d: false,
+        s: false,
+        a: false
 };
 
 
@@ -69,6 +72,13 @@ function line(x1, y1, x2, y2) {
 	ctx.stroke();
 }
 
+function onionSkin() {
+        ctx.globalAlpha = ost / 100;
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.globalAlpha = 1;
+}
+
 
 
 
@@ -83,8 +93,9 @@ var state;
 
 //	Animating
 
-Animating = function(movie) {
+Animating = function(movie, stack) {
 	this.movie = movie;
+        this.stack = stack;
 	this.start = true;
 	this.drawing = false;
 	this.px = 0;
@@ -106,29 +117,58 @@ Animating = function(movie) {
 		}
 	}
 
-	this.onionSkin = function() {
-		ctx.globalAlpha = ost / 100;
-		ctx.fillStyle = "white";
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-		ctx.globalAlpha = 1;
-	}
-
 	this.updateMouse = function() {
 		this.px = mouseX;
 		this.py = mouseY;
 	}
 
+        this.drawFrame = function(frame) {
+                for(var i = 0; i < frame.length; i++) {
+                        line(
+                            frame[i][0],
+                            frame[i][1],
+                            frame[i][2],
+                            frame[i][3]
+                        );
+                }
+        }
+
+        this.updateDisplay = function() {
+                ctx.fillStyle = "white";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                this.drawFrame(this.movie[this.movie.length - 2]);
+                onionSkin();
+                this.drawFrame(this.movie[this.movie.length - 1]);
+        }
+
 	this.control = function() {
 		if(keys.m) {
 			keys.m = false;
 
-			state = new Playing(this.movie);
+			state = new Playing(this.movie, this.stack);
 		} else if(keys.n) {
 			keys.n = false;
 
 			this.movie.push([]);
-			this.onionSkin();
-		}
+			onionSkin();
+		} else if(keys.d) {
+                        this.stack.push(this.movie[this.movie.length - 1]);
+                        keys.d = false;
+                } else if(keys.s) {
+                        this.movie.pop();
+                        this.movie.push(
+                            this.stack[this.stack.length - 1].concat([]).slice(
+                                0,
+                                -1
+                            )
+                        );
+                        this.updateDisplay();
+                        keys.s = false;
+                } else if(keys.a) {
+                        this.stack.pop();
+                        keys.a = false;
+                }
 	}
 
 	this.update = function() {
@@ -136,14 +176,13 @@ Animating = function(movie) {
 		this.control();
 		this.updateMouse();
 	}
-
-	this.onionSkin();
 }
 
 //		Playing
 
-Playing = function(movie) {
+Playing = function(movie, stack) {
 	this.movie = movie;
+        this.stack = stack;
 	this.frameNum = 0;
 	this.timer = frameTimer;
 
@@ -160,7 +199,6 @@ Playing = function(movie) {
 	this.drawFrame = function() {
 		var thisFrame = this.movie[this.frameNum];
 
-		ctx.strokeStyle = "black";
 		for(var i = 0; i < thisFrame.length; i++) {
 			line(thisFrame[i][0], thisFrame[i][1], thisFrame[i][2], thisFrame[i][3])
 		}
@@ -173,7 +211,12 @@ Playing = function(movie) {
 
 			this.frameNum++;
 			if(this.frameNum >= this.movie.length) {
-				state = new Animating(this.movie);
+                                this.frameNum -= 2;
+                                this.drawFrame();
+                                onionSkin();
+                                this.frameNum++;
+                                this.drawFrame();
+				state = new Animating(this.movie, this.stack);
 			}
 
 			this.timer = frameTimer;
@@ -188,7 +231,7 @@ Playing = function(movie) {
 
 //										draw function
 
-state = new Animating([[]]);
+state = new Animating([[]], []);
 
 function draw() {
 	state.update();
@@ -230,6 +273,15 @@ function ifKeyDown(e) {
 		case 77:
 			keys.m = true;
 			break;
+                case 68:
+                        keys.d = true;
+                        break;
+                case 83:
+                        keys.s = true;
+                        break;
+                case 65:
+                        keys.a = true;
+                        break;
 	}
 }
 
@@ -241,6 +293,15 @@ function ifKeyUp(e) {
 		case 77:
 			keys.m = false;
 			break;
+                case 68:
+                        keys.d = false;
+                        break;
+                case 83:
+                        keys.s = false;
+                        break;
+                case 65:
+                        keys.a = false;
+                        break;
 	}
 }
 
