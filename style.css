@@ -1,3 +1,76 @@
+/* color */
+
+#page {
+    background-color: #1F7CBA;
+}
+
+#content, #sidebar {
+    background-color: #59BDFF;
+}
+
+#footer, #title {
+    background-color: #062E48;
+}
+
+#navbar {
+    background-color: #6E4000;
+}
+
+.navbar-link {
+    background-color: #BA7A1F;
+}
+
+.navbar-link a {
+    color: #062E48;
+}
+
+#title h1 {
+    color: #BA7A1F;
+}
+
+#content *, #sidebar * {
+    color: #062E48;
+}
+
+#content a, #sidebar a {
+    color: #1F7CBA;
+}
+
+
+
+
+
+
+
+
+
+/* shape */
+#title {
+    border-radius: 15px 30px 0 0;
+}
+
+#navbar {
+    border-radius: 0 0 15px 30px;
+}
+
+.navbar-link {
+    border-radius: 5px 10px;
+}
+
+#content, #sidebar, #footer {
+    border-radius: 15px 30px;
+}
+
+
+
+
+
+
+
+
+
+/* position */
+
 * {
     margin: 0;
     padding: 0;
@@ -8,7 +81,6 @@
     position: absolute;
     width: 100%;
     min-height: 100%;
-    background-color: #24f;
 }
 
 #container {
@@ -21,7 +93,6 @@
 }
 
 #title {
-    background-color: #f00;
     height: 60px;
     overflow: hidden;
 }
@@ -32,15 +103,13 @@
 
 #navbar {
     height: 40px;
-    background-color: aquamarine;
-    padding: 0 5px 0 5px;
+    padding: 0 5px 0 30px;
 }
 
 .navbar-link {
     display: inline-block;
     margin: 5px;
     padding: 5px;
-    background-color: azure;
 }
 
 #main {
@@ -51,21 +120,18 @@
     width: 200px;
     float: right;
     min-height: 300px;
-    background-color: brown;
     margin: 30px 0 0 0;
 }
 
 #content {
     display: inline-block;
     min-height: 500px;
-    background-color: lavender;
     margin: 30px 30px 0 0;
     width: 410px;
-    padding: 50px 30px;
+    padding: 30px;
 }
 
 #footer {
     height: 50px;
-    background-color: #00f;
     margin-top: 30px;
 }
