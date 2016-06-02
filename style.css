@@ -1,14 +1,54 @@
+/* fonts/format/style */
+.title {
+    font-family: "Courier New", Courier, monospace;
+}
+
+#navbar {
+    font-family: "Arial Black", Gadget, sans-serif;
+}
+
+#page-content {
+    font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+#page-content p {
+    margin: 25px 0;
+    text-indent: 30px;
+    font-size: 1.1em;
+    line-height: 1.5;
+    text-align: justify;
+}
+
+#page-content ul, ol {
+    list-style-position: inside;
+    padding: 0 25px;
+    line-height: 1.5;
+    font-size: 1.05em;
+}
+
+
+
+
+
+
+
+
+
 /* color */
 
 #page {
-    background-color: #1F7CBA;
+    background: url(background.png);
 }
 
-#content, #sidebar {
+#container {
+    background-color: rgba(89,189,255,0.5);
+}
+
+#page-content, #sidebar {
     background-color: #59BDFF;
 }
 
-#footer, #title {
+#footer, .title {
     background-color: #062E48;
 }
 
@@ -22,15 +62,15 @@
     text-decoration: none;
 }
 
-#title h1 {
+.title h1 {
     color: #BA7A1F;
 }
 
-#content *, #sidebar * {
+#page-content *, #sidebar * {
     color: #062E48;
 }
 
-#content a, #sidebar a {
+#page-content a, #sidebar a {
     color: #1F7CBA;
 }
 
@@ -43,11 +83,11 @@
 
 
 /* shape */
-#title {
+.title {
     border-radius: 15px 30px 0 0;
 }
 
-#navbar {
+#navbar, #page-content {
     border-radius: 0 0 15px 30px;
 }
 
@@ -55,7 +95,7 @@
     border-radius: 5px 10px;
 }
 
-#content, #sidebar, #footer {
+#container, #sidebar, #footer {
     border-radius: 15px 30px;
 }
 
@@ -83,31 +123,28 @@
 
 #container {
     width: 700px;
-    margin: 10px auto 0 auto;
+    margin: 10px auto 10px auto;
+    padding: 20px;
 }
 
-#header {
-    overflow: hidden;
-}
-
-#title {
+.title {
     height: 60px;
     overflow: hidden;
 }
 
-#title h1 {
+.title h1 {
     margin: 13px 0 0 25px;
 }
 
 #navbar {
-    height: 40px;
-    padding: 0 5px 0 30px;
+    padding: 8px 30px;
+    overflow: hidden;
 }
 
 #navbar a {
     display: inline-block;
-    margin: 7px;
-    padding: 3px 5px;
+    padding: 3px 7px;
+    margin: 0 2px;
 }
 
 #main {
@@ -123,10 +160,16 @@
 
 #content {
     display: inline-block;
-    min-height: 500px;
     margin: 30px 30px 0 0;
-    width: 410px;
-    padding: 30px;
+    width: 470px;
+    /*background-color: black;*/
+    overflow: hidden;
+}
+
+#page-content {
+    padding: 0 20px;
+    overflow: hidden;
+    min-height: 300px;
 }
 
 #footer {
