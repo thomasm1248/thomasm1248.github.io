@@ -16,12 +16,10 @@
     background-color: #6E4000;
 }
 
-.navbar-link {
-    background-color: #BA7A1F;
-}
-
-.navbar-link a {
+#navbar a {
     color: #062E48;
+    background-color: #BA7A1F;
+    text-decoration: none;
 }
 
 #title h1 {
@@ -53,7 +51,7 @@
     border-radius: 0 0 15px 30px;
 }
 
-.navbar-link {
+#navbar a {
     border-radius: 5px 10px;
 }
 
@@ -106,10 +104,10 @@
     padding: 0 5px 0 30px;
 }
 
-.navbar-link {
+#navbar a {
     display: inline-block;
-    margin: 5px;
-    padding: 5px;
+    margin: 7px;
+    padding: 3px 5px;
 }
 
 #main {
