@@ -1,178 +1,128 @@
-/* fonts/format/style */
-.title {
-    font-family: "Courier New", Courier, monospace;
-}
-
-#navbar {
-    font-family: "Arial Black", Gadget, sans-serif;
-}
-
-#page-content {
-    font-family: "Comic Sans MS", cursive, sans-serif;
-}
-
-#page-content p {
-    margin: 25px 0;
-    text-indent: 30px;
-    font-size: 1.1em;
-    line-height: 1.5;
-    text-align: justify;
-}
-
-#page-content ul, ol {
-    list-style-position: inside;
-    padding: 0 25px;
-    line-height: 1.5;
-    font-size: 1.05em;
-}
-
-
-
-
-
-
-
-
-
-/* color */
-
-#page {
-    background: url(background.png);
-}
-
-#container {
-    background-color: rgba(89,189,255,0.5);
-}
-
-#page-content, #sidebar {
-    background-color: #59BDFF;
-}
-
-#footer, .title {
-    background-color: #062E48;
-}
-
-#navbar {
-    background-color: #6E4000;
-}
-
-#navbar a {
-    color: #062E48;
-    background-color: #BA7A1F;
-    text-decoration: none;
-}
-
-.title h1 {
-    color: #BA7A1F;
-}
-
-#page-content *, #sidebar * {
-    color: #062E48;
-}
-
-#page-content a, #sidebar a {
-    color: #1F7CBA;
-}
-
-
-
-
-
-
-
-
-
-/* shape */
-.title {
-    border-radius: 15px 30px 0 0;
-}
-
-#navbar, #page-content {
-    border-radius: 0 0 15px 30px;
-}
-
-#navbar a {
-    border-radius: 5px 10px;
-}
-
-#container, #sidebar, #footer {
-    border-radius: 15px 30px;
-}
-
-
-
-
-
-
-
-
-
-/* position */
-
 * {
     margin: 0;
     padding: 0;
 }
 
-#page {
-    display: block;
-    position: absolute;
-    width: 100%;
-    min-height: 100%;
+#container {
+    background-color: #f0f7ff;
+    overflow: hidden;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-#container {
-    width: 700px;
-    margin: 10px auto 10px auto;
-    padding: 20px;
+#header {
+    background-color: #222222;
+    text-align: center;
+    padding: 50px 0 20px;
 }
 
 .title {
-    height: 60px;
-    overflow: hidden;
-}
-
-.title h1 {
-    margin: 13px 0 0 25px;
+    color: dimgray;
 }
 
 #navbar {
-    padding: 8px 30px;
-    overflow: hidden;
-}
-
-#navbar a {
+    margin: 20px 0 0;
     display: inline-block;
-    padding: 3px 7px;
-    margin: 0 2px;
 }
 
-#main {
-    overflow: hidden;
+#navbar a:link, a:visited {
+    background-color: #282828;
+    padding: 5px;
+    margin: 5px;
+    border-left: 2px solid #303030;
+    border-top: 2px solid #303030;
+    border-right: 2px solid #202020;
+    border-bottom: 2px solid #202020;
+    border-radius: 6px;
+    text-decoration: none;
+    color: dimgray;
 }
 
-#sidebar {
-    width: 200px;
-    float: right;
-    min-height: 300px;
-    margin: 30px 0 0 0;
+#navbar a:hover {
+    background-color: #303030;
+    padding: 5px;
+    margin: 5px;
+    border-left: 2px solid #383838;
+    border-top: 2px solid #383838;
+    border-right: 2px solid #282828;
+    border-bottom: 2px solid #282828;
+    border-radius: 5px;
+    text-decoration: none;
+    color: dimgray;
+}
+
+#navbar a:active {
+    background-color: #202020;
+    padding: 5px;
+    margin: 5px;
+    border-left: 2px solid #181818;
+    border-top: 2px solid #181818;
+    border-right: 2px solid #303030;
+    border-bottom: 2px solid #303030;
+    border-radius: 5px;
+    text-decoration: none;
+    color: dimgray;
 }
 
 #content {
-    display: inline-block;
-    margin: 30px 30px 0 0;
-    width: 470px;
-    /*background-color: black;*/
-    overflow: hidden;
+    width: 600px;
+    margin: 0 auto;
+    padding: 50px 0 0 0;
 }
 
-#page-content {
-    padding: 0 20px;
-    overflow: hidden;
-    min-height: 300px;
+#content {
+    font-size: 1.2em;
+    text-indent: 50px;
+    text-align: justify;
+    line-height: 1.5em;
+}
+
+#content ul, ol {
+    list-style-position: inside;
+    margin-left: 30px;
+    text-indent: 0;
 }
 
 #footer {
-    height: 50px;
-    margin-top: 30px;
+    /*background-color: green;*/
+    width: 600px;
+    margin: 20px auto 50px;
+    border-top: 1px solid gray;
+    padding: 20px;
+    font-size: 0.6em;
+    color: gray;
 }
+
+#footer-left {
+    float: left;
+}
+
+#footer-right {
+    float: right;
+    text-align: right;
+}
+
+#footer-center {
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
