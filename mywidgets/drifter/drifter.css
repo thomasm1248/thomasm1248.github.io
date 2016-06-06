@@ -1,0 +1,13 @@
+.canvas_container {
+    position: absolute;
+    display: inline-block;
+}
+
+.canvas {
+    border: 5px ridge gray;
+}
+
+#page-canvas_div {
+    margin-left: 50px;
+    margin-top: 50px;
+}
