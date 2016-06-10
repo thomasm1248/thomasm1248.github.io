@@ -81,6 +81,25 @@
     text-indent: 0;
 }
 
+#content a:link {
+    color: blue;
+    text-decoration: none;
+}
+
+#content a:visited {
+    color: purple;
+    text-decoration: none;
+}
+
+#content a:active {
+    color: skyblue;
+    text-decoration: none;
+}
+
+#content a:hover {
+    text-decoration: underline;
+}
+
 #footer {
     /*background-color: green;*/
     width: 600px;
