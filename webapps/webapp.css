@@ -1,0 +1,7 @@
+body {
+    background-color: dimgray;
+}
+
+canvas {
+    border: 2px ridge gray;
+}
