@@ -37,6 +37,9 @@ var animator =
 var mouseX = 0, mouseY = 0;
 var px = 200, py = 200;
 var speed = 2;
+var shrinkTimer = 0;
+var loose = false;
+var gameIsOver = false;
 
 var Dot;
 var dots = [];
@@ -237,7 +240,7 @@ Enemy.prototype.update = function() {
 
 
 function updateDots() {
-    if(Math.random() * 100 < 1.5) {
+    if(Math.random() * 100 < 1.5 && canvas.width * canvas.height > 90000) {
         dots.push(new Dot());
     }
 
@@ -250,7 +253,7 @@ function updateDots() {
 }
 
 function updateEnemies() {
-    if(Math.random() * 100 < 1.0) {
+    if(Math.random() * 100 < 1.0 && canvas.width * canvas.height > 90000) {
         enemies.push(new Enemy());
     }
 
@@ -262,13 +265,20 @@ function updateEnemies() {
     }
 }
 
-ctx.fillStyle = "black";
-ctx.shadowColor = "#ffffff";
-ctx.shadowBlur = 30;
-ctx.shadowOffsetX = 0;
-ctx.shadowOffsetY = 0;
+function playing() {
+    if(shrinkTimer < 0) {
+        canvas.width -= 1;
+        canvas.height -= 1;
+        shrinkTimer = 10;
+    }
+    shrinkTimer--;
 
-function draw() {
+    ctx.fillStyle = "black";
+    ctx.shadowColor = "#ffffff";
+    ctx.shadowBlur = 30;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     px += (mouseX - px) / 10;
@@ -281,7 +291,45 @@ function draw() {
     updateEnemies();
     updateDots();
 
-    animator(draw);
+    for(var i = 0; i < dots.length; i++) {
+        if(dist(px, py, dots[i].x, dots[i].y) < 40) {
+            loose = true;
+            gameIsOver = true;
+            break;
+        }
+    }
+
+    for(var i = 0; i < enemies.length; i++) {
+        if(dist(px, py, enemies[i].x, enemies[i].y) < 60) {
+            loose = true;
+            gameIsOver = true;
+            break;
+        }
+    }
+
+    if(canvas.width * canvas.height <= 90000) {
+        gameIsOver = true;
+    }
+
+    if(gameIsOver) {
+        ctx.globalAlpha = 0.01;
+        ctx.shadowBlur = 0;
+        if(loose) {
+            ctx.fillStyle = "black";
+            animator(gameOver);
+        } else {
+            ctx.fillStyle = "white";
+            animator(gameOver);
+        }
+    } else {
+        animator(playing);
+    }
+}
+
+function gameOver() {
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    animator(gameOver);
 }
 
 canvas.addEventListener("mousemove", mousemove);
@@ -293,7 +341,7 @@ function mousemove(e) {
 	mouseY = e.clientY - rect.top;
 }
 
-draw();
+playing();
 
 
 
