@@ -7,6 +7,10 @@ body {
     background-color: #1a1a1a;
 }
 
+.fullscreen-canvas-container {
+    overflow: hidden;
+}
+
 .fullscreen-canvas {
     display: block;
 }
