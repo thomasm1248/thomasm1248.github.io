@@ -915,8 +915,7 @@ Model = function() {
 
 // MenuState
 MenuState = function() {
-    this.titleImage = new Image();
-    this.titleImage.src = "../media/lightsaberBrawlTitle.png";
+    this.titleImage = images[0];
 }
 
 MenuState.prototype.drawBG = function() {
@@ -929,8 +928,8 @@ MenuState.prototype.drawBG = function() {
 MenuState.prototype.drawTitle = function() {
     ctx.drawImage(
         this.titleImage,
-        canvas.width / 2 - this.titleImage.width / 2,
-        this.canvas.height / 2 - this.titleImage.height
+        canvas.width / 2 - this.titleImage.naturalWidth / 2,
+        canvas.height / 2 - this.titleImage.naturalHeight
     );
 }
 
@@ -1144,9 +1143,6 @@ PlayingState.prototype.update = function() {
 
 
 // Draw function
-
-state = new MenuState();
-
 function draw() {
     animator(draw);
 
@@ -1240,10 +1236,10 @@ function keyHandler(e) {
 
 // Start everything
 var imagesLoaded = 0;
-function imageLoad() {
+function loaded() {
     imagesLoaded++;
 
-    var barW = 200;
+    /*var barW = 200;
     var barH = 20;
 
     ctx.fillStyle = "green";
@@ -1262,16 +1258,17 @@ function imageLoad() {
         canvas.height / 2 - barH / 2,
         barW,
         barH
-    );
+    );*/
 
     if(imagesLoaded === images.length) {
+        state = new MenuState();
         draw();
     }
 }
 
 images.push(new Image());
-images[0].src = "../media/lightsaberBrawlTitle.png";
+images[0].src = "lightsaberBrawlTitle.png";
 
 for(var i = 0; i < images.length; i++) {
-    images[i].onload = imageLoad;
+    images[i].onload = loaded;
 }
