@@ -1126,7 +1126,7 @@ PlayingState.prototype.update = function() {
 
 // Draw function
 
-state = new PlayingState();
+state = new MenuState();
 
 function draw() {
     animator(draw);
