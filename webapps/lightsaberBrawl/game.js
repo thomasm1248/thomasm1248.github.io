@@ -53,6 +53,8 @@ var key = [
     }
 ];
 
+var spacebar = false;
+
 
 
 
@@ -936,6 +938,11 @@ MenuState.prototype.drawTitle = function() {
 MenuState.prototype.update = function() {
     this.drawBG();
     this.drawTitle();
+
+    // Provide Temporary way to start the game
+    if(spacebar) {
+        state = new PlayingState();
+    }
 }
 
 
@@ -1226,6 +1233,11 @@ function keyHandler(e) {
             break;
         case 54:
             key[3].r = val;
+            e.preventDefault();
+            break;
+            // Misc.
+        case 32:
+            spacebar = val
             e.preventDefault();
             break;
     }
