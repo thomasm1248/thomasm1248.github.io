@@ -905,6 +905,24 @@ Model = function() {
 
 
 
+// MenuState
+MenuState = function() {
+}
+
+MenuState.prototype.drawBG = function() {
+    ctx.fillStyle = "#000000";
+    ctx.globalAlpha = 0.2;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+}
+
+MenuState.prototype.update = function() {
+    this.drawBG();
+}
+
+
+
+
 // PlayingState
 PlayingState = function() {
     // Reset the model
