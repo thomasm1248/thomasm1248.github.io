@@ -58,8 +58,8 @@ var spacebar = false;
 
 
 
-// Player colors
-var colors = [
+// Player skins
+var skins = [
     // Blue Jedi
     [
         "#39210e",
@@ -96,6 +96,11 @@ var names = [
     "Luke",
     "Yoda"
 ];
+
+var laserColors = {
+    core: "#ff7b7b",
+    glow: "#f40000"
+};
 
 
 
@@ -197,18 +202,19 @@ Player = function(x, y, dir, keys) {
     this.dir = dir;
 
     this.keys = keys;
+    this.skin = 0;
 
     this.maxSaberLength = 100;
-    this.saberLength = 0;
+    this.saberLength = this.maxSaberLength;
     this.saberDrawSpeed = 25;
 
     this.rad = 20; // 20
 
     this.color = {
-        fill: colors[this.keys][0],
-        stroke: colors[this.keys][1],
-        core: colors[this.keys][2],
-        glow: colors[this.keys][3]
+        fill: skins[this.skin][0],
+        stroke: skins[this.skin][1],
+        core: skins[this.skin][2],
+        glow: skins[this.skin][3]
     };
 
     this.waitTimerSet = 50;
@@ -217,7 +223,7 @@ Player = function(x, y, dir, keys) {
     this.respawnRadSet = 400;
     this.respawnRad = this.respawnRadSet;
     this.respawnSpeed = 20;
-    this.respawn = true;
+    this.respawn = false;
 
     this.kills = 0;
 
@@ -225,18 +231,15 @@ Player = function(x, y, dir, keys) {
 }
 
 Player.prototype.drawSaber = function() {
-    var core = this.color.core;
-    var glow = this.color.glow;
-
     ctx.save();
 
     ctx.translate(this.pos.x, this.pos.y);
     ctx.rotate(this.dir * d2r);
 
-    ctx.shadowColor = glow;
+    ctx.shadowColor = this.color.glow;
     ctx.shadowBlur = 5;
 
-    ctx.strokeStyle = core;
+    ctx.strokeStyle = this.color.core;
     ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.beginPath();
@@ -528,6 +531,46 @@ Player.prototype.wait = function() {
     return this.dead;
 }
 
+Player.prototype.updateSkin = function() {
+    this.color = {
+        fill: skins[this.skin][0],
+        stroke: skins[this.skin][1],
+        core: skins[this.skin][2],
+        glow: skins[this.skin][3]
+    };
+}
+
+Player.prototype.setup = function() {
+    this.drawSaber();
+    this.drawBody();
+
+    var up = key[this.keys].u;
+    var left = key[this.keys].l;
+    var down = key[this.keys].d;
+    var right = key[this.keys].r;
+
+    if(up) {
+        key[this.keys].u = false;
+        this.skin++;
+        this.skin %= skins.length;
+        this.updateSkin();
+    } else if(down) {
+        key[this.keys].d = false;
+        this.skin--;
+        this.skin += skins.length;
+        this.skin %= skins.length;
+        this.updateSkin();
+    }
+
+    if(left) {
+        key[this.keys].l = false;
+        state.activated[this.keys] = false;
+        this.dead = true;
+    }
+
+    return this.dead;
+}
+
 Player.prototype.update = function() {
     if(this.maxSaberLength - this.saberLength < 0.1) {
         this.saberLength = this.maxSaberLength;
@@ -768,10 +811,10 @@ Laser = function(x, y, dir) {
 }
 
 Laser.prototype.draw = function() {
-    ctx.shadowColor = colors[1][3];
+    ctx.shadowColor = laserColors.glow;
     ctx.shadowBlur = 5;
 
-    ctx.strokeStyle = colors[1][2];
+    ctx.strokeStyle = laserColors.core;
     ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
@@ -917,6 +960,15 @@ Model = function() {
 
 // MenuState
 MenuState = function() {
+    model = new Model();
+
+    this.activated = [
+        false,
+        false,
+        false,
+        false
+    ];
+
     this.titleImage = images[0];
 }
 
@@ -935,9 +987,61 @@ MenuState.prototype.drawTitle = function() {
     );
 }
 
+MenuState.prototype.playerSelect = function() {
+    if(key[0].l && !this.activated[0]) {
+        key[0].l = false;
+        this.activated[0] = true;
+        model.players.push(new Player(
+            canvas.width * 0.2,
+            canvas.height * 0.75,
+            270,
+            0
+        ));
+    }
+    if(key[1].l && !this.activated[1]) {
+        key[1].l = false;
+        this.activated[1] = true;
+        model.players.push(new Player(
+            canvas.width * 0.4,
+            canvas.height * 0.75,
+            270,
+            1
+        ));
+    }
+    if(key[2].l && !this.activated[2]) {
+        key[2].l = false;
+        this.activated[2] = true;
+        model.players.push(new Player(
+            canvas.width * 0.6,
+            canvas.height * 0.75,
+            270,
+            2
+        ));
+    }
+    if(key[3].l && !this.activated[3]) {
+        key[3].l = false;
+        this.activated[3] = true;
+        model.players.push(new Player(
+            canvas.width * 0.8,
+            canvas.height * 0.75,
+            270,
+            3
+        ));
+    }
+
+    for(var i = 0; i < model.players.length; i++) {
+        if(model.players[i].setup()) {
+            model.players.splice(i, 1);
+            i--;
+        }
+    }
+}
+
 MenuState.prototype.update = function() {
     this.drawBG();
     this.drawTitle();
+
+    this.playerSelect();
 
     // Provide Temporary way to start the game
     if(spacebar) {
@@ -950,34 +1054,17 @@ MenuState.prototype.update = function() {
 
 // PlayingState
 PlayingState = function() {
-    // Reset the model
-    model = new Model();
+    var sector = 360 / model.players.length;
+    for(var i = 0; i < model.players.length; i++) {
+        model.players[i].saberLength = 0;
+        model.players[i].respawn = true;
+        model.players[i].respawnRad = model.players[i].respawnRadSet;
 
-    // Add four new Players to the model
-    model.players.push(new Player(
-        canvas.width / 2 - 200,
-        canvas.height / 2,
-        180,
-        0
-    ));
-    model.players.push(new Player(
-        canvas.width / 2 + 200,
-        canvas.height / 2,
-        0,
-        1
-    ));
-    model.players.push(new Player(
-        canvas.width / 2,
-        canvas.height / 2 + 200,
-        90,
-        2
-    ));
-    model.players.push(new Player(
-        canvas.width / 2,
-        canvas.height / 2 - 200,
-        270,
-        3
-    ));
+        var dir = i * sector;
+        model.players[i].dir = dir;
+        model.players[i].pos.x = canvas.width / 2 + Math.cos(dir * d2r) * 200;
+        model.players[i].pos.y = canvas.height / 2 + Math.sin(dir * d2r) * 200;
+    }
 }
 
 PlayingState.prototype.drawBG = function() {
@@ -1186,36 +1273,36 @@ function keyHandler(e) {
             break;
             //  IJKL
         case 73:
-            key[2].u = val;
+            key[1].u = val;
             e.preventDefault();
             break;
         case 74:
-            key[2].l = val;
+            key[1].l = val;
             e.preventDefault();
             break;
         case 75:
-            key[2].d = val;
+            key[1].d = val;
             e.preventDefault();
             break;
         case 76:
-            key[2].r = val;
+            key[1].r = val;
             e.preventDefault();
             break;
             //  Arrow
         case 38:
-            key[1].u = val;
+            key[2].u = val;
             e.preventDefault();
             break;
         case 37:
-            key[1].l = val;
+            key[2].l = val;
             e.preventDefault();
             break;
         case 40:
-            key[1].d = val;
+            key[2].d = val;
             e.preventDefault();
             break;
         case 39:
-            key[1].r = val;
+            key[2].r = val;
             e.preventDefault();
             break;
             //  Num pad
