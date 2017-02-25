@@ -974,7 +974,7 @@ MenuState = function() {
 
 MenuState.prototype.drawBG = function() {
     ctx.fillStyle = "#000000";
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = 0.5;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
 }
@@ -1070,7 +1070,7 @@ PlayingState = function() {
 PlayingState.prototype.drawBG = function() {
     //ctx.fillStyle = "#55a351";
     ctx.fillStyle = "#000000";
-    ctx.globalAlpha = 0.2;
+    ctx.globalAlpha = 0.5;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     ctx.globalAlpha = 1;
 }
