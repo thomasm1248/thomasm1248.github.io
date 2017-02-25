@@ -7,12 +7,20 @@ canvas.height = window.innerHeight;
 
 document.bgColor = "#000000";
 
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
 // Init animator
 var animator =
     window.requestAnimationFrame ||
     window.msRequestAnimationFrame ||
     window.mosRequestAnimationFrame ||
     window.webkitRequestAnimationFrame;
+
+
+
+
+// Image variable
+var images = [];
 
 
 
@@ -907,6 +915,8 @@ Model = function() {
 
 // MenuState
 MenuState = function() {
+    this.titleImage = new Image();
+    this.titleImage.src = "../media/lightsaberBrawlTitle.png";
 }
 
 MenuState.prototype.drawBG = function() {
@@ -916,8 +926,17 @@ MenuState.prototype.drawBG = function() {
     ctx.globalAlpha = 1;
 }
 
+MenuState.prototype.drawTitle = function() {
+    ctx.drawImage(
+        this.titleImage,
+        canvas.width / 2 - this.titleImage.width / 2,
+        this.canvas.height / 2 - this.titleImage.height
+    );
+}
+
 MenuState.prototype.update = function() {
     this.drawBG();
+    this.drawTitle();
 }
 
 
@@ -1220,4 +1239,39 @@ function keyHandler(e) {
 
 
 // Start everything
-draw();
+var imagesLoaded = 0;
+function imageLoad() {
+    imagesLoaded++;
+
+    var barW = 200;
+    var barH = 20;
+
+    ctx.fillStyle = "green";
+    ctx.strokeStyle = "gray";
+    ctx.lineWidth = 3;
+
+    ctx.fillRect(
+        canvas.width / 2 - barW / 2,
+        canvas.height / 2 - barH / 2,
+        imagesLoaded / images.length * barW,
+        barH
+    );
+
+    ctx.strokeRect(
+        canvas.width / 2 - barW / 2,
+        canvas.height / 2 - barH / 2,
+        barW,
+        barH
+    );
+
+    if(imagesLoaded === images.length) {
+        draw();
+    }
+}
+
+images.push(new Image());
+images[0].src = "../media/lightsaberBrawlTitle.png";
+
+for(var i = 0; i < images.length; i++) {
+    images[i].onload = imageLoad;
+}
