@@ -67,13 +67,6 @@ var skins = [
         "#7b7bff",
         "#0000f4"
     ],
-    // Red Sith
-    [
-        "#0b0b0b",
-        "#0f0f0f",
-        "#ff7b7b",
-        "#f40000"
-    ],
     // Green Jedi
     [
         "#39210e",
@@ -81,12 +74,82 @@ var skins = [
         "#6bff6b",
         "#008400"
     ],
+    // Blue Rebel
+    [
+        "#231010",
+        "#130b0a",
+        "#7b7bff",
+        "#0000f4"
+    ],
+    // Green Rebel
+    [
+        "#231010",
+        "#130b0a",
+        "#6bff6b",
+        "#008400"
+    ],
+    // Red Sith
+    [
+        "#0b0b0b",
+        "#0f0f0f",
+        "#ff7b7b",
+        "#f40000"
+    ],
     // Yoda
     [
         "#0f2206",
         "#0a0c07",
         "#6bff6b",
         "#008400"
+    ],
+    // Angel
+    [
+        "#eeeeee",
+        "#2d2d2d",
+        "#ffffff",
+        "#cccccc"
+    ],
+    // Red Laser Being
+    [
+        "#000000",
+        "#d30303",
+        "#000000",
+        "#d30303"
+    ],
+    // Yellow Laser Being
+    [
+        "#000000",
+        "#acae1e",
+        "#000000",
+        "#acae1e"
+    ],
+    // Blue Laser Being
+    [
+        "#000000",
+        "#0000f4",
+        "#000000",
+        "#0000f4"
+    ],
+    // White Laser Being
+    [
+        "#000000",
+        "#ffffff",
+        "#000000",
+        "#ffffff"
+    ],
+    // Green Laser Being
+    [
+        "#000000",
+        "#31ac01",
+        "#000000",
+        "#31ac01"
+    ],
+    // Rose Death
+    [
+        "#720c5e",
+        "#26031f",
+        "#f7a0e6",
+        "#ed53cf"
     ]
 ];
 
