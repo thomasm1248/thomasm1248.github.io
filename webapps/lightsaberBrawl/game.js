@@ -144,12 +144,19 @@ var skins = [
         "#000000",
         "#31ac01"
     ],
-    // Rose Death
     [
+    // Rose Death
         "#720c5e",
         "#26031f",
         "#f7a0e6",
         "#ed53cf"
+    ],
+    // Invisiblade
+    [
+        "#eeeeee",
+        "#2d2d2d",
+        "#111111",
+        "#111111"
     ]
 ];
 
