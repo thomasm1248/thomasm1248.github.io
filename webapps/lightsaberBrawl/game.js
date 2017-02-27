@@ -296,6 +296,7 @@ Player = function(x, y, dir, keys) {
     this.respawn = false;
 
     this.kills = 0;
+    this.deaths = 0;
 
     this.dead = false;
 }
@@ -359,6 +360,10 @@ Player.prototype.drawBody = function() {
 Player.prototype.kill = function() {
     if(!this.respawn) {
         this.dead = true;
+        this.deaths++;
+        return true;
+    } else {
+        return false;
     }
 }
 
@@ -384,7 +389,7 @@ Player.prototype.checkSaberEnemyCols = function(enemies) {
                 ) <
                 enemies[i].rad
             ) {
-                enemies[i].kill();
+                if(enemies[i].kill()) {this.kills++;}
             }
         }
 
