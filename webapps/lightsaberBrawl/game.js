@@ -182,6 +182,7 @@ var Model;
 var state;
 var PlayingState;
 var MenuState;
+var GameOverState;
 
 var Player;
 var Soldier;
@@ -1140,6 +1141,9 @@ PlayingState = function() {
         model.players[i].pos.x = canvas.width / 2 + Math.cos(dir * d2r) * 200;
         model.players[i].pos.y = canvas.height / 2 + Math.sin(dir * d2r) * 200;
     }
+
+    this.gameTimerSet = 18000;
+    this.gameTimer = this.gameTimerSet;
 }
 
 PlayingState.prototype.drawBG = function() {
@@ -1304,9 +1308,73 @@ PlayingState.prototype.update = function() {
     this.updateDeadPlayers();
     this.updatePlayers();
 
+    this.gameTimer--;
+    if(this.gameTimer <= 0) {
+        state = new GameOverState();
+    }
+
     //this.drawScoreBoard();
 }
 
+
+
+
+// GameOverState
+GameOverState = function() {
+    // Draw a background
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.globalAlpha = 1;
+
+    // Draw Game Over message
+    ctx.drawImage(
+        images[1],
+        canvas.width / 2 - images[1].naturalWidth / 2,
+        canvas.height / 3 - images[1].naturalHeight
+    );
+
+    // Make all the dead players alive a gain
+    for(var i = 0; i < model.deadPlayers.length; i++) {
+        model.players.push(model.deadPlayers[i]);
+    }
+
+    // Draw the players
+    for(var i = 0; i < model.players.length; i++) {
+        var x = canvas.width / 5 * (model.players[i].keys + 1);
+        var y = canvas.height * 0.60;
+
+        model.players[i].pos.x = x;
+        model.players[i].pos.y = y;
+        model.players[i].dir = 270;
+
+        model.players[i].drawSaber();
+        model.players[i].drawBody();
+
+        ctx.save();
+        ctx.translate(x, y);
+
+        ctx.fillStyle = "yellow";
+        ctx.textAlign = "center";
+        ctx.font = "50px Courier New";
+
+        var score = model.players[i].kills * 5;
+        score -= model.players[i].deaths;
+
+        ctx.fillText(score, 0, 80);
+
+        ctx.restore();
+    }
+}
+
+GameOverState.prototype.update = function() {
+    if(spacebar) {
+        spacebar = false;
+        state = new MenuState();
+    }
+
+    return;
+}
 
 
 
@@ -1442,6 +1510,9 @@ function loaded() {
 
 images.push(new Image());
 images[0].src = "lightsaberBrawlTitle.png";
+
+images.push(new Image());
+images[1].src = "gameOverMessage.png";
 
 for(var i = 0; i < images.length; i++) {
     images[i].onload = loaded;
