@@ -296,6 +296,9 @@ Player = function(x, y, dir, keys) {
     this.respawnSpeed = 20;
     this.respawn = false;
 
+    this.deathRad = 0;
+    this.deathSpeed = 10;
+
     this.kills = 0;
     this.deaths = 0;
 
@@ -369,6 +372,7 @@ Player.prototype.kill = function() {
     if(!this.respawn) {
         this.dead = true;
         this.deaths++;
+        this.deathRad = 0;
         return true;
     } else {
         return false;
@@ -572,11 +576,30 @@ Player.prototype.move = function() {
     this.dir += this.turnVel;
 }
 
+Player.prototype.drawDeath = function() {
+    ctx.save();
+    ctx.translate(this.pos.x, this.pos.y);
+
+    ctx.globalAlpha = 1 / (this.deathRad / 10);
+    ctx.lineWidth = this.deathRad / 8;
+    ctx.strokeStyle = "#12d0ed";
+    ctx.beginPath();
+    ctx.arc(0, 0, this.deathRad, 0, 360 * d2r);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    ctx.restore();
+
+    this.deathRad += this.deathSpeed;
+}
+
 Player.prototype.wait = function() {
     /*ctx.globalAlpha = 0.2;
     this.drawSaber();
     this.drawBody();
     ctx.globalAlpha = 1;*/
+
+    this.drawDeath();
 
     if(this.waitTimer < 0) {
         var x = Math.random() * (canvas.width - 200) + 100;
