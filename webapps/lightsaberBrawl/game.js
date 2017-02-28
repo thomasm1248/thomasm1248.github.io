@@ -1149,7 +1149,7 @@ PlayingState = function() {
         model.players[i].pos.y = canvas.height / 2 + Math.sin(dir * d2r) * 200;
     }
 
-    this.gameTimerSet = 18000;
+    this.gameTimerSet = 10800;
     this.gameTimer = this.gameTimerSet;
 }
 
@@ -1223,93 +1223,6 @@ PlayingState.prototype.updateLasers = function() {
     }
 }
 
-PlayingState.prototype.drawScoreBoard = function() {
-    var scoresTemp = [];
-    for(var i in model.players) {
-        scoresTemp.push([
-            names[model.players[i].keys],
-            model.players[i].kills,
-            false,
-            model.players[i].hasLongSaber,
-            model.players[i].speed > model.players[i].defaultSpeed
-        ]);
-    }
-    for(var i in model.deadPlayers) {
-        scoresTemp.push([
-            names[model.deadPlayers[i].keys],
-            model.deadPlayers[i].kills,
-            true,
-            model.players[i].hasLongSaber,
-            false
-        ]);
-    }
-
-    var scores = [];
-    while(scoresTemp.length > 0) {
-        var champ = 0;
-        var champI = 0;
-        for(var i in scoresTemp) {
-            if(scoresTemp[i][1] > champ) {
-                champ = scoresTemp[i][1];
-                champI = i;
-            }
-        }
-        scores.push(scoresTemp[champI]);
-        scoresTemp.splice(champI, 1);
-    }
-
-    var width = 200;
-    var height = 250;
-    var margin = 20;
-
-    ctx.save();
-    ctx.translate(canvas.width - width - margin, margin);
-
-    ctx.globalAlpha = 0.5;
-
-    ctx.fillStyle = "#333333";
-    ctx.strokeStyle = "#666666";
-    ctx.lineWidth = 5;
-    ctx.lineJoin = "round";
-    ctx.fillRect(0, 0, width, height);
-    ctx.strokeRect(0, 0, width, height);
-
-    ctx.fillStyle = "white";
-    ctx.fontStyle = "normal";
-    ctx.font = "30px Comic Sans MS";
-    ctx.fillText("Score Board", 10, 40);
-
-    ctx.font = "20px Comic Sans MS";
-    var text = "";
-    for(var i in scores) {
-        text = scores[i][0];
-        text += " ~ ";
-        text += scores[i][1];
-        if(scores[i][4]) {
-            ctx.fillStyle = "green";
-        } else {
-            ctx.fillStyle = "white";
-        }
-        if(scores[i][3]) {
-            ctx.shadowBlur = 5;
-            ctx.shadowColor = "white";
-        } else {
-            ctx.shadowColor = "transparent";
-        }
-        if(scores[i][2]) {
-            ctx.globalAlpha = 0.3;
-        } else {
-            ctx.globalAlpha = 0.5;
-        }
-        ctx.fillText(text, 15, i * 30 + 100);
-    }
-
-    ctx.shadowColor = "transparent";
-    ctx.globalAlpha = 1;
-
-    ctx.restore();
-}
-
 PlayingState.prototype.update = function() {
     this.drawBG();
 
@@ -1323,8 +1236,6 @@ PlayingState.prototype.update = function() {
     if(this.gameTimer <= 0) {
         state = new GameOverState();
     }
-
-    //this.drawScoreBoard();
 }
 
 
@@ -1367,14 +1278,68 @@ GameOverState = function() {
         ctx.save();
         ctx.translate(x, y);
 
+        var buffer = 100;
+        var lineHeight = 20;
+        var spacing = 20;
+        var left = -20;
+        var center = 40;
+        var right = 100;
+
         ctx.fillStyle = "yellow";
-        ctx.textAlign = "center";
-        ctx.font = "50px Courier New";
+        ctx.font = lineHeight + "px Courier New";
 
         var score = model.players[i].kills * 5;
         score -= model.players[i].deaths;
 
-        ctx.fillText(score, 0, 80);
+        ctx.strokeStyle = "yellow";
+        ctx.beginPath();
+        ctx.moveTo(left - 80, buffer + lineHeight * 2 + spacing * 2);
+        ctx.lineTo(right, buffer + lineHeight * 2 + spacing * 2);
+        ctx.stroke();
+
+        ctx.textAlign = "right";
+        ctx.fillText(
+            "Kills:",
+            left,
+            buffer + lineHeight
+        );
+        ctx.fillText(
+            "- Deaths:",
+            left,
+            buffer + lineHeight * 2 + spacing
+        );
+        ctx.fillText(
+            "Score:",
+            left,
+            buffer + lineHeight * 3 + spacing * 3
+        );
+
+        ctx.fillText(
+            model.players[i].kills,
+            center,
+            buffer + lineHeight
+        );
+        ctx.fillText(
+            model.players[i].deaths,
+            center,
+            buffer + lineHeight * 2 + spacing
+        );
+        ctx.fillText(
+            score,
+            center,
+            buffer + lineHeight * 3 + spacing * 3
+        );
+
+        ctx.fillText(
+            "x2",
+            right,
+            buffer + lineHeight
+        );
+        ctx.fillText(
+            "x1",
+            right,
+            buffer + lineHeight * 2 + spacing
+        );
 
         ctx.restore();
     }
