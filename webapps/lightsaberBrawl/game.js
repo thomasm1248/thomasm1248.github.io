@@ -339,10 +339,17 @@ Player.prototype.drawBody = function() {
     ctx.fill();
     ctx.stroke();
 
+    ctx.restore();
+}
+
+Player.prototype.drawRespawn = function() {
     if(this.respawn) {
         if(this.respawnRad <= this.rad) {
             this.respawn = false;
         }
+
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
 
         ctx.globalAlpha = this.respawnRad / this.respawnRadSet;
         ctx.lineWidth = this.respawnRad / 8;
@@ -352,10 +359,10 @@ Player.prototype.drawBody = function() {
         ctx.stroke();
         ctx.globalAlpha = 1;
 
+        ctx.restore();
+
         this.respawnRad -= this.respawnRad / this.respawnSpeed;
     }
-
-    ctx.restore();
 }
 
 Player.prototype.kill = function() {
@@ -1173,6 +1180,10 @@ PlayingState.prototype.updatePlayers = function() {
     for(var i = 0; i < model.players.length; i++) {
         model.players[i].drawBody();
     }
+
+    for(var i = 0; i < model.players.length; i++) {
+        model.players[i].drawRespawn();
+    }
 }
 
 PlayingState.prototype.updateDeadPlayers = function() {
@@ -1347,6 +1358,8 @@ GameOverState = function() {
         model.players[i].pos.x = x;
         model.players[i].pos.y = y;
         model.players[i].dir = 270;
+
+        model.players[i].saberLength = model.players[i].maxSaberLength;
 
         model.players[i].drawSaber();
         model.players[i].drawBody();
