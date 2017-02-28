@@ -1354,7 +1354,7 @@ GameOverState = function() {
         );
 
         ctx.fillText(
-            "x2",
+            "x5",
             right,
             buffer + lineHeight
         );
