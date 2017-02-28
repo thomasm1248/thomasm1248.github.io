@@ -2,15 +2,30 @@
 <html>
     <head>
         <title>Keycode Getter</title>
+        <style>
+
+
+h1 {
+    font-size: 4em;
+    text-align: center;
+    margin: 300px 0 0;
+}
+
+
+        </style>
     </head>
     <body>
-        <h1 class="center"></h1>
+        <h1 id="output">Press any key.</h1>
         <script>
 
 
 
 
-// code
+window.addEventListener("keydown", printKeyCode, false);
+function printKeyCode(e) {
+    document.getElementById("output").innerHTML = e.keyCode;
+    e.preventDefault();
+}
 
 
 
