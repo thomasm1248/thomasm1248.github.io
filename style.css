@@ -8,7 +8,7 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-#header {
+header {
     background-color: #222222;
     text-align: center;
     padding: 50px 0 20px;
@@ -18,82 +18,72 @@
     color: dimgray;
 }
 
-#navbar {
-    margin: 20px 0 0;
+nav {
+    height: 50px;
+    background-color: #45b7ea;
+    text-align: center;
+}
+
+nav a {
+    padding: 14px 10px 0;
+    text-decoration: none;
+    height: 72%;
+    color: #35566b;
+    font-family: "Arial Black", Gadget, sans-serif;
     display: inline-block;
 }
 
-#navbar a {
-    padding: 5px;
-    margin: 5px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: dimgray;
+nav a:link, a:visited {
+    background-color: #45b7ea;
 }
 
-#navbar a:link, a:visited {
-    background-color: #282828;
-    border-left: 2px solid #303030;
-    border-top: 2px solid #303030;
-    border-right: 2px solid #202020;
-    border-bottom: 2px solid #202020;
+nav a:hover {
+    background-color: #5fc4f1;
 }
 
-#navbar a:hover {
-    background-color: #303030;
-    border-left: 2px solid #383838;
-    border-top: 2px solid #383838;
-    border-right: 2px solid #282828;
-    border-bottom: 2px solid #282828;
+nav a:active {
+    background-color: #409fca;
 }
 
-#navbar a:active {
-    background-color: #202020;
-    border-left: 2px solid #181818;
-    border-top: 2px solid #181818;
-    border-right: 2px solid #303030;
-    border-bottom: 2px solid #303030;
-}
-
-#content {
+section {
     width: 600px;
     margin: 0 auto;
     padding: 50px 0 0 0;
 }
 
-#content {
+section {
     font-size: 1.2em;
     text-indent: 50px;
     text-align: justify;
     line-height: 1.5em;
 }
 
-#content ul, ol {
+section ul, ol {
     list-style-position: inside;
     margin-left: 30px;
     text-indent: 0;
 }
 
-#content a:link {
+section a:link {
     color: blue;
     text-decoration: none;
 }
 
-#content a:visited {
+section a:visited {
     color: purple;
     text-decoration: none;
 }
 
-#content a:active {
+section a:active {
     color: skyblue;
     text-decoration: none;
 }
 
-#content a:hover {
+section a:hover {
     text-decoration: underline;
 }
 
-#footer {
+footer {
     /*background-color: green;*/
     width: 600px;
     margin: 20px auto 50px;
@@ -115,25 +105,3 @@
 #footer-center {
     text-align: center;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
