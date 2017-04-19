@@ -3,8 +3,7 @@
     padding: 0;
 }
 
-#container {
-    overflow: hidden;
+body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -49,13 +48,14 @@ section {
     width: 600px;
     margin: 0 auto;
     padding: 50px 0 0 0;
-}
-
-section {
     font-size: 1.2em;
     text-indent: 50px;
     text-align: justify;
     line-height: 1.5em;
+}
+
+section h1, section p {
+    margin: 30px 0;
 }
 
 section ul, ol {
@@ -84,7 +84,6 @@ section a:hover {
 }
 
 footer {
-    /*background-color: green;*/
     width: 600px;
     margin: 20px auto 50px;
     border-top: 1px solid gray;
