@@ -180,10 +180,10 @@ var Plant;
 Model = function() {
 	this.plants = [];
 	this.rabbits = [];
-	this.wolfs = [];
+	this.wolves = [];
 
     this.starvedRabbits = [];
-    this.starvedWolfs = [];
+    this.starvedWolves = [];
 }
 
 
@@ -296,7 +296,7 @@ Wolf.prototype.move = function() {
 
 Wolf.prototype.reproduce = function() {
     if(this.health > 300 && Math.random() * this.reproduceChance < 1 && this.canReproduce) {
-        model.wolfs.push(new Wolf(this.pos.x, this.pos.y));
+        model.wolves.push(new Wolf(this.pos.x, this.pos.y));
         this.canReproduce = false;
     }
 }
@@ -394,12 +394,12 @@ Rabbit.prototype.move = function() {
         y: 0
     };
 
-    // Run from wolfs
+    // Run from wolves
     var dist;
-    for(var i = 0; i < model.wolfs.length; i++) {
-        dist = getDist(this.pos, model.wolfs[i].pos);
+    for(var i = 0; i < model.wolves.length; i++) {
+        dist = getDist(this.pos, model.wolves[i].pos);
         if(dist < this.watchRadius) {
-            var dir = getDir(model.wolfs[i].pos, this.pos);
+            var dir = getDir(model.wolves[i].pos, this.pos);
             movement.x += Math.cos(dir * d2r) * this.speed;
             movement.y += Math.sin(dir * d2r) * this.speed;
         }
@@ -525,11 +525,11 @@ Sim.prototype.updateStarvedOrganisms = function() {
             i--;
         }
     }
-    for(var i = 0; i < model.starvedWolfs.length; i++) {
-        model.starvedWolfs[i].draw();
-        model.starvedWolfs[i].visibleTime--;
-        if(model.starvedWolfs[i].visibleTime < 0) {
-            model.starvedWolfs.splice(i, 1);
+    for(var i = 0; i < model.starvedWolves.length; i++) {
+        model.starvedWolves[i].draw();
+        model.starvedWolves[i].visibleTime--;
+        if(model.starvedWolves[i].visibleTime < 0) {
+            model.starvedWolves.splice(i, 1);
             i--;
         }
     }
@@ -546,7 +546,7 @@ Sim.prototype.placeOrganisms = function() {
 			model.rabbits.push(new Rabbit(mx, my));
 			break;
 		case "wolf":
-			model.wolfs.push(new Wolf(mx, my));
+			model.wolves.push(new Wolf(mx, my));
 			break;
 		}
 	}
@@ -571,13 +571,13 @@ Sim.prototype.updateOrganisms = function() {
 		}
 	}
 
-	for(var i = 0; i < model.wolfs.length; i++) {
-		if(model.wolfs[i].update()) {
-            if(model.wolfs[i].starved) {
-                model.wolfs[i].visibleTime = 50;
-                model.starvedWolfs.push(model.wolfs[i]);
+	for(var i = 0; i < model.wolves.length; i++) {
+		if(model.wolves[i].update()) {
+            if(model.wolves[i].starved) {
+                model.wolves[i].visibleTime = 50;
+                model.starvedWolves.push(model.wolves[i]);
             }
-			model.wolfs.splice(i, 1);
+			model.wolves.splice(i, 1);
 			i--;
 		}
 	}
@@ -592,8 +592,8 @@ Sim.prototype.drawOrganisms = function() {
 		model.rabbits[i].draw();
 	}
 
-	for(var i = 0; i < model.wolfs.length; i++) {
-		model.wolfs[i].draw();
+	for(var i = 0; i < model.wolves.length; i++) {
+		model.wolves[i].draw();
 	}
 }
 
