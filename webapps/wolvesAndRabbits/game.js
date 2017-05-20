@@ -9,6 +9,9 @@ var animator =
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 var rect = canvas.getBoundingClientRect();
+var area = canvas.width * canvas.height;
+var plantsPerPixel = 100 / 1241280;
+var plantControl = area * plantsPerPixel;
 
 
 
@@ -486,8 +489,8 @@ Plant.prototype.draw = function() {
 
 Plant.prototype.grow = function() {
     var chance = this.growChance;
-    if(model.plants.length > 100) {
-        chance += (model.plants.length - 100) * 100;
+    if(model.plants.length > plantControl) {
+        chance += (model.plants.length - plantControl) * 100;
     }
 	if(Math.random() * chance < 1) {
 		var x = Math.random() * this.growBox * 2 - this.growBox + this.pos.x;
