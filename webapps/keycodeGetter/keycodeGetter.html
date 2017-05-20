@@ -1,19 +1,35 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Test</title>
-        <link type="text/css" rel="stylesheet" href="../webapp.css">
-        <script src="javascript.js"></script>
+        <title>Keycode Getter</title>
+        <style>
+
+
+h1 {
+    font-size: 4em;
+    text-align: center;
+    margin: 300px 0 0;
+}
+
+
+        </style>
     </head>
     <body>
-        <h1></h1>
-            <canvas
-                id="myCanvas"
-                width="60"
-                height="20"
-                    >
+        <h1 id="output">Press any key.</h1>
+        <script>
 
-                Sorry, your web-browser dosn't currently support html canvas.
-            </canvas>
+
+
+
+window.addEventListener("keydown", printKeyCode, false);
+function printKeyCode(e) {
+    document.getElementById("output").innerHTML = e.keyCode;
+    e.preventDefault();
+}
+
+
+
+
+        </script>
     </body>
 </html>
