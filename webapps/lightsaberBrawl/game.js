@@ -1172,7 +1172,7 @@ PlayingState = function() {
         model.players[i].pos.y = canvas.height / 2 + Math.sin(dir * d2r) * 200;
     }
 
-    this.gameTimerSet = 10800;
+    this.gameTimerSet = 7200;
     this.gameTimer = this.gameTimerSet;
 }
 
