@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Tilebots</title>
+	<style>
+
+* {
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	overflow: hidden;
+}
+
+@font-face {
+	font-family: "Arcade";
+	src: url("ARCADE.TTF");
+}
+
+#overlay-div {
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+#input-container {
+	width: 300px;
+	height: 300px;
+	/*border: 1px solid white;*/
+	margin: 100px auto;
+}
+
+#setup-header {
+	font-family: "Arcade";
+	font-size: 100px;
+	color: white;
+}
+
+#name_input {
+	font-family: "Arcade";
+	font-size: 40px;
+	color: white;
+	background-color: black;
+	width: 100%;
+	height: 100%;
+	padding: 5px;
+	resize: none;
+}
+
+	</style>
+</head>
+<body id="body">
+	<canvas id="canvas">
+		Sorry. HTML Canvas is not supported.
+	</canvas>
+	<div id="overlay-div">
+		<div id="input-container">
+			<p id="setup-header">Setup</p>
+			<textarea id="name_input" spellcheck="false"></textarea>
+		</div>
+	</div>
+	<script>
+
+
+
+////////////////////////////////////   Quick Config Variables
+////////////////////////////////////   Setup
+
+function l(id) {return document.getElementById(id);}
+var canvas = l("canvas");
+var ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+var animator =
+	window.RequestAnimationFrame ||
+	window.oRequestAnimationFrame ||
+	window.msRequestAnimationFrame ||
+	window.mozRequestAnimationFrame ||
+	window.webkitRequestAnimationFrame;
+
+////////////////////////////////////   Util
+
+var r2d = 180 / Math.PI;
+var d2r = Math.PI / 180;
+
+var mouse = {
+	x: 0,
+	y: 0,
+	dx: 0,
+	dy: 0,
+	click: false
+};
+
+var keys = {
+	plus: false,
+	minus: false,
+	b: false,
+	f: false,
+	w: false,
+	d: false
+};
+
+var debugLog = "";
+function debug(a, b) {
+	if(a === undefined) {
+		var body = document.getElementById("body");
+		body.innerHTML = debugLog;
+		return;
+	} else if(b === undefined) {
+		a = new Option(JSON.stringify(a)).innerHTML; // Make text html safe
+		debugLog += "<p>" + a + "</p>";
+	} else if(a) {
+		b = new Option(JSON.stringify(b)).innerHTML; // Make text html safe
+		debugLog += "<p>" + b + "</p>";
+	}
+	return a;
+}
+
+function easeInOutCubic(t) { return t<0.5 ? 4*t*t*t : (t-1)*(2*t-2)*(2*t-2)+1; }
+
+function clearCanvas() {
+	ctx.fillStyle = "black";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function translate(v) {
+	ctx.translate(v.x, v.y);
+}
+
+function scale(s) {
+	ctx.scale(s, s);
+}
+
+function addV(v1, v2) {
+	return {
+		x: v1.x + v2.x,
+		y: v1.y + v2.y
+	};
+}
+
+function vToV(v1, v2) {
+	return {
+		x: v2.x - v1.x,
+		y: v2.y - v1.y
+	};
+}
+
+function snapV(v) {
+	return {
+		x: Math.floor(v.x),
+		y: Math.floor(v.y)
+	};
+}
+
+function getDist(v1, v2) {
+	var d = {
+		x: v2.x - v1.x,
+		y: v2.y - v1.y
+	};
+	return Math.sqrt(d.x*d.x + d.y*d.y);
+}
+
+function scaleV(v, s) {
+	return {
+		x: v.x * s,
+		y: v.y * s
+	};
+}
+
+////////////////////////////////////   Declarations
+
+var Map;
+
+var Model;
+
+var Bot;
+
+var GameOver;
+var Playing;
+var Setup;
+var Menu;
+
+////////////////////////////////////   Objects
+
+
+
+Map = function() {
+	/* Quadrant order
+				3 2
+				1 0
+	*/
+	this.cellArr = {};
+	this.emptyCellValue = "";
+};
+
+Map.prototype.get = function(x, y) {
+	var index = x + "," + y;
+	if(this.cellArr[index] === undefined) {
+		return this.emptyCellValue;
+	} else {
+		return this.cellArr[index].value;
+	}
+};
+
+Map.prototype.set = function(x, y, value) {
+	var index = x + "," + y;
+	
+	if(this.cellArr[index] === undefined) {
+		this.cellArr[index] = {
+			value: value,
+			coords: {
+				x: x,
+				y: y
+			}
+		};
+	} else {
+		this.cellArr[index].value = value;
+	}
+};
+
+
+
+Bot = function(x, y, hue, name) {
+	// Name of the bot
+	this.name = name;
+	
+	// Position of the bot
+	this.pos = {
+		x: x,
+		y: y
+	};
+	
+	// Energy
+	this.energyPerTurn = 3;
+	this.energyMax = 6;
+	this.energy = 6;
+	this.cEnergy = 0;
+	
+	// Color of the bot
+	this.color = "hsl(" + hue + ", 100%, 50%)";
+	
+	// Map of the bot
+	this.map = new Map();
+	this.map.set(0, 0, "head");
+};
+
+Bot.prototype.getAttackPoints = function() {
+	var attackPoints = [];
+	for(var i in this.map.cellArr) {
+		if(this.map.cellArr[i].value === "weapon") {
+			attackPoints.push(addV(this.pos, this.map.cellArr[i].coords));
+		}
+	}
+	return attackPoints;
+};
+
+Bot.prototype.removeExtra = function() {
+	// Remove all abandoned tiles
+	var oldMap = this.map;
+	var newMap = new Map();
+	function checkCell(x, y) {
+		if(oldMap.get(x, y) !== "") {
+			newMap.set(x, y, oldMap.get(x, y));
+			oldMap.set(x, y, "");
+			checkCell(x + 1, y);
+			checkCell(x - 1, y);
+			checkCell(x, y + 1);
+			checkCell(x, y - 1);
+		}
+	}
+	checkCell(0, 0);
+	this.map = newMap;
+	
+	// Return extra tiles
+	var count = 0;
+	for(var i in oldMap.cellArr) {
+		if(oldMap.cellArr[i].value !== "") {count++;}
+	}
+	return count;
+};
+
+Bot.prototype.beAttacked = function(attackPoints) {
+	var count = 0;
+	// Remove attacked tiles
+	for(var i in attackPoints) {
+		var coords = vToV(this.pos, attackPoints[i]);
+		if(this.map.get(coords.x, coords.y) !== "") {count++;}
+		this.map.set(coords.x, coords.y, "");
+	}
+	count += this.removeExtra();
+	return this.map.get(0, 0) === "head" ? 0 : count;
+};
+
+Bot.prototype.drawTile = function(tile) {
+	ctx.save();
+	translate(tile.coords);
+	switch(tile.value) {
+		case "head":
+			ctx.fillRect(0.04, 0.04, 0.92, 0.92);
+			break;
+		case "body":
+			ctx.strokeRect(0.07, 0.07, 0.86, 0.86);
+			break;
+		case "foot":
+			ctx.strokeRect(0.07, 0.07, 0.86, 0.86);
+			ctx.strokeRect(0.2, 0.2, 0.6, 0.6);
+			break;
+		case "weapon":
+			ctx.strokeRect(0.07, 0.07, 0.86, 0.86);
+			ctx.beginPath();
+			ctx.moveTo(0.07, 0.07);
+			ctx.lineTo(0.93, 0.93);
+			ctx.moveTo(0.07, 0.93);
+			ctx.lineTo(0.93, 0.07);
+			ctx.stroke();
+			break;
+		case "unfinished foot":
+			ctx.strokeRect(0.07, 0.07, 0.86, 0.86);
+			ctx.strokeRect(0.2, 0.2, 0.6, 0.6);
+			ctx.beginPath();
+			ctx.moveTo(0.5, 0.07);
+			ctx.lineTo(0.5, 0.93);
+			ctx.moveTo(0.07, 0.5);
+			ctx.lineTo(0.93, 0.5);
+			ctx.stroke();
+			break;
+		case "unfinished weapon":
+			ctx.strokeRect(0.07, 0.07, 0.86, 0.86);
+			ctx.beginPath();
+			ctx.moveTo(0.07, 0.07);
+			ctx.lineTo(0.93, 0.93);
+			ctx.moveTo(0.07, 0.93);
+			ctx.lineTo(0.93, 0.07);
+			ctx.stroke();
+			ctx.beginPath();
+			ctx.moveTo(0.5, 0.07);
+			ctx.lineTo(0.5, 0.93);
+			ctx.moveTo(0.07, 0.5);
+			ctx.lineTo(0.93, 0.5);
+			ctx.stroke();
+			break;
+		case "":
+			break;
+		default:
+			ctx.beginPath();
+			ctx.moveTo(0.5, 0.07);
+			ctx.lineTo(0.5, 0.93);
+			ctx.moveTo(0.07, 0.5);
+			ctx.lineTo(0.93, 0.5);
+			ctx.stroke();
+			break;
+	}
+	ctx.restore();
+};
+
+Bot.prototype.canConnect = function(coords) {
+	if(this.map.get(coords.x + 1, coords.y) !== "") {return true;}
+	if(this.map.get(coords.x - 1, coords.y) !== "") {return true;}
+	if(this.map.get(coords.x, coords.y + 1) !== "") {return true;}
+	if(this.map.get(coords.x, coords.y - 1) !== "") {return true;}
+	return false;
+};
+
+Bot.prototype.withinBounds = function(coords) {
+	var mapCoords = addV(this.pos, coords);
+	if(mapCoords.x < 0) {return false;}
+	if(mapCoords.y < 0) {return false;}
+	if(mapCoords.x >= state.arena.w) {return false;}
+	if(mapCoords.y >= state.arena.h) {return false;}
+	return true;
+};
+
+Bot.prototype.draw = function() {
+	ctx.save();
+	translate(this.pos);
+	ctx.fillStyle = this.color;
+	ctx.strokeStyle = this.color;
+	ctx.lineWidth = 0.04;
+	for(var i in this.map.cellArr) {
+		this.drawTile(this.map.cellArr[i]);
+	}
+	ctx.restore();
+};
+
+
+
+Model = function() {
+	this.bots = [];
+};
+
+
+
+GameOver = function() {
+};
+
+GameOver.prototype.update = function() {
+	
+};
+
+
+
+Playing = function(model) {
+	this.model = model;
+	this.botInFocus = 0;
+	
+	// Infobar
+	this.infobar = {
+		font: "82px Arcade",
+		height: 65
+	};
+	
+	this.arena = {
+		w: 20,
+		h: 20
+	};
+	
+	this.camera = {
+		x: 10,
+		y: 10,
+		zoom: 30
+	};
+	this.zoomMultiplier = 1.2;
+	this.maxZoom = 70;
+	this.minZoom = 20;
+	
+	this.ms = {
+		x: mouse.x,
+		y: mouse.y
+	};
+	
+	this.subState = "editing";
+	/* Substates:
+			* editing
+			* move animation
+			* attack animation
+	*/
+	
+	this.speedMultiplier = 0.05;
+	this.startPos = {};
+	this.endPos = {};
+	this.vToGoal = {};
+	this.cPerFrame = 0;
+	this.currentProgress = 0;
+};
+
+Playing.prototype.drawEverything = function() {
+	// Draw a background over the previous frame
+	clearCanvas();
+	// Camera
+	ctx.save();
+	ctx.translate(canvas.width / 2, canvas.height / 2);
+	scale(this.camera.zoom);
+	ctx.translate(-this.camera.x, -this.camera.y);
+	// Draw dot grid
+	ctx.fillStyle = "dimgrey";
+	for(var x = 0; x <= this.arena.w; x++) {
+		for(var y = 0; y <= this.arena.h; y++) {
+			ctx.fillRect(x - 0.04, y - 0.04, 0.08, 0.08);
+		}
+	}
+	// Draw all the bots
+	for(var i in this.model.bots) {
+		if(i !== this.botInFocus) {
+			this.model.bots[i].draw();
+		}
+	}
+	// Undo camera
+	ctx.restore();
+	// Fade everything drawn so far into the background a little
+	ctx.globalAlpha = 0.7;
+	clearCanvas();
+	ctx.globalAlpha = 1;
+	// Camera
+	ctx.save();
+	ctx.translate(canvas.width / 2, canvas.height / 2);
+	scale(this.camera.zoom);
+	ctx.translate(-this.camera.x, -this.camera.y);
+	// Draw focused bot
+	this.model.bots[this.botInFocus].draw();
+	// Undo Camera
+	ctx.restore();
+	// Draw Infobar
+	ctx.fillStyle = "black";
+	ctx.lineWidth = 1;
+	ctx.strokeStyle = "dimgrey";
+	ctx.beginPath();
+	ctx.rect(-1, -1, canvas.width + 2, this.infobar.height + 1);
+	ctx.fill();
+	ctx.stroke();
+	ctx.font = this.infobar.font;
+	ctx.fillStyle = this.model.bots[0].color;
+	ctx.fillText(this.model.bots[0].name + ": " + this.model.bots[0].energy, 20, 67);
+};
+
+Playing.prototype.nextTurn = function() {
+	// Make it easier to access main bot
+	var bot = this.model.bots[0];
+	
+	// Cut anything off bot that isn't within bounds
+	for(var i in bot.map.cellArr) {
+		if(!bot.withinBounds(bot.map.cellArr[i].coords)) {
+			bot.map.cellArr[i].value = "";
+		}
+	}
+	
+	// Attack other bots
+	var attackPoints = bot.getAttackPoints();
+	for(i = 1; i < this.model.bots.length; i++) {
+		var score = this.model.bots[i].beAttacked(attackPoints);
+		if(score) {
+			bot.energy += score;
+			this.model.bots.splice(i, 1);
+			i--;
+		}
+	}
+	
+	// Push the previous bot to the back of the list
+	this.model.bots.splice(0, 1);
+	this.model.bots.push(bot);
+	newBot = this.model.bots[0];
+	
+	// Finish unfinished tiles
+	for(i in newBot.map.cellArr) {
+		switch(newBot.map.cellArr[i].value) {
+			case "unfinished foot":
+				newBot.map.cellArr[i].value = "foot";
+				break;
+			case "unfinished weapon":
+				newBot.map.cellArr[i].value = "weapon";
+				break;
+		}
+	}
+	
+	// Give new robot more energy
+	if(newBot.energy < newBot.energyMax) {
+		newBot.energy += newBot.energyPerTurn;
+		if(newBot.energy > newBot.energyMax) {
+			newBot.energy = newBot.energyMax;
+		}
+	}
+	
+	this.subState = "editing";
+};
+
+Playing.prototype.movementPhase = function(newPos) {
+	this.startPos.x = this.model.bots[0].pos.x;
+	this.startPos.y = this.model.bots[0].pos.y;
+	this.endPos = newPos;
+	this.vToGoal = vToV(this.startPos, this.endPos);
+	var distToGoal = getDist(this.startPos, this.endPos);
+	this.cPerFrame = 1 / distToGoal * this.speedMultiplier;
+	this.currentProgress = 0;
+	this.subState = "move animation";
+};
+
+Playing.prototype.followControls = function() {
+	// View movement
+	this.camera.x += mouse.dx / this.camera.zoom;
+	this.camera.y += mouse.dy / this.camera.zoom;
+	// Zoom
+	if(keys.plus && this.camera.zoom < this.maxZoom) {
+		this.camera.zoom *= this.zoomMultiplier;
+	}
+	if(keys.minus && this.camera.zoom > this.minZoom) {
+		this.camera.zoom /= this.zoomMultiplier;
+	}
+	
+	// Variable for current bot
+	var bot = this.model.bots[0];
+	
+	// Edit current bot
+	var coords = vToV(bot.pos, snapV(this.ms));
+	if((coords.x !== 0 || coords.y !== 0) && bot.canConnect(coords) && bot.withinBounds(coords)) {
+		if(keys.b && bot.energy >= 1 && bot.map.get(coords.x, coords.y) !== "body") {
+			bot.map.set(coords.x, coords.y, "body");
+			bot.energy--;
+		} else if(keys.w && bot.energy >= 2 && bot.map.get(coords.x, coords.y) !== "weapon" && bot.map.get(coords.x, coords.y) !== "unfinished weapon") {
+			bot.map.set(coords.x, coords.y, "unfinished weapon");
+			bot.energy -= 2;
+		} else if(keys.f && bot.energy >= 2 && bot.map.get(coords.x, coords.y) !== "foot" && bot.map.get(coords.x, coords.y) !== "unfinished foot") {
+			bot.map.set(coords.x, coords.y, "unfinished foot");
+			bot.energy -= 2;
+		} else if(keys.d) {
+			bot.map.set(coords.x, coords.y, "");
+			bot.removeExtra();
+		}
+	}
+	
+	// Follow clicks
+	if(mouse.click && mouse.y > this.infobar.height) {
+		mouse.click = false;
+		coords = vToV(bot.pos, snapV(this.ms));
+		var tileClicked = bot.map.get(coords.x, coords.y);
+		if(tileClicked === "head") {
+			this.nextTurn();
+		} else if(tileClicked === "foot") {
+			this.movementPhase(addV(bot.pos, coords));
+		}
+	}
+};
+
+Playing.prototype.animateMovement = function() {
+	this.currentProgress += this.cPerFrame;
+	if(this.currentProgress > 1) {
+		this.model.bots[0].pos = this.endPos;
+		this.nextTurn();
+	} else {
+		this.model.bots[0].pos = addV(this.startPos, scaleV(this.vToGoal, easeInOutCubic(this.currentProgress)));
+	}
+};
+
+Playing.prototype.drawGameOverScreen = function() {
+	clearCanvas();
+	ctx.save();
+	ctx.translate(canvas.width / 2, canvas.height / 2);
+	scale(20);
+	ctx.translate(-0.5, -0.5);
+	this.model.bots[0].draw();
+	ctx.restore();
+};
+
+Playing.prototype.update = function() {
+	switch(this.subState) {
+		case "editing":
+			// Find mouse position according to map
+			this.ms.x = (mouse.x - canvas.width / 2) / this.camera.zoom + this.camera.x;
+			this.ms.y = (mouse.y - canvas.height / 2) / this.camera.zoom + this.camera.y;
+			// Let user interfere
+			this.followControls();
+			break;
+		case "move animation":
+			this.animateMovement();
+			break;
+		/*case "game over":
+			this.drawGameOverScreen();
+			break;*/
+	}
+	// Draw Everything
+	this.drawEverything();
+	
+	/*// End game if only one bot remains
+	if(this.model.bots.length === 1) {
+		this.subState = "game over";
+	}*/
+};
+
+
+
+Setup = function() {
+	this.model = new Model();
+	l("overlay-div").style.display = "block";
+};
+
+Setup.prototype.readInput = function() {
+	var input = l("name_input").value;
+	var names = input.split("\n");
+	var numOfEmptyLines = 0;
+	for(var i in names) {
+		if(names[i] === "") {
+			numOfEmptyLines++;
+		}
+	}
+	if(numOfEmptyLines > 1) {
+		var numNames = names.length - numOfEmptyLines;
+		var hues = [];
+		var startHue = Math.random() * 360;
+		for(i = 0; i < numNames; i++) {
+			hues.push(startHue + i * 360 / numNames);
+		}
+		var hueIndex = 0;
+		for(i = 0; i < names.length; i++) {
+			if(names[i] !== "") {
+				this.model.bots.push(new Bot(Math.floor(Math.random() * 20), Math.floor(Math.random() * 20), hues[hueIndex++], names[i]));
+			}
+		}
+		l("overlay-div").style.display = "none";
+		state = new Playing(this.model);
+	}
+};
+
+Setup.prototype.update = function() {
+	this.readInput();
+	clearCanvas();
+};
+
+
+
+Menu = function() {
+	this.playButtonHovered = false;
+};
+
+Menu.prototype.draw = function() {
+	clearCanvas();
+	ctx.save();
+	ctx.translate(canvas.width / 2, canvas.height / 2);
+	ctx.fillStyle = "white";
+	ctx.font = "150px Arcade";
+	ctx.textAlign = "center";
+	ctx.fillText("Tilebots", 0, -70);
+	ctx.font = "100px Arcade";
+	ctx.translate(0, 60);
+	if(this.playButtonHovered && !mouse.click) {
+		ctx.scale(1.2, 1.2);
+	}
+	ctx.fillText("Play", 0, 40);
+	ctx.restore();
+};
+
+Menu.prototype.playButton = function() {
+	var x = mouse.x - canvas.width / 2;
+	var y = mouse.y - canvas.height / 2;
+	if(x > -100 && x < 100 && y > 15 && y < 105) {
+		this.playButtonHovered = true;
+	} else {
+		this.playButtonHovered = false;
+	}
+	
+	if(this.playButtonHovered && mouse.click) {
+		state = new Setup();
+	}
+};
+
+Menu.prototype.update = function() {
+	this.playButton();
+	this.draw();
+};
+
+
+
+////////////////////////////////////   Draw Function
+
+state = new Menu();
+function draw() {
+	// Let there be another frame
+	animator(draw);
+	// Resize canvas
+	canvas.width = window.innerWidth;
+	canvas.height = window.innerHeight;
+	// Run state related code
+	state.update();
+	// Reset temporary event variables
+	mouse.dx = 0;
+	mouse.dy = 0;
+	mouse.click = false;
+	for(var i in keys) {keys[i] = false;}
+}
+
+////////////////////////////////////   Event Handlers
+
+canvas.addEventListener('mousemove', function(e) {
+	var rect = canvas.getBoundingClientRect();
+	mouse.x = e.clientX - rect.left;
+	mouse.y = e.clientY - rect.top;
+}, false);
+
+canvas.addEventListener('click', function(e) {
+	mouse.click = true;
+}, false);
+
+canvas.addEventListener('mousewheel', function(e) {
+	mouse.dx = e.deltaX;
+	mouse.dy = e.deltaY;
+	e.preventDefault();
+}, false);
+
+window.addEventListener('keydown', function(e) {
+	var prevent = true;
+	switch(e.keyCode) {
+		case 32:
+			debug();
+			break;
+		case 187:
+			keys.plus = true;
+			break;
+		case 189:
+			keys.minus = true;
+			break;
+		case 66:
+			keys.b = true;
+			break;
+		case 70:
+			keys.f = true;
+			break;
+		case 87:
+			keys.w = true;
+			break;
+		case 68:
+			keys.d = true;
+			break;
+		default:
+			prevent = false;
+	}
+	if(prevent && state instanceof Playing) {e.preventDefault();}
+}, false);
+
+////////////////////////////////////   End
+
+draw();
+
+
+
+	</script>
+</body>
+</html>
