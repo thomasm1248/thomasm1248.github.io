@@ -910,7 +910,7 @@ Laser = function(x, y, dir) {
 
     this.dir = dir;
 
-    this.defaultSpeed = 3;
+    this.defaultSpeed = 4;
     this.speed = this.defaultSpeed;
 
     this.used = false;
