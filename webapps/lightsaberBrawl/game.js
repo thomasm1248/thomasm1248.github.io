@@ -1311,7 +1311,7 @@ GameOverState = function() {
         ctx.fillStyle = "yellow";
         ctx.font = lineHeight + "px Courier New";
 
-        var score = model.players[i].kills * 5;
+        var score = model.players[i].kills * 3;
         score -= model.players[i].deaths;
 
         ctx.strokeStyle = "yellow";
@@ -1354,7 +1354,7 @@ GameOverState = function() {
         );
 
         ctx.fillText(
-            "x5",
+            "x3",
             right,
             buffer + lineHeight
         );
