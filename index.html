@@ -4,47 +4,62 @@
     <meta charset="utf-8">
     <title>thomasm1248</title>
     <link href="style.css" rel="stylesheet">
+    <script src="masonry.pkgd.min.js"></script>
 </head>
 <body>
     <header>
-        <div class="title">
+        <div id="title-box">
             <h1>Thomas Mason</h1>
             <sub>thomasm1248@gmail.com</sub>
         </div>
+        <div id="welcome-box">
+            <h2>Hi!</h2>
+            <p>I'm a young software developer, and I've made a bunch of random things over the years as I've taught myself how to use HTML, CSS, and Javascript. Most of my creations don't have instructions, but you might still be able to figure some of them out. You should take a look at Barbershop at the very least.</p><p>Good luck!</p>
+        </div>
     </header>
-    <nav>
-        <a href="https://thomasm1248.github.io/Cookie-Coin/CookieCoin.html">
-            Cookie Coin
-        </a>
-        <a href="https://thomasm1248.github.io/barbershop/barbershop.html">
-            Barbershop
-        </a>
-        <a href="https://thomasm1248.github.io/Lightsaber-Brawl/lightsaberBrawl.html">
-            Lightsaber Brawl
-        </a>
-        <a href="https://thomasm1248.github.io/Tilebots/Tilebots.html">
-            Tilebots
-        </a>
-        <a href="https://thomasm1248.github.io/Fractal-Art/fractal-art.html">
-            Fractal Art
-        </a>
-    </nav>
-    <section>
-        <h1>Welcome!</h1>
-        <p>Feel free to check out any of the random things I've created during my free time. I'm sorry for the tricky controls and lack of instructions. If you can't figure out how to work the programs yourself, feel free to either ask me in person, or email me. If you check out anything at all, I would highly recommend taking a look at Barbershop. It's the most finished of all my projects.</p>
-        <p>I often run out of things to do, so if you have any any suggestions, feedback, complaints, or ideas, please email them to me.</p>
-    </section>
-    <footer>
-        <div id="footer-left">
-            Published under the MIT Licence.
+    <div id="project-box-container">
+        <div class="grid" id="project-box" data-masonry='{ "itemSelector": ".grid-item", "gutter": 20, "fitWidth": true }'>
+        <!--
+            Card Template:
+    
+            <div class="grid-item">
+                <a href="link">
+                    <img src="thumbnails/thumbnail.png">
+                    <h2>Title</h2>
+                    <p>Description</p>
+                </a>
+            </div>
+        -->
+            <div class="grid-item">
+                <a href="https://thomasm1248.github.io/barbershop/barbershop.html">
+                    <img src="thumbnails/barbershop-thumbnail.png">
+                    <h2>Barbershop</h2>
+                    <p>Wizard battle! Each player collects new spells for themselves as they play. Become the most powerful wizard.</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="https://thomasm1248.github.io/Cookie-Coin/CookieCoin.html">
+                    <img src="thumbnails/cookie-coin-thumbnail.png">
+                    <h2>Cookie Coin</h2>
+                    <p>A simple pseudocurrency manager that uses your browser's cookies to store data. Money can be sent via email.</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="https://thomasm1248.github.io/Lightsaber-Brawl/lightsaberBrawl.html">
+                    <img src="thumbnails/lightsaber-brawl-thumbnail.png">
+                    <h2>Lightsaber Brawl</h2>
+                    <p>Use asdf, ijkl, numpad, and arrow keys to select your characters. Spacebar starts the game.</p>
+                </a>
+            </div>
+            <div class="grid-item">
+                <a href="https://thomasm1248.github.io/Fractal-Art/fractal-art.html">
+                    <h2>Fractal Art Generator</h2>
+                    <img src="thumbnails/fractal-art-thumbnail.png">
+                    <p>Use the 1, 2, and 3 keys to edit the fractal, then press the spacebar to render it. Read the code for more.</p>
+                </a>
+            </div>
         </div>
-        <div id="footer-right">
-            Thanks for visiting!
-        </div>
-        <div id="footer-center">
-            <img src="smily.gif">
-        </div>
-    </footer>
+    </div>
 </body>
 </html>
 
