@@ -5,6 +5,11 @@
     <title>thomasm1248</title>
     <link href="style.css" rel="stylesheet">
     <script src="masonry.pkgd.min.js"></script>
+    <script>
+        window.onload = function() {
+            new Masonry(document.getElementById("project-box"), {itemSelector: '.grid-item', gutter: 20, fitWidth: true});
+        }
+    </script>
 </head>
 <body>
     <header>
