@@ -20,6 +20,8 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Header */
+
 header {
     background-color: var(--main-color);
     padding: 50px 30px 20px;
@@ -37,10 +39,6 @@ header {
     text-align: center;
 }
 
-.sub {
-    font-size: 1.5em;
-}
-
 #welcome-box {
     width: 600px;
     font-size: 1.3em;
@@ -53,6 +51,40 @@ header div h2, header div p {
     margin: 30px 0;
 }
 
+/* Navbar */
+
+nav {
+    height: 40px;
+    background-color: var(--secondary-color);
+    text-align: center;
+}
+
+nav a {
+    font-size: 1.6em;
+    text-decoration: none;
+    color: var(--main-color);
+    height: 40px;
+    display: inline-block;
+    padding: 5px 10px;
+    box-sizing: border-box;
+}
+
+nav a:hover {
+    background-color: var(--main-color);
+    color: var(--secondary-color);
+}
+
+nav a:active {
+    background-color: var(--secondary-color);
+    color: var(--main-color);
+}
+
+.current-page {
+    background-color: var(--background-color);
+}
+
+/* Projects */
+
 #project-box-container {
     display: flex;
     flex-direction: column;
@@ -64,7 +96,7 @@ header div h2, header div p {
     width: 300px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.6);
     transition: 0.3s;
-    border-radius: 25px;
+    border-radius: 5px;
     margin-bottom: 20px;
     overflow: hidden;
 }
@@ -89,6 +121,18 @@ header div h2, header div p {
     font-size: 1.2em;
     color: var(--secondary-color);
     background-color: var(--main-color);
+}
+
+/* Post page */
+
+.post-container {
+    max-width: 700px;
+    margin: 100px auto;
+}
+
+.post-container p {
+    font-size: 1.2em;
+    margin: 20px;
 }
 
 /* Remove all formatting from the links */
