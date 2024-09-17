@@ -135,6 +135,15 @@ nav a:active {
     margin: 20px;
 }
 
+/* Text content */
+
+.highlight {
+    padding: 5px;
+    margin-left: 20px;
+    border-radius: 3px;
+    font-size: 1.1em;
+}
+
 /* Remove all formatting from the links */
 #project-box a:hover, #project-box a:link, #project-box a:visited, #project-box a:active {
     text-decoration: none;
