@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>{{ page.title }} - {{ site.title }}</title>
-    <link href="/css/style.css" rel="stylesheet">
+    {% include meta.html %}
     <script src="/scripts/masonry.pkgd.min.js"></script>
     <script>
         window.onload = function() {
@@ -12,16 +10,7 @@
     </script>
 </head>
 <body>
-    <header>
-        <div id="title-box">
-            <h1>Thomas Mason</h1>
-            <sub>thomasm1248@gmail.com</sub>
-        </div>
-        <div id="welcome-box">
-            <h2>Hi!</h2>
-            <p>I'm a young software developer, and I've made a bunch of random things over the years as I've taught myself how to use HTML, CSS, and Javascript. Most of my creations don't have instructions, but you might still be able to figure some of them out. You should take a look at Barbershop at the very least.</p><p>Good luck!</p>
-        </div>
-    </header>
+    {% include header.html %}
     {% include navbar.html %}
     <div id="project-box-container">
         <div class="grid" id="project-box" data-masonry='{ "itemSelector": ".grid-item", "gutter": 20, "fitWidth": true }'>
