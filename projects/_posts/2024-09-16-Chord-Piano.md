@@ -1,6 +1,5 @@
 ---
 thumbnail: chord-piano-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/chord-piano/chord-piano.html
 ---
 

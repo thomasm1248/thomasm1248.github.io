@@ -1,6 +1,5 @@
 ---
 thumbnail: cookie-coin-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/Cookie-Coin/CookieCoin.html
 ---
 

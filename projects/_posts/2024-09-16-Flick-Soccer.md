@@ -1,6 +1,5 @@
 ---
 thumbnail: flick-soccer-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/flick-soccer/index.html
 ---
 

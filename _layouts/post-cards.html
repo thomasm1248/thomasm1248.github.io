@@ -19,7 +19,7 @@
                     {% for category in post.categories %}
                         {% if category == page.filterCategory %}
                             <div class="grid-item">
-                                <a href="{% if post.external %}{{ post.link }}{% else %}{{ post.url }}{% endif %}">
+                                <a href="{% if post.link %}{{ post.link }}{% else %}{{ post.url }}{% endif %}">
                                     {% if post.thumbnail %}
                                     <img src="/assets/post-thumbnails/{{ post.thumbnail }}">
                                     {% endif %}
@@ -32,7 +32,7 @@
                     {% endfor %}
                 {% else %}
                     <div class="grid-item">
-                        <a href="{% if post.external %}{{ post.link }}{% else %}{{ post.url }}{% endif %}">
+                        <a href="{% if post.link %}{{ post.link }}{% else %}{{ post.url }}{% endif %}">
                             {% if post.thumbnail %}
                             <img src="/assets/post-thumbnails/{{ post.thumbnail }}">
                             {% endif %}

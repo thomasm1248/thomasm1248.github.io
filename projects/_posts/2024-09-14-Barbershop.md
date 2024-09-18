@@ -1,6 +1,5 @@
 ---
 thumbnail: barbershop-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/barbershop/barbershop.html
 ---
 

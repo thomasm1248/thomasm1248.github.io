@@ -1,6 +1,5 @@
 ---
 thumbnail: circle-generator-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/circle-generator/circle-generator.html
 ---
 

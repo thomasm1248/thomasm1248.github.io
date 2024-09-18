@@ -1,6 +1,5 @@
 ---
 thumbnail: fractal-art-thumbnail.png
-external: true
 link: https://thomasm1248.github.io/Fractal-Art/fractal-art.html
 ---
 
