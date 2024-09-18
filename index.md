@@ -1,6 +1,6 @@
 ---
 layout: post-cards
-selectedTab: "home"
+selectedTab: all
 title: Home
 permalink: /
 ---
