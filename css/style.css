@@ -144,6 +144,22 @@ nav a:active {
     font-size: 1.1em;
 }
 
+/* Footer */
+
+footer {
+    background-color: var(--main-color);
+    text-align: center;
+    padding: 20px;
+}
+
+footer a {
+    color: var(--secondary-color);
+}
+
+footer a:hover {
+    color: white;
+}
+
 /* Remove all formatting from the links */
 #project-box a:hover, #project-box a:link, #project-box a:visited, #project-box a:active {
     text-decoration: none;
