@@ -1,3 +1,5 @@
 source 'https://rubygems.org'
 
-gem 'jekyll', '~> 4.3' # Adjust version as needed
+gem 'webrick'
+gem 'kramdown-parser-gfm'
+gem 'jekyll', '~> 3.9.3' # Adjust version as needed
