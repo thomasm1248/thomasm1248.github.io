@@ -123,16 +123,24 @@ nav a:active {
     background-color: var(--main-color);
 }
 
-/* Post page */
+/* Page */
 
-.post-container {
+.page-body {
     max-width: 700px;
     margin: 100px auto;
 }
 
-.post-container p {
+.page-body p {
     font-size: 1.2em;
     margin: 20px;
+}
+
+.page-body li {
+    margin-left: 50px;
+}
+
+.page-body a:hover {
+    color: green;
 }
 
 /* Text content */

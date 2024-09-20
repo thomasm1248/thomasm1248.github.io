@@ -1,5 +1,6 @@
 ---
 layout: post
+tags: Games
 ---
 
 I implemented someone else's board game using PHP for a school project. Use at your own risk.
