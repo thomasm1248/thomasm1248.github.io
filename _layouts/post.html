@@ -1,18 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% include meta.html %}
-</head>
-<body>
-    {% include header.html %}
-    {% include navbar.html %}
-    <div class="post-container">
-        <h1>{{page.title}}</h1>
-        {{ content }}
-        <p style="background-color: gray; text-align: center; padding: 10px;">
-        <a href="/contact.html">Comment</a>
-        </p>
-    </div>
-    {% include footer.html %}
-</body>
-</html>
+---
+layout: page
+---
+
+<h1>{{page.title}}</h1>
+
+{{ content }}
+
+<!-- Comments -->
+<p style="background-color: gray; text-align: center; padding: 10px;">
+<a href="/contact.html">Comment</a>
+</p>
