@@ -33,7 +33,13 @@
                         {% if post.thumbnail %}
                         <img src="/assets/post-thumbnails/{{ post.thumbnail }}">
                         {% endif %}
-                        <h2>{{ post.title }}</h2>
+                        {%- assign paths = post.relative_path | split: '/' | last | split: '.md' | first | split: '-' -%}
+                        {%- assign mytitle = "" -%}
+                        {% for path in paths offset: 3 %}
+                            {%- assign mytitle = mytitle | append: path | append: " " -%}
+                        {% endfor %}
+                        {%- assign mytitle = mytitle | strip -%}
+                        <h2>{{ mytitle }}</h2>
                         <p>{{ post.excerpt }}</p>
                         <p class="card-type">{{ post.categories[0] }}</p>
                     </a>
