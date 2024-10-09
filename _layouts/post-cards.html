@@ -40,7 +40,7 @@
                         {% endfor %}
                         {%- assign mytitle = mytitle | strip -%}
                         <h2>{{ mytitle }}</h2>
-                        <p>{{ post.excerpt }}</p>
+                        {{ post.excerpt }}
                         <p class="card-type">{{ post.categories[0] }}</p>
                     </a>
                 </div>
