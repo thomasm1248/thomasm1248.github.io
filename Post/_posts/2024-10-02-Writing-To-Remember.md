@@ -1,5 +1,6 @@
 ---
 layout: post
+tags: Productivity
 ---
 
 We already know writing things by hand helps us remember them, but what are some practical ways we can use that to our advantage outside of meetings or classrooms?

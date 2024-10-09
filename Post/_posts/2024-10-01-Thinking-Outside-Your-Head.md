@@ -1,5 +1,6 @@
 ---
 layout: post
+tags: Productivity
 ---
 
 When we do math problems, we use paper. But when we think about other problems, we often try to do it without paper, digital notes, or anything to write or draw with.

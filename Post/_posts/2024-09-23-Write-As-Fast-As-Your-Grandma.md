@@ -1,5 +1,6 @@
 ---
 layout: post
+tags: Productivity
 ---
 
 I discovered the power of the ancient writing system used by our ancestors. Now I can write faster.
