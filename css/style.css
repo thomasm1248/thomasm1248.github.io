@@ -6,7 +6,7 @@
 }
 
 body {
-    background-color: #e5ddc8;
+    background-color: #C0C6C7;
     font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -66,7 +66,7 @@ body {
 
 .card-type {
     padding: 5px;
-    color: #ff5959;
+    color: #FF3155;
 }
 
 /* Page */
@@ -93,8 +93,11 @@ body {
     margin-left: 50px;
 }
 
+.page-body a, .page-body a:visited {
+    color: #FF3155;
+}
 .page-body a:hover {
-    color: green;
+    color: #0C8D4C;
 }
 
 /* Text content */
@@ -120,6 +123,6 @@ footer a {
 }
 
 footer a:hover {
-    color: #ff5959;
+    color: #0C8D4C;
 }
 
