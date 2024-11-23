@@ -8,6 +8,7 @@
 body {
     background-color: #C0C6C7;
     font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.2em
 }
 
 /* Header stuff */
@@ -18,6 +19,12 @@ body {
 
 .header-card {
     border: 3px dashed black;
+}
+
+/* Site-wide styling */
+
+img {
+    border: 1px dashed black;
 }
 
 /* Projects */
@@ -48,15 +55,10 @@ body {
 #project-box img {
     width: 100%;
     display: block;
-    border: 1px dashed black;
 }
 
 #project-box h2 {
     padding: 10px 0;
-}
-
-#project-box p {
-    font-size: 1.2em;
 }
 
 #project-box a:hover, #project-box a:link, #project-box a:visited, #project-box a:active {
@@ -80,12 +82,11 @@ body {
     margin: 100px auto;
 }
 
-.page-body h2 {
+.page-body h2, .page-body h3 {
     margin-top: 20px;
 }
 
 .page-body p {
-    font-size: 1.2em;
     margin: 20px;
 }
 
