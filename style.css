@@ -1,0 +1,84 @@
+/* Root */
+body, * {
+  margin: 0;
+  padding: 0;
+}
+body {
+  width: 5000px;
+  height: 5000px;
+  background-image: url('stippled-background.jpg');
+  background-repeat: repeat;
+}
+
+/* All Items */
+
+.text,
+.jump,
+.header,
+.card
+{
+  position: absolute;
+}
+
+/* Item: text */
+
+.text {
+  background-color: white;
+  padding: 5px;
+  border: 1px solid black;
+  border-radius: 3px;
+  font-size: 1.2em;
+}
+
+/* Item: jump */
+
+.jump {
+  cursor: pointer;
+  font-size: 1.5em;
+  color: #ff3155;
+  background-color: white;
+  padding: 5px;
+  border-left: 2px solid #ff3155;
+  border-right: 2px solid #ff3155;
+  white-space: nowrap;
+}
+.jump:hover {
+  box-shadow: 5px 5px 10px #797f8a;
+}
+.jump:active {
+  box-shadow: none;
+}
+
+/* Item: header */
+
+.header {
+  color: white;
+  background-color: #ff3155;
+  padding: 5px;
+  white-space: nowrap;
+}
+
+/* Item: card */
+
+.card {
+  padding: 10px;
+  background-color: white;
+  text-decoration: none;
+  border: 1px solid black;
+  border-radius: 3px;
+}
+.card img {
+  width: 100%;
+  border: 1px dashed black;
+}
+.card p {
+  padding-top: 10px;
+  color: black;
+  font-size: 1.2em;
+}
+.card:hover {
+  box-shadow: 5px 5px 10px #797f8a;
+}
+.card:active {
+  box-shadow: none;
+}
