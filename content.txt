@@ -50,3 +50,12 @@ c
 lightsaber-brawl-thumbnail.png
 Lightsaber Brawl
 https://www.thomasmason.us/Lightsaber-Brawl/lightsaberBrawl.html
+
+c
+2189
+574
+250
+353
+flick-soccer-thumbnail.png
+Flick Soccer
+https://www.thomasmason.us/flick-soccer/index.html
