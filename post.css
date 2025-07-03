@@ -1,0 +1,13 @@
+body {
+  padding: 30px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.date {
+  color: gray; /* TODO replace with brand color */
+}
+
+p {
+  font-size: 1.2em;
+}

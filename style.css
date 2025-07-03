@@ -15,7 +15,8 @@ body {
 .text,
 .jump,
 .header,
-.card
+.card,
+.post
 {
   position: absolute;
 }
@@ -80,5 +81,24 @@ body {
   box-shadow: 5px 5px 10px #797f8a;
 }
 .card:active {
+  box-shadow: none;
+}
+
+/* Item: post */
+
+.post {
+  border: 3px dashed gray; /* TODO replace with brand color */
+  font-size: 1.5em;
+  padding: 5px;
+  background-color: white;
+  text-decoration: none;
+  text-align: center;
+  color: gray; /* TODO replace with brand color */
+  /*white-space: nowrap;*/
+}
+.post:hover {
+  box-shadow: 5px 5px 10px #797f8a;
+}
+.post:active {
   box-shadow: none;
 }
