@@ -16,7 +16,8 @@ body {
 .jump,
 .header,
 .card,
-.post
+.page,
+.image
 {
   position: absolute;
 }
@@ -86,7 +87,7 @@ body {
 
 /* Item: post */
 
-.post {
+.page {
   border: 3px dashed gray; /* TODO replace with brand color */
   font-size: 1.5em;
   padding: 5px;
@@ -96,9 +97,15 @@ body {
   color: gray; /* TODO replace with brand color */
   /*white-space: nowrap;*/
 }
-.post:hover {
+.page:hover {
   box-shadow: 5px 5px 10px #797f8a;
 }
-.post:active {
+.page:active {
   box-shadow: none;
+}
+
+/* Item: image */
+
+.image {
+  /* Nothing needed! :) */
 }

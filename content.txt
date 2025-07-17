@@ -1,13 +1,13 @@
 t
-100
-100
+176
+103
 300
 -5
 Welcome to my website! I hope you find something worth your time here.
 
 h
-100
-20
+170
+25
 4
 Hello!
 
@@ -86,6 +86,44 @@ p
 585
 1742
 200
-4
-Writing in cursive
-2024-09-23-Write-As-Fast-As-Your-Grandma.html
+2
+Writing in cursive is better
+cursive-is-better.html
+
+i
+45
+56
+100
+349
+logo.png
+
+p
+837
+1785
+200
+355
+What to do with gift money
+what-to-do-with-gift-money.html
+
+p
+730
+1876
+200
+5
+Best lifehack for keeping tidy
+clutter-box-method.html
+
+t
+2382
+160
+340
+357
+Back in high-school, I made lots of little games and toys using HTML and Javascript. Here are the best games I made.
+
+p
+852
+1670
+200
+6
+Boredom is healthy and beneficial
+boredom-is-good.html

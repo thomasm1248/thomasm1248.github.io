@@ -72,15 +72,24 @@ fetch('content.txt')
           break;
         case 'p':
           const p = document.createElement('a');
-          p.classList.add('post');
+          p.classList.add('page');
           p.style.left = parts[1] + 'px';
           p.style.top = parts[2] + 'px';
           p.style.width = parts[3] + 'px';
           p.style.transform = 'rotate(' + parts[4] + 'deg)';
           p.innerText = parts[5];
-          p.href = 'post.html?post=' + parts[6];
+          p.href = 'page.html?page=' + parts[6];
           document.body.appendChild(p);
           break;
+        case 'i':
+          const i = document.createElement('img');
+          i.classList.add('image');
+          i.style.left = parts[1] + 'px';
+          i.style.top = parts[2] + 'px';
+          i.style.width = parts[3] + 'px';
+          i.style.transform = 'rotate(' + parts[4] + 'deg)';
+          i.src = 'images/' + parts[5];
+          document.body.appendChild(i);
         default:
           console.log('Content type not recognized: ' + parts[0]);
           break;
