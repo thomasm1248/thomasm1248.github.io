@@ -12,38 +12,29 @@ h
 Hello!
 
 j
-550
-160
-356
-Games >
-2391
-392
-
-j
-286
-341
-82
-Posts >
-828
-1824
+364
+220
+7
+Click Me!
+5000
+5000
 
 h
-2355
-89
-3
-Games
+4929
+4977
+0
+Welcome.
 
-j
-2105
-92
-351
-< Back
-0
-0
+t
+101
+214
+200
+355
+I built this website as a design experiment. It's like a giant map that others can explore. This is still a work in progress, but it will slowly fill up as my life continues. I recommend starting at the center. Use the jump button to the right to teleport there.
 
 c
-2000
-224
+4613
+5114
 350
 347
 barbershop-thumbnail.png
@@ -51,8 +42,8 @@ Barbershop: Wizard battle game
 https://www.thomasmason.us/barbershop/barbershop.html
 
 c
-2394
-280
+5007
+5170
 450
 5
 lightsaber-brawl-thumbnail.png
@@ -60,31 +51,24 @@ Lightsaber Brawl
 https://www.thomasmason.us/Lightsaber-Brawl/lightsaberBrawl.html
 
 c
-2189
-574
+4802
+5464
 250
 353
 flick-soccer-thumbnail.png
 Flick Soccer
 https://www.thomasmason.us/flick-soccer/index.html
 
-h
-728
-1628
-352
-Posts
-
-j
-572
-1601
-74
-< Back
-0
-0
+t
+4747
+4814
+200
+5
+I've written some posts about some things I've learned. You can click on any of these to read the full articles.
 
 p
-585
-1742
+4881
+4742
 200
 2
 Writing in cursive is better
@@ -98,31 +82,31 @@ i
 logo.png
 
 p
-837
-1785
+4498
+4850
 200
 355
 What to do with gift money
 what-to-do-with-gift-money.html
 
 p
-730
-1876
+4616
+4956
 200
 5
 Best lifehack for keeping tidy
 clutter-box-method.html
 
 t
-2382
-160
+4995
+5050
 340
 357
 Back in high-school, I made lots of little games and toys using HTML and Javascript. Here are the best games I made.
 
 p
-852
-1670
+4620
+4708
 200
 6
 Boredom is healthy and beneficial
