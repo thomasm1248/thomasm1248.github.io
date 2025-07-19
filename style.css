@@ -4,8 +4,8 @@ body, * {
   padding: 0;
 }
 body {
-  width: 5000px;
-  height: 5000px;
+  width: 10000px;
+  height: 10000px;
   background-image: url('stippled-background.jpg');
   background-repeat: repeat;
 }
