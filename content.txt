@@ -38,7 +38,7 @@ c
 350
 347
 barbershop-thumbnail.png
-Barbershop: Wizard battle game
+Barbershop - Wizard battle game. Read the How To Play page. Good luck figuring out how the spells work.
 https://www.thomasmason.us/barbershop/barbershop.html
 
 c
@@ -47,16 +47,16 @@ c
 450
 5
 lightsaber-brawl-thumbnail.png
-Lightsaber Brawl
+Lightsaber Brawl - You can have up to 4 players (WASD, IJKL, Arrow Keys, Num Pad). You'll have to figure out the rest yourself.
 https://www.thomasmason.us/Lightsaber-Brawl/lightsaberBrawl.html
 
 c
-4802
-5464
+4770
+5474
 250
 353
 flick-soccer-thumbnail.png
-Flick Soccer
+Flick Soccer - The goal is to get the white ball to the other side. If you cause any balls to touch the edges, the other person gets to put them wherever.
 https://www.thomasmason.us/flick-soccer/index.html
 
 t
