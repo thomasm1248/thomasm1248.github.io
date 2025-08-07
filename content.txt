@@ -6,6 +6,12 @@ t
 Welcome to my website! I hope you find something worth your time here.
 
 h
+5255
+4686
+348
+Productivity
+
+h
 170
 25
 4
@@ -97,6 +103,14 @@ p
 Best lifehack for keeping tidy
 clutter-box-method.html
 
+p
+5408
+4749
+200
+355
+Use notebooks instead of apps
+why-use-paper-instead-of-digital.html
+
 t
 4995
 5050
@@ -105,8 +119,8 @@ t
 Back in high-school, I made lots of little games and toys using HTML and Javascript. Here are the best games I made.
 
 p
-4620
-4708
+5308
+4566
 200
 6
 Boredom is healthy and beneficial
