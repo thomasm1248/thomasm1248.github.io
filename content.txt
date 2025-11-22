@@ -125,3 +125,27 @@ p
 6
 Boredom is healthy and beneficial
 boredom-is-good.html
+
+h
+4206
+5393
+4
+<< YouTube Finds
+
+c
+3743
+4957
+300
+348
+struthless-ai-thumbnail.png
+"We're not cooked... but we're definitely getting slowcooked. This is a video about the Gradual Disempowerment of humanity, as a result of overreliance on AI. It's also a guide to implimenting some simple but (in my opinion) effective solutions."
+https://youtu.be/6fj-OJ6RcNQ?si=o0L6YKQ_wjugXnDO
+
+c
+3771
+5411
+300
+2
+dynamicland-2024-report.png
+The recent report on the progress of Dynamicland, a project intending to develop a new way of interacting with computers that is more community-driven and human-centric. It's one of the coolest things I know about.
+https://youtu.be/5Q9r-AEzRMA?si=nEix0LfsjUa-oNNW
