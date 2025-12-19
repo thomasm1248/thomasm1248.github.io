@@ -1,8 +1,8 @@
 // Util
 
 function jumpTo(x, y) {
-  const leftX = x - window.innerWidth / 2;
-  const topY = y - window.innerHeight / 2;
+  const leftX = x - window.visualViewport.width / 2;
+  const topY = y - window.visualViewport.height / 2;
   window.scrollTo({
     left: leftX,
     top: topY,
@@ -99,3 +99,4 @@ fetch('content.txt')
   .catch(error => {
     console.log('Error: ' + error);
   });
+
