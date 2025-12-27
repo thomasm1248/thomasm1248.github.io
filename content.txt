@@ -133,15 +133,6 @@ h
 << YouTube Finds
 
 c
-3743
-4957
-300
-348
-struthless-ai-thumbnail.png
-"We're not cooked... but we're definitely getting slowcooked. This is a video about the Gradual Disempowerment of humanity, as a result of overreliance on AI. It's also a guide to implimenting some simple but (in my opinion) effective solutions."
-https://youtu.be/6fj-OJ6RcNQ?si=o0L6YKQ_wjugXnDO
-
-c
 3771
 5411
 300
@@ -158,3 +149,24 @@ c
 breakdown-chicken-video.png
 The best video out there about saving money and eating better by breaking down a chicken. This guy has collected all the best tips and tricks for breaking down a chicken quickly and easily!
 https://youtu.be/Dw9vRSVUZgs?si=ZafO8FClK-8_a-G0
+
+p
+4509
+4738
+200
+4
+Don't make wishlists
+wishlists-are-bad.html
+
+h
+5464
+4975
+13
+Ongoing DIY Card Game Project >>
+
+t
+6105
+5017
+400
+354
+For the past 5 years or so, I've been trying to develop a set of core rules for a game in which the players themselves are the ones who come up with and create all the cards. I'm inspired by games such as 1000 Blank White Cards (every card is created by players, almost no rules) and TCG's (thousands of different cards, but they are all compatible with each other). I've been through several re-hauls of the system, and have learned a lot from the playtests I've done so far. I'll be providing more information about the process I've been through and the current state of the project. Stay tuned...
