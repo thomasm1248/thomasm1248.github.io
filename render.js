@@ -1,11 +1,10 @@
 // Util
 
 function jumpTo(x, y) {
-  const leftX = x - window.innerWidth / 2;
-  const topY = y - window.innerHeight / 2;
+  const vv = window.visualViewport
   window.scrollTo({
-    left: leftX,
-    top: topY,
+    left: x - vv.width / 2 - vv.offsetLeft,
+    top: y - vv.height / 2 - vv.offsetTop,
     behavior: 'smooth'
   });
 }
@@ -99,3 +98,5 @@ fetch('content.txt')
   .catch(error => {
     console.log('Error: ' + error);
   });
+
+
