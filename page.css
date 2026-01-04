@@ -8,6 +8,10 @@ body {
   color: gray; /* TODO replace with brand color */
 }
 
-p {
+p, li {
   font-size: 1.2em;
+}
+
+li {
+    margin-top: .5em;
 }

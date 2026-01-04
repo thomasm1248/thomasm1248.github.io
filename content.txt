@@ -170,3 +170,11 @@ t
 400
 354
 For the past 5 years or so, I've been trying to develop a set of core rules for a game in which the players themselves are the ones who come up with and create all the cards. I'm inspired by games such as 1000 Blank White Cards (every card is created by players, almost no rules) and TCG's (thousands of different cards, but they are all compatible with each other). I've been through several re-hauls of the system, and have learned a lot from the playtests I've done so far. I'll be providing more information about the process I've been through and the current state of the project. Stay tuned...
+
+p
+6130
+5354
+150
+2
+Version history
+diy-card-game-timeline.html
