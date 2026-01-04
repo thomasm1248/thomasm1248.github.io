@@ -178,3 +178,19 @@ p
 2
 Version history
 diy-card-game-timeline.html
+
+t
+5066
+5853
+250
+2
+I'd like to provide more links to content from other wesites and blogs that have inspired me, but this is all I've got for now:
+
+c
+5207
+5996
+200
+349
+internet-phonebook-post.jpg
+An inspiring post from one of my favorite blogs. It's about the corner of the internet in which websites like mine live: personal blogs and websites. This post inspired me to keep working on my own website.
+https://pketh.org/internet-phonebook.html
