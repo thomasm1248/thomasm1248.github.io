@@ -89,6 +89,7 @@ fetch('content.txt')
           i.style.transform = 'rotate(' + parts[4] + 'deg)';
           i.src = 'images/' + parts[5];
           document.body.appendChild(i);
+          break;
         default:
           console.log('Content type not recognized: ' + parts[0]);
           break;
