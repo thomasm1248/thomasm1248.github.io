@@ -1,12 +1,29 @@
+// Globals
+
+var locationHistory = [];
+
 // Util
 
-function jumpTo(x, y) {
+function jumpTo(x, y, dontRecordCurrentLocation) {
   const vv = window.visualViewport
+  if(!dontRecordCurrentLocation) {
+    locationHistory.push({
+      x: vv.pageLeft + vv.offsetLeft + vv.width / 2,
+      y: vv.pageTop + vv.offsetTop + vv.height / 2
+    });
+  }
   window.scrollTo({
     left: x - vv.width / 2 - vv.offsetLeft,
     top: y - vv.height / 2 - vv.offsetTop,
     behavior: 'smooth'
   });
+}
+
+function jumpBack() {
+  if(locationHistory.length == 0) return false;
+  var previousLocation = locationHistory.pop();
+  jumpTo(previousLocation.x, previousLocation.y, true);
+  return true;
 }
 
 // Render
@@ -96,8 +113,19 @@ fetch('content.txt')
       }
     });
   })
+  .then(() => {
+    window.onpopstate = function(e) {
+      if(jumpBack()) {
+        history.pushState(null, null, location.href);
+      } else {
+        window.history.back();
+      }
+    };
+  })
   .catch(error => {
     console.log('Error: ' + error);
   });
+
+history.pushState(null, null, location.href);
 
 
