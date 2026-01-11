@@ -73,8 +73,8 @@ t
 I've written some posts about some things I've learned. You can click on any of these to read the full articles.
 
 p
-4881
-4742
+5928
+2359
 200
 2
 Writing in cursive is better
@@ -104,8 +104,8 @@ Best lifehack for keeping tidy
 clutter-box-method.html
 
 p
-5408
-4749
+5807
+2565
 200
 355
 Use notebooks instead of apps
@@ -194,3 +194,32 @@ c
 internet-phonebook-post.jpg
 An inspiring post from one of my favorite blogs. It's about the corner of the internet in which websites like mine live: personal blogs and websites. This post inspired me to keep working on my own website.
 https://pketh.org/internet-phonebook.html
+
+j
+5028
+4894
+0
+I like using paper
+5904
+2492
+
+h
+5784
+2473
+1
+I like using paper
+
+p
+5622
+2308
+200
+-6
+How to use paper as a thinking tool without cluttering a notebook
+thinking-on-paper-without-filling-notebook-with-junk.html
+
+i
+5555
+2469
+200
+4
+paper-notepad-stock-image-by-steve-johnson.jpg
