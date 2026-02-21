@@ -196,5 +196,3 @@ t.assert.doc = `boolean condition -> string message -> undefined -- If\
 
 t.shape.doc = `any spec -> any value -> any value -- Verifies that the value\
  matches the shape specified by spec. See an example in tame.js for usage.`;
-
-t.freeze(t);
