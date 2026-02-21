@@ -166,17 +166,47 @@ var t = {
         return func;
     },
 
-    help(func) {
-        t.shape('function', func);
-        if(typeof func.doc !== 'string') {
+    help(x) {
+        if(typeof x === 'string') {
+            if(t.docStrings[x] === undefined)
+                t.log('no doc found');
+            else
+                t.log(t.docStrings[x]);
+            return;
+        }
+        if(typeof x !== 'function' && typeof x !== 'object') {
+            t.log('only functions and objects can have doc strings');
+            return;
+        }
+        if(typeof x.doc !== 'string') {
             t.log('no doc found');
             return;
         }
-        t.log(func.doc);
+        t.log(x.doc);
     },
+
+    docStrings: {},
+
+    keyDoc(key, text) {
+        t.shape('string', key);
+        t.shape('string', text);
+        t.docStrings[key] = text;
+    },
+
+    doc = `Provides various helper functions for improving diagnostics,\
+ promoting functional programming techniques, strengthening correctness,\
+ and making it easier to explore a codebase during runtime. (see t.help,\
+ t.log, t.tag, t.freeze, t.trampoline, and t.shape)`,
 };
 
-t.help.doc = `function f -> undefined -- Prints f.doc to console.`;
+t.help.doc = `any x -> undefined -- If x is a string, the doc string\
+ previously registered for that string by t.keyDoc() is printed.\
+ Otherwise, if x is a function or an object, and if a doc string has\
+ been defined for it, then the doc string is printed.`;
+
+t.keyDoc.doc = `string key -> string doc -> undefined -- Registers\
+ the doc string under the specified key. The doc string can be\
+ printed to the console using t.help(key).`;
 
 t.mutable.doc = `any x -> boolean -- Indicates wether or not x is\
  mutable. (see t.freeze)`;
@@ -202,3 +232,10 @@ t.assert.doc = `boolean condition -> string message -> undefined -- If\
 
 t.shape.doc = `any spec -> any value -> any value -- Verifies that the value\
  matches the shape specified by spec. See an example in tame.js for usage.`;
+
+t.trampoline.doc = `any x -> any y -- If x is a function, call it without\
+ arguments. If its return value is also a function, call that function.\
+ Continue until something other than a function is returned. Return that.\
+ The purpose of this is to allow functions to be written in a more\
+ functional-programming style even though Javascript doesn't officially\
+ support tail-call-optimization.`;
