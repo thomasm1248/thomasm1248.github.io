@@ -157,7 +157,7 @@ var t = {
     },
 
     mutable(obj) {
-        return typeof obj !== 'object' || !Object.isFrozen(obj);
+        return typeof obj === 'object' && !Object.isFrozen(obj);
     },
 
     help(func) {
