@@ -43,20 +43,27 @@ var t = {
         console.assert(condition, message);
     },
 
-    shape(spec, obj) {
-        let invalid = false;
-        let invalidFields = [];
-        for(const key in spec) {
-            if(typeof obj[key] !== spec[key]) {
-                invalid = true;
-                invalidFields.push(key);
+    shape(spec, value, path) {
+        if(path === undefined) path = '';
+        if(typeof spec === 'string') {
+            if(typeof value !== spec) {
+                t.log(
+                    'Expected type:', spec,
+                    '\nActual value:', value);
+                throw new Error(`expected '${spec}', got '${typeof value}'`);
             }
+        } else if(typeof spec === 'object') {
+            if(typeof value !== 'object') {
+                t.log(
+                    'Expected shape:', spec,
+                    '\nActual value:', value);
+                throw new Error(`expected 'object', got '${typeof value}'`);
+            }
+            for(const key in spec)
+                t.shape(spec[key], value[key]);
         }
-        if(invalid) {
-            console.log(
-                'Expected shape:', spec,
-                '\nActual object:', structuredClone(obj));
-            throw new Error(`Invalid field(s) '${invalidFields.join("', '")}'`);
+        else {
+            throw new Error("'spec' must be of type 'string' or 'object'");
         }
     },
 
