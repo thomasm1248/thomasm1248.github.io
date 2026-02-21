@@ -1,10 +1,6 @@
-// Globals
-
-var locationHistory = [];
-
 // Util
 
-function jumpTo(x, y, dontRecordCurrentLocation) {
+function jumpTo(x, y) {
   history.pushState(null, null, location.href);
   const vv = window.visualViewport
   window.scrollTo({
@@ -13,13 +9,8 @@ function jumpTo(x, y, dontRecordCurrentLocation) {
     behavior: 'smooth'
   });
 }
-
-function jumpBack() {
-  if(locationHistory.length == 0) return false;
-  var previousLocation = locationHistory.pop();
-  jumpTo(previousLocation.x, previousLocation.y, true);
-  return true;
-}
+jumpTo.doc = `number x -> number y -> undefined -- Smoothly scrolls\
+ the viewport so that the center of the viewport is at (x, y).`;
 
 // Render
 
@@ -35,16 +26,18 @@ fetch('content.txt')
       const parts = chunk.split('\r\n');
       switch(parts[0]) {
         case 't':
-          const t = document.createElement('p');
-          t.classList.add('text');
-          t.style.left = parts[1] + 'px';
-          t.style.top = parts[2] + 'px';
-          t.style.width = parts[3] + 'px';
-          t.style.transform = 'rotate(' + parts[4] + 'deg)';
-          t.innerText = parts[5];
-          document.body.appendChild(t);
+          t.assert(parts.length >= 6, `'t' has ${parts.length} lines instead of 6`);
+          const tx = document.createElement('p');
+          tx.classList.add('text');
+          tx.style.left = parts[1] + 'px';
+          tx.style.top = parts[2] + 'px';
+          tx.style.width = parts[3] + 'px';
+          tx.style.transform = 'rotate(' + parts[4] + 'deg)';
+          tx.innerText = parts[5];
+          document.body.appendChild(tx);
           break;
         case 'h':
+          t.assert(parts.length >= 5, `'h' has ${parts.length} lines instead of 5`);
           const h = document.createElement('h1');
           h.classList.add('header');
           h.style.left = parts[1] + 'px';
@@ -54,6 +47,7 @@ fetch('content.txt')
           document.body.appendChild(h);
           break;
         case 'j':
+          t.assert(parts.length >= 7, `'j' has ${parts.length} lines instead of 7`);
           const j = document.createElement('p');
           j.classList.add('jump');
           j.style.left = parts[1] + 'px';
@@ -66,6 +60,7 @@ fetch('content.txt')
           document.body.appendChild(j);
           break;
         case 'c':
+          t.assert(parts.length >= 8, `'c' has ${parts.length} lines instead of 8`);
           const c = document.createElement('a');
           c.classList.add('card');
           c.style.left = parts[1] + 'px';
@@ -82,6 +77,7 @@ fetch('content.txt')
           document.body.appendChild(c);
           break;
         case 'p':
+          t.assert(parts.length >= 7, `'p' has ${parts.length} lines instead of 7`);
           const p = document.createElement('a');
           p.classList.add('page');
           p.style.left = parts[1] + 'px';
@@ -93,6 +89,7 @@ fetch('content.txt')
           document.body.appendChild(p);
           break;
         case 'i':
+          t.assert(parts.length >= 6, `'i' has ${parts.length} lines instead of 6`);
           const i = document.createElement('img');
           i.classList.add('image');
           i.style.left = parts[1] + 'px';
@@ -103,12 +100,12 @@ fetch('content.txt')
           document.body.appendChild(i);
           break;
         default:
-          console.log('Content type not recognized: ' + parts[0]);
+          t.log('Content type not recognized: ' + parts[0]);
           break;
       }
     });
   })
   .catch(error => {
-    console.log('Error: ' + error);
+    t.log('Error: ' + error);
   });
 

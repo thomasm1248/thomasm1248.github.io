@@ -193,7 +193,7 @@ var t = {
         t.docStrings[key] = text;
     },
 
-    doc = `Provides various helper functions for improving diagnostics,\
+    doc: `Provides various helper functions for improving diagnostics,\
  promoting functional programming techniques, strengthening correctness,\
  and making it easier to explore a codebase during runtime. (see t.help,\
  t.log, t.tag, t.freeze, t.trampoline, and t.shape)`,
