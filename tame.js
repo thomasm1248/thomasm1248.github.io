@@ -160,6 +160,12 @@ var t = {
         return typeof obj === 'object' && !Object.isFrozen(obj);
     },
 
+    trampoline(func) {
+        while(typeof func !== 'function')
+            func = func();
+        return func;
+    },
+
     help(func) {
         t.shape('function', func);
         if(typeof func.doc !== 'string') {
