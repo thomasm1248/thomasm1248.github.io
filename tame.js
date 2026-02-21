@@ -52,36 +52,56 @@ var t = {
 
     shape(spec, value, path) {
         if(!t.enabled) return value;
-        if(path === undefined) path = 'obj';
-        if(typeof spec === 'string') {
-            if(typeof value !== spec) {
-                t.log(
-                    'Expected type:', spec,
-                    '\nActual value:', value);
-                throw new Error(`expected '${spec}' from ${path}, got '${typeof value}'`);
-            }
-        } else if(typeof spec === 'object') {
-            if(spec.length === undefined) {
-                // Object
-                if(typeof value !== 'object') {
-                    t.log(
-                        'Expected shape:', spec,
-                        '\nActual value:', value);
-                    throw new Error(`expected 'object' from ${path}, got '${typeof value}'`);
+        let isRootCall = false;
+        if(path === undefined) {
+            path = 'obj';
+            isRootCall = true;
+        }
+        try {
+            if(typeof spec === 'string') {
+                if(typeof value !== spec) {
+                    const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
+                    if(isRootCall) throw new Error(message);
+                    else return message;
                 }
-                for(const key in spec)
-                    t.shape(spec[key], value[key], path + '.' + key);
-            } else {
-                // List
-                let listSpec = spec[0];
-                for(var i = 0; i < value.length; i++)
-                    t.shape(listSpec, value[i], `${path}[${i}]`);
+            } else if(typeof spec === 'object') {
+                if(spec.length === undefined) {
+                    // Object
+                    if(typeof value !== 'object') {
+                        const message = `expected 'object' from ${path}, got '${typeof value}'`;
+                        if(isRootCall) throw new Error(message);
+                        else return message;
+                    }
+                    for(const key in spec) {
+                        const message = t.shape(spec[key], value[key], path + '.' + key);
+                        if(typeof message === 'string') {
+                            if(isRootCall) throw new Error(message);
+                            else return message;
+                        }
+                    }
+                } else {
+                    // List
+                    let listSpec = spec[0];
+                    for(var i = 0; i < value.length; i++) {
+                        const message = t.shape(listSpec, value[i], `${path}[${i}]`);
+                        if(typeof message === 'string') {
+                            if(isRootCall) throw new Error(message);
+                            else return message;
+                        }
+                    }
+                }
             }
+            else {
+                throw new Error("'spec' must be of type 'string' or 'object'");
+            }
+            if(isRootCall) return value;
+        } catch(ex) {
+            if(isRootCall)
+                t.log(
+                    'Expected shape:', spec,
+                    '\nActual value:', value);
+            throw ex;
         }
-        else {
-            throw new Error("'spec' must be of type 'string' or 'object'");
-        }
-        return value;
     },
 
     // Same as console.log, but objects are copied
