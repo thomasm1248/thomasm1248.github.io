@@ -88,8 +88,13 @@ var t = {
     log() {
         if(!t.enabled) return arguments[arguments.length-1];
         let clones = [];
-        for(let a in arguments)
-            clones.push(structuredClone(arguments[a]));
+        for(let key in arguments) {
+            let value = arguments[key];
+            if(typeof value === 'object' && !Object.isFrozen(value))
+                clones.push(structuredClone(value));
+            else
+                clones.push(value)
+        }
         console.log(...clones);
         return arguments[arguments.length-1];
     },
