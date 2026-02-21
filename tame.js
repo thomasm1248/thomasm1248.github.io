@@ -58,6 +58,7 @@ var t = {
             isRootCall = true;
         }
         try {
+            if(typeof spec === 'any') return;
             if(typeof spec === 'string') {
                 if(typeof value !== spec) {
                     const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
@@ -82,6 +83,7 @@ var t = {
                 } else {
                     // List
                     let listSpec = spec[0];
+                    if(listSpec === 'any') return;
                     for(var i = 0; i < value.length; i++) {
                         const message = t.shape(listSpec, value[i], `${path}[${i}]`);
                         if(typeof message === 'string') {
