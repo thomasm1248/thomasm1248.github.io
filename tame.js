@@ -156,6 +156,10 @@ var t = {
         return obj;
     },
 
+    mutable(obj) {
+        return typeof obj !== 'object' || !Object.isFrozen(obj);
+    },
+
     help(func) {
         t.shape('function', func);
         if(typeof func.doc !== 'string') {
@@ -165,3 +169,32 @@ var t = {
         t.log(func.doc);
     },
 };
+
+t.help.doc = `function f -> undefined -- Prints f.doc to console.`;
+
+t.mutable.doc = `any x -> boolean -- Indicates wether or not x is\
+ mutable. (see t.freeze)`;
+
+t.freeze.doc = `object o -> object o -- Freezes object o and all the objects\
+ within it recursively. (see t.mutable)`;
+
+t.tags.doc = `object o -> string -- Returns a string containing all the debug\
+ tags of the object o, separated by newlines. (see t.tags)`;
+
+t.transferTags.doc = `object a -> object b -> object b -- Copies all the debug tags\
+ from object a to object b, then returns object b. (see t.tag)`;
+
+t.tag.doc = `string t -> object o -> object o -- Appends debug tag string t to the end of\
+ o's current debug tag list. (see t.transferTags, t.tags)`;
+
+t.log.doc = `any args[] -> any last -- A thin wrapper around console.log that\
+ makes clones of unfrozen objects so that the log message doesn't change when\
+ the objects do. The last argument is returned. (see t.freeze)`;
+
+t.assert.doc = `boolean condition -> string message -> undefined -- If\
+ condition is true, throw an error containing the provided message.`;
+
+t.shape.doc = `any spec -> any value -> any value -- Verifies that the value\
+ matches the shape specified by spec. See an example in tame.js for usage.`;
+
+t.freeze(t);
