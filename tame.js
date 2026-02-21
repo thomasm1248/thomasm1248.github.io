@@ -120,7 +120,6 @@ var t = {
         return obj.debugTagHistory.join('\n');
     },
 
-    // Recursively freeze objects and their sub-objects
     freeze(obj) {
         Object.freeze(obj);
         for(const key of Object.getOwnPropertyNames(obj)) {
@@ -130,5 +129,14 @@ var t = {
             }
         }
         return obj;
+    },
+
+    help(func) {
+        t.shape('function', func);
+        if(typeof func.doc !== 'string') {
+            t.log('no doc found');
+            return;
+        }
+        t.log(func.doc);
     },
 };
