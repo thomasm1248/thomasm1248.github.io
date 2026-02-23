@@ -10,7 +10,7 @@
  * #   # #     #   #     #   #
  * ####  ##### #   # ####    #
  *
- * by Thomas Mason
+ * by Thomas Mason (thomasm1248@gmail.com)
  *
  * This is my solution for taming the beast (Javascript).
  * It provides some useful functions that make it easy to
@@ -308,54 +308,38 @@ const t = (function() {
     
     const modules = {};
     const Module = {
-        dependencies: ['string'],
         init: 'function',
     };
 
-    const module = function(key, dependencies, init) {
+    const module = function(key, init) {
         shape('string', key);
-        shape(['string'], dependencies);
         shape('function', init);
         if(modules[key] !== undefined) {
             log(`module '${key}' was defined again (ignored)`);
             return;
         }
         modules[key] = {
-            dependencies,
             init,
         };
     }
-    module.doc = `(key: string, dependencies: [string], init: function):\
- undefined -- Defines a module. The init function takes the modules listed\
- as dependencies and returns a module object, which is automatically frozen.`;
+    module.doc = `(key: string, init: function):\
+ undefined -- Defines a module. The init function that\
+ returns a module object, which is automatically frozen.`;
 
     const loadModule = function(moduleDefinition) {
         shape(Module, moduleDefinition);
-        const args = moduleDefinition.dependencies
-            .map(key => getModule(key));
-        const module = moduleDefinition.init(...args);
+        const module = moduleDefinition.init();
         moduleDefinition.module = freeze(module);
     }
 
-    const getModule = function(key) {
+    const require = function(key) {
         const moduleDefinition = modules[key];
         if(moduleDefinition === undefined)
-            throw new Error(`module'${key}' is not defined`);
+            throw new Error(`module' ${key}' is not defined`);
         if(moduleDefinition.module === undefined)
             loadModule(moduleDefinition);
         return moduleDefinition.module;
     }
-
-    const entryPoint = function(dependencies, func) {
-        shape(['string'], dependencies);
-        shape('function', func);
-        const args = dependencies
-            .map(key => getModule(key));
-        func(...args);
-    }
-    entryPoint.doc = `(dependencies: [string], func: function): undefined\
- -- Defines an entry point that will run immediately. All the modules\
- required by the func will be loaded. (see t.module)`;
 
     return {
         enable,
@@ -376,7 +360,7 @@ const t = (function() {
         mutable,
         trampoline,
         module,
-        entryPoint,
+        require,
         doc,
     };
 })();
