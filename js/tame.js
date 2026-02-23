@@ -149,6 +149,22 @@ const t = (function() {
  adds a '(mutable)' warning to mutable objects. The last argument is\
  returned.`;
 
+    const warn = function(...args) {
+        if(!enabled) return args[args.length-1];
+        let newArgs = [];
+        for(let key in args) {
+            let value = args[key];
+            if (typeof value === 'object' && !Object.isFrozen(value))
+                newArgs.push('(mutable)');
+            newArgs.push(value);
+        }
+        console.warn(...newArgs);
+        return args[args.length-1];
+    }
+    warn.doc = `...args -> last -- A thin wrapper around console.warn that\
+ adds a '(mutable)' warning to mutable objects. The last argument is\
+ returned.`;
+
     const tag = function(tag, obj) {
         if(!enabled) return obj;
         t.shape('string', tag);
