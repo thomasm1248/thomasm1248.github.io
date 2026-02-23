@@ -135,25 +135,19 @@ const t = (function() {
 
     const log = function(...args) {
         if(!enabled) return args[args.length-1];
-        try {
-            let clones = [];
-            for(let key in args) {
-                let value = args[key];
-                if(typeof value === 'object' && !Object.isFrozen(value))
-                    clones.push(structuredClone(value));
-                else
-                    clones.push(value)
-            }
-            console.log(...clones);
+        let newArgs = [];
+        for(let key in args) {
+            let value = args[key];
+            if (typeof value === 'object' && !Object.isFrozen(value))
+                newArgs.push('(mutable)');
+            newArgs.push(value);
         }
-        catch {
-            console.log(...args);
-        }
+        console.log(...newArgs);
         return args[args.length-1];
     }
-    log.doc = `any args[] -> any last -- A thin wrapper around console.log that\
- makes clones of unfrozen objects so that the log message doesn't change when\
- the objects do. The last argument is returned. (see t.freeze)`;
+    log.doc = `...args -> last -- A thin wrapper around console.log that\
+ adds a '(mutable)' warning to mutable objects. The last argument is\
+ returned.`;
 
     const tag = function(tag, obj) {
         if(!enabled) return obj;
