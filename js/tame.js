@@ -28,11 +28,9 @@
  * No classes
  * No implicit coercion (==) (only use ===)
  * No prototype modification
- * No async in core logic
  * Prefer functional paradigm
- * If a function uses an optimized tail call,
- *   it should end with '_c' to indicate that
- *   t.trampoline() is required
+ * No async in core logic
+ * Document every function and object
  */
 
 const t = (function() {
@@ -51,7 +49,7 @@ const t = (function() {
     const disable = () => enabled = false;
     disable.doc = `Disables diagnostics. (see t.enable)`;
 
-    const assert = function(condition, message) {
+    const assert = (condition, message) => {
         if(!enabled) return;
         if(!condition) {
             if(typeof message === 'function')
@@ -64,7 +62,7 @@ const t = (function() {
  The message can be any type, but if it's a function, the function\
  will be called to obtain the real message.`;
 
-    const shape = function(spec, value, path) {
+    const shape = (spec, value, path) => {
         if(!enabled) return value;
         let isRootCall = false;
         if(path === undefined) {
@@ -133,13 +131,12 @@ const t = (function() {
     shape.doc = `any spec -> any value -> any value -- Verifies that the value\
  matches the shape specified by spec. See an example in tame.js for usage.`;
 
-    const log = function(...args) {
+    const log = (...args) => {
         if(!enabled) return args[args.length-1];
         let newArgs = [];
         for(let key in args) {
-            let value = args[key];
-            if (typeof value === 'object' && !Object.isFrozen(value))
-                newArgs.push('(mutable)');
+            const value = args[key];
+            if (mutable(value)) newArgs.push('(mutable)');
             newArgs.push(value);
         }
         console.log(...newArgs);
@@ -149,23 +146,22 @@ const t = (function() {
  adds a '(mutable)' warning to mutable objects. The last argument is\
  returned.`;
 
-    const warn = function(...args) {
-        if(!enabled) return args[args.length-1];
+    const warn = (...args) => {
+        if (!enabled) return args[args.length - 1];
         let newArgs = [];
-        for(let key in args) {
-            let value = args[key];
-            if (typeof value === 'object' && !Object.isFrozen(value))
-                newArgs.push('(mutable)');
+        for (let key in args) {
+            const value = args[key];
+            if (mutable(value)) newArgs.push('(mutable)');
             newArgs.push(value);
         }
         console.warn(...newArgs);
-        return args[args.length-1];
+        return args[args.length - 1];
     }
     warn.doc = `...args -> last -- A thin wrapper around console.warn that\
  adds a '(mutable)' warning to mutable objects. The last argument is\
  returned.`;
 
-    const tag = function(tag, obj) {
+    const tag = (tag, obj) => {
         if(!enabled) return obj;
         t.shape('string', tag);
         t.shape({}, obj);
@@ -177,7 +173,7 @@ const t = (function() {
     tag.doc = `string t -> object o -> object o -- Appends debug tag string t to the end of\
  o's current debug tag list. (see t.transferTags, t.tags)`;
 
-    const transferTags = function(from, to) {
+    const transferTags = (from, to) => {
         if(!enabled) return to;
         t.shape({}, from);
         t.shape({}, to);
@@ -191,7 +187,7 @@ const t = (function() {
     transferTags.doc = `object a -> object b -> object b -- Copies all the debug tags\
  from object a to object b, then returns object b. (see t.tag)`;
 
-    const tags = function(obj) {
+    const tags = obj => {
         if(!enabled) return '';
         t.shape({}, obj);
         if(obj.debugTagHistory === undefined) return '<no tags>';
@@ -204,30 +200,37 @@ const t = (function() {
 
     const docStrings = {};
 
-    const help = function(x) {
-        if(typeof x === 'string') {
-            if(t.docStrings[x] === undefined)
-                t.log('no doc found');
-            else
-                t.log(t.docStrings[x]);
-            return;
+    const help = x => {
+        switch(typeof x) {
+            case 'string':
+                if (t.docStrings[x] === undefined)
+                    t.log('no doc found');
+                else
+                    t.log(t.docStrings[x]);
+                break;
+            case 'function':
+                if (typeof x.doc === 'string')
+                    t.log(x.doc, '\n\n', x);
+                else
+                    t.log(x);
+                break;
+            case 'object':
+                if (typeof x.doc === 'string')
+                    t.log(x.doc, '\n', x);
+                else
+                    t.log(x);
+                break;
+            default:
+                t.log(x);
+                break;
         }
-        if(typeof x !== 'function' && typeof x !== 'object') {
-            t.log('only functions and objects can have doc strings');
-            return;
-        }
-        if(typeof x.doc !== 'string') {
-            t.log('no doc found');
-            return;
-        }
-        t.log(x.doc);
     }
     help.doc = `any x -> undefined -- If x is a string, the doc string\
  previously registered for that string by t.keyDoc() is printed.\
  Otherwise, if x is a function or an object, and if a doc string has\
  been defined for it, then the doc string is printed.`;
 
-    const keyDoc = function(key, text) {
+    const keyDoc = (key, text) => {
         t.shape('string', key);
         t.shape('string', text);
         docStrings[key] = text;
@@ -242,7 +245,7 @@ const t = (function() {
 
     const extensions = {};
 
-    const extensionPoint = function(key, args, defaultFunc) {
+    const extensionPoint = (key, args, defaultFunc) => {
         if(!extensionsEnabled) return defaultFunc(...args);
         t.shape('string', key);
         t.shape(['any'], args);
@@ -255,7 +258,7 @@ const t = (function() {
  Run function f, and pass the array of args to it. However, the function can\
  be overriden by registering a new function with the same key using t.extend.`;
 
-    const extend = function(key, newFunc) {
+    const extend = (key, newFunc) => {
         if(!extensionsEnabled) return;
         t.shape('string', key);
         t.shape('function', newFunc);
@@ -265,7 +268,7 @@ const t = (function() {
  function with the provided key so that it overrides any extension points that\
  use the same key. (see t.extensionPoint)`;
 
-    const clearExtension = function(key) {
+    const clearExtension = key => {
         t.shape('string', key);
         extensions[key] = undefined;
     }
@@ -273,7 +276,7 @@ const t = (function() {
  for the specified key (if applicable). (see t.extensionPoint, t.extend,\
       t.clearAllExtensions)`;
 
-    const clearAllExtensions = function() {
+    const clearAllExtensions = () => {
         for(let key in extensions)
             extensions[key] = undefined;
     }
@@ -282,7 +285,7 @@ const t = (function() {
 
     // Functional programming
 
-    const freeze = function(obj) {
+    const freeze = obj => {
         Object.freeze(obj);
         for(const key of Object.getOwnPropertyNames(obj)) {
             const value = obj[key];
@@ -295,14 +298,14 @@ const t = (function() {
     freeze.doc = `object o -> object o -- Freezes object o and all the objects\
  within it recursively. (see t.mutable)`;
 
-    const mutable = function(obj) {
+    const mutable = obj => {
         return (typeof obj === 'object' || typeof obj === 'function') &&
                !Object.isFrozen(obj);
     }
     mutable.doc = `any x -> boolean -- Indicates wether or not x is\
  mutable. (see t.freeze)`;
 
-    const trampoline = function(func) {
+    const trampoline = func => {
         while(typeof func !== 'function')
             func = func();
         return func;
@@ -321,7 +324,7 @@ const t = (function() {
         init: 'function',
     };
 
-    const module = function(key, init) {
+    const module = (key, init) => {
         shape('string', key);
         shape('function', init);
         if(modules[key] !== undefined) {
@@ -336,13 +339,13 @@ const t = (function() {
  undefined -- Defines a module. The init function that\
  returns a module object, which is automatically frozen.`;
 
-    const loadModule = function(moduleDefinition) {
+    const loadModule = moduleDefinition => {
         shape(Module, moduleDefinition);
         const module = moduleDefinition.init();
         moduleDefinition.module = freeze(module);
     }
 
-    const require = function(key) {
+    const require = key => {
         const moduleDefinition = modules[key];
         if(moduleDefinition === undefined)
             throw new Error(`module' ${key}' is not defined`);
