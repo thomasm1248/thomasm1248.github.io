@@ -357,6 +357,7 @@ const t = (function() {
         assert,
         shape,
         log,
+        warn,
         tag,
         transferTags,
         tags,
