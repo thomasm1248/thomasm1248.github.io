@@ -56,7 +56,7 @@ const t = (function() {
         if(!condition) {
             if(typeof message === 'function')
                 message = message();
-            t.log('assert failed:', message);
+            throw new Error(`assert failed: ${message}`);
         }
     }
     assert.doc = `boolean condition -> any message -> undefined -- If\
