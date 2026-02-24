@@ -22,6 +22,7 @@
  *
  * Rules to follow in your code:
  *
+ * 'use strict';
  * No `var`
  * Prefer `const`
  * Avoid `this`
@@ -32,6 +33,8 @@
  * No async in core logic
  * Document every function and object
  */
+
+'use strict';
 
 const t = (function() {
     const doc = `Provides various helper functions for improving diagnostics,\
@@ -339,18 +342,19 @@ const t = (function() {
  undefined -- Defines a module. The init function that\
  returns a module object, which is automatically frozen.`;
 
-    const loadModule = moduleDefinition => {
+    const loadModule = (moduleDefinition, config) => {
         shape(Module, moduleDefinition);
-        const module = moduleDefinition.init();
+        const module = moduleDefinition.init(config);
         moduleDefinition.module = freeze(module);
     }
 
-    const require = key => {
+    const require = (key, config) => {
+        assert(!t.mutable(config), 'config must be immutable. (see t.freeze)');
         const moduleDefinition = modules[key];
         if(moduleDefinition === undefined)
             throw new Error(`module' ${key}' is not defined`);
         if(moduleDefinition.module === undefined)
-            loadModule(moduleDefinition);
+            loadModule(moduleDefinition, config);
         return moduleDefinition.module;
     }
 
@@ -378,4 +382,3 @@ const t = (function() {
         doc,
     };
 })();
-
