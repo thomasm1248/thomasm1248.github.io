@@ -45,6 +45,7 @@ const t = (function() {
     // Diagnostics
 
     let enabled = true;
+    let interactiveMode = false;
     
     const enable = () => enabled = true;
     enable.doc = `Enables diagnostics. (see t.disable)`;
@@ -52,11 +53,23 @@ const t = (function() {
     const disable = () => enabled = false;
     disable.doc = `Disables diagnostics. (see t.enable)`;
 
+    const interactive = () => interactiveMode = true;
+
     const assert = (condition, message) => {
         if(!enabled) return;
         if(!condition) {
             if(typeof message === 'function')
                 message = message();
+            if(interactiveMode) {
+                t.warn('assert failed:', message);
+
+                debugger;
+                // ASSERT FAILED
+                // (see log)
+                //
+                // Return to context:
+                return;
+            }
             throw new Error(`assert failed: ${message}`);
         }
     }
@@ -125,9 +138,20 @@ const t = (function() {
             if(isRootCall) return value;
         } catch(ex) {
             if(isRootCall)
-                t.log(
+                t.warn(
                     'Expected shape:', spec,
                     '\nActual value:', value);
+            if(interactiveMode) {
+
+                debugger;
+                // INVALID SHAPE
+                // (see log)
+                //
+                // Modify `value`,
+                // then continue
+
+                return shape(spec, value);
+            }
             throw ex;
         }
     }
@@ -379,6 +403,7 @@ Lazy loades the requested module. The config parameter must\
     return {
         enable,
         disable,
+        interactive,
         assert,
         shape,
         log,
