@@ -293,7 +293,7 @@ const t = (function() {
         for(const key of Object.getOwnPropertyNames(obj)) {
             const value = obj[key];
             if(value && typeof value === 'object' && !Object.isFrozen(value)) {
-                t.freeze(value);
+                freeze(value);
             }
         }
         return obj;
@@ -323,7 +323,7 @@ const t = (function() {
     // Modules
     
     const modules = {};
-    const Module = t.freeze({
+    const Module = freeze({
         init: 'function',
     });
 
@@ -347,9 +347,15 @@ That is, it takes an immutable config object, accesses whichever\
 Note: When the module object is returned, it will be automatically\
  frozen with t.freeze.`;
 
-    const loadModule = (moduleDefinition, config) => {
-        shape(Module, moduleDefinition);
+    const loadModule = (moduleName, config) => {
+        const moduleDefinition = modules[moduleName];
         const module = moduleDefinition.init(config);
+        try {
+            t.shape({}, module);
+        } catch {
+            t.warn(`Module '${moduleName}' did not return an object`);
+            return;
+        }
         moduleDefinition.module = freeze(module);
     }
 
@@ -358,10 +364,12 @@ Note: When the module object is returned, it will be automatically\
         if(typeof config !== 'undefined')
             t.shape({}, config);
         const moduleDefinition = modules[moduleName];
-        if(moduleDefinition === undefined)
-            throw new Error(`module' ${moduleName}' is not defined`);
+        if(moduleDefinition === undefined) {
+            t.warn(`module '${moduleName}' is missing`);
+            return undefined;
+        }
         if(moduleDefinition.module === undefined)
-            loadModule(moduleDefinition, config);
+            loadModule(moduleName, config);
         return moduleDefinition.module;
     }
     require.doc = `(moduleName, config) => module
