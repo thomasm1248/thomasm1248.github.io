@@ -323,24 +323,29 @@ const t = (function() {
     // Modules
     
     const modules = {};
-    const Module = {
+    const Module = t.freeze({
         init: 'function',
-    };
+    });
 
-    const module = (key, init) => {
-        shape('string', key);
+    const module = (moduleName, init) => {
+        shape('string', moduleName);
         shape('function', init);
-        if(modules[key] !== undefined) {
-            log(`module '${key}' was defined again (ignored)`);
+        if(modules[moduleName] !== undefined) {
+            log(`module '${moduleName}' was defined again (ignored)`);
             return;
         }
-        modules[key] = {
+        modules[moduleName] = {
             init,
         };
     }
-    module.doc = `(key: string, init: function):\
- undefined -- Defines a module. The init function that\
- returns a module object, which is automatically frozen.`;
+    module.doc = `(moduleName, init) => undefined
+Defines a module. The signature of the init function should be
+config => module
+That is, it takes an immutable config object, accesses whichever\
+ portions of it that it needs to, uses t.require to obtain dependencies\
+ then returns an object that represents the module.
+Note: When the module object is returned, it will be automatically\
+ frozen with t.freeze.`;
 
     const loadModule = (moduleDefinition, config) => {
         shape(Module, moduleDefinition);
@@ -348,15 +353,20 @@ const t = (function() {
         moduleDefinition.module = freeze(module);
     }
 
-    const require = (key, config) => {
+    const require = (moduleName, config) => {
         assert(!t.mutable(config), 'config must be immutable. (see t.freeze)');
-        const moduleDefinition = modules[key];
+        if(typeof config !== 'undefined')
+            t.shape({}, config);
+        const moduleDefinition = modules[moduleName];
         if(moduleDefinition === undefined)
-            throw new Error(`module' ${key}' is not defined`);
+            throw new Error(`module' ${moduleName}' is not defined`);
         if(moduleDefinition.module === undefined)
             loadModule(moduleDefinition, config);
         return moduleDefinition.module;
     }
+    require.doc = `(moduleName, config) => module
+Lazy loades the requested module. The config parameter must\
+ be either 'undefined' or an immutable object (see t.freeze).`;
 
     return {
         enable,
