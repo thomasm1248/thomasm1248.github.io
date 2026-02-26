@@ -29,31 +29,62 @@
  * No classes
  * No implicit coercion (==) (only use ===)
  * No prototype modification
- * Prefer functional paradigm
  * No async in core logic
  * Document every function and object
+ * Write pure, immutable, explicit code.
+ *  Validate at boundaries. Fail loudly in
+ *  dev, disappear in prod.
  */
 
 'use strict';
 
 const t = (function() {
-    const doc = `Provides various helper functions for improving diagnostics,\
- promoting functional programming techniques, strengthening correctness,\
- and making it easier to explore a codebase during runtime. (see t.help,\
- t.log, t.tag, t.freeze, t.trampoline, and t.shape)`;
 
     // Diagnostics
 
     let enabled = true;
-    let interactiveMode = false;
     
     const enable = () => enabled = true;
-    enable.doc = `Enables diagnostics. (see t.disable)`;
+    enable.meta = `Enables diagnostics. (see t.disable)`;
 
     const disable = () => enabled = false;
-    disable.doc = `Disables diagnostics. (see t.enable)`;
+    disable.meta = `Disables diagnostics. (see t.enable)`;
 
-    const interactive = () => interactiveMode = true;
+    const log = (...args) => {
+        if(!enabled) return args[args.length-1];
+        let newArgs = [];
+        for(let key in args) {
+            const value = args[key];
+            if (typeof value !== 'function' && mutable(value)) newArgs.push('(mutable)');
+            newArgs.push(value);
+        }
+        console.log(...newArgs);
+        return args[args.length-1];
+    }
+    log.meta = `...args -> last -- A thin wrapper around console.log that\
+ adds a '(mutable)' warning to mutable objects. The last argument is\
+ returned.`;
+
+    const warn = (...args) => {
+        if (!enabled) return args[args.length - 1];
+        let newArgs = [];
+        for (let key in args) {
+            const value = args[key];
+            if (mutable(value)) newArgs.push('(mutable)');
+            newArgs.push(value);
+        }
+        console.warn(...newArgs);
+        return args[args.length - 1];
+    }
+    warn.meta = `...args -> last -- A thin wrapper around console.warn that\
+ adds a '(mutable)' warning to mutable objects. The last argument is\
+ returned.`;
+
+    // Data validation
+
+    let interactiveMode = false;
+
+    const interactive = (newValue = true) => interactiveMode = newValue;
 
     const assert = (condition, message) => {
         if(!enabled) return;
@@ -69,11 +100,12 @@ const t = (function() {
                 //
                 // Return to context:
                 return;
+
             }
             throw new Error(`assert failed: ${message}`);
         }
     }
-    assert.doc = `boolean condition -> any message -> undefined -- If\
+    assert.meta = `boolean condition -> any message -> undefined -- If\
  condition is true, throw an error containing the provided message.\
  The message can be any type, but if it's a function, the function\
  will be called to obtain the real message.`;
@@ -95,6 +127,14 @@ const t = (function() {
             if(typeof spec === 'string') {
                 if(typeof value !== spec) {
                     const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
+                    if(isRootCall) throw new Error(message);
+                    else return message;
+                }
+            } else if(typeof spec === 'function') {
+                try {
+                    spec(value);
+                } catch(e) {
+                    const message = `custom shape function threw an error:\n${e.message}`;
                     if(isRootCall) throw new Error(message);
                     else return message;
                 }
@@ -133,7 +173,7 @@ const t = (function() {
                 }
             }
             else {
-                throw new Error("'spec' must be of type 'string' or 'object'");
+                throw new Error("'spec' must be of type 'string', 'function, or 'object'");
             }
             if(isRootCall) return value;
         } catch(ex) {
@@ -141,174 +181,92 @@ const t = (function() {
                 t.warn(
                     'Expected shape:', spec,
                     '\nActual value:', value);
-            if(interactiveMode) {
+            if(isRootCall && interactiveMode) {
 
                 debugger;
                 // INVALID SHAPE
                 // (see log)
                 //
-                // Modify `value`,
-                // then continue
+                // Return to context:
+                return value;
 
-                return shape(spec, value);
             }
             throw ex;
         }
     }
-    shape.doc = `any spec -> any value -> any value -- Verifies that the value\
+    shape.meta = `any spec -> any value -> any value -- Verifies that the value\
  matches the shape specified by spec. See an example in tame.js for usage.`;
 
-    const log = (...args) => {
-        if(!enabled) return args[args.length-1];
-        let newArgs = [];
-        for(let key in args) {
-            const value = args[key];
-            if (mutable(value)) newArgs.push('(mutable)');
-            newArgs.push(value);
-        }
-        console.log(...newArgs);
-        return args[args.length-1];
-    }
-    log.doc = `...args -> last -- A thin wrapper around console.log that\
- adds a '(mutable)' warning to mutable objects. The last argument is\
- returned.`;
-
-    const warn = (...args) => {
-        if (!enabled) return args[args.length - 1];
-        let newArgs = [];
-        for (let key in args) {
-            const value = args[key];
-            if (mutable(value)) newArgs.push('(mutable)');
-            newArgs.push(value);
-        }
-        console.warn(...newArgs);
-        return args[args.length - 1];
-    }
-    warn.doc = `...args -> last -- A thin wrapper around console.warn that\
- adds a '(mutable)' warning to mutable objects. The last argument is\
- returned.`;
-
-    const tag = (tag, obj) => {
-        if(!enabled) return obj;
-        t.shape('string', tag);
-        t.shape({}, obj);
-        if(obj.debugTagHistory === undefined)
-            obj.debugTagHistory = [];
-        obj.debugTagHistory.push(tag);
-        return obj;
-    }
-    tag.doc = `string t -> object o -> object o -- Appends debug tag string t to the end of\
- o's current debug tag list. (see t.transferTags, t.tags)`;
-
-    const transferTags = (from, to) => {
-        if(!enabled) return to;
-        t.shape({}, from);
-        t.shape({}, to);
-        if(from.debugTagHistory === undefined)
-            return;
-        if(to.debugTagHistory === undefined)
-            to.debugTagHistory = [];
-        to.debugTagHistory.push(...from.debugTagHistory);
-        return to;
-    }
-    transferTags.doc = `object a -> object b -> object b -- Copies all the debug tags\
- from object a to object b, then returns object b. (see t.tag)`;
-
-    const tags = obj => {
-        if(!enabled) return '';
-        t.shape({}, obj);
-        if(obj.debugTagHistory === undefined) return '<no tags>';
-        return obj.debugTagHistory.join('\n');
-    }
-    tags.doc = `object o -> string -- Returns a string containing all the debug\
- tags of the object o, separated by newlines. (see t.tags)`;
-
-    // Doc strings
-
-    const docStrings = {};
-
-    const help = x => {
-        switch(typeof x) {
-            case 'string':
-                if (t.docStrings[x] === undefined)
-                    t.log('no doc found');
-                else
-                    t.log(t.docStrings[x]);
-                break;
-            case 'function':
-                if (typeof x.doc === 'string')
-                    t.log(x.doc, '\n\n', x);
-                else
-                    t.log(x);
-                break;
-            case 'object':
-                if (typeof x.doc === 'string')
-                    t.log(x.doc, '\n', x);
-                else
-                    t.log(x);
-                break;
-            default:
-                t.log(x);
-                break;
-        }
-    }
-    help.doc = `any x -> undefined -- If x is a string, the doc string\
- previously registered for that string by t.keyDoc() is printed.\
- Otherwise, if x is a function or an object, and if a doc string has\
- been defined for it, then the doc string is printed.`;
-
-    const keyDoc = (key, text) => {
-        t.shape('string', key);
-        t.shape('string', text);
-        docStrings[key] = text;
-    }
-    keyDoc.doc = `string key -> string doc -> undefined -- Registers\
- the doc string under the specified key. The doc string can be\
- printed to the console using t.help(key).`;
-
-    // Extensions
-    
-    const extensionsEnabled = true;
-
-    const extensions = {};
-
-    const extensionPoint = (key, args, defaultFunc) => {
-        if(!extensionsEnabled) return defaultFunc(...args);
-        t.shape('string', key);
+    const guard = (...args) => {
         t.shape(['any'], args);
-        t.shape('function', defaultFunc);
-        const extender = extensions[key];
-        if(extender === undefined) return defaultFunc(...args);
-        return extender(...args);
-    }
-    extensionPoint.doc = `string key -> any args[] -> function f -> any v --\
- Run function f, and pass the array of args to it. However, the function can\
- be overriden by registering a new function with the same key using t.extend.`;
+        t.assert(args.length >= 2, 't.guard needs at least two parameters');
+        const func = args[args.length - 1];
+        t.shape('function', func);
+        const outSpec = args[args.length - 2];
+        const inSpec = args.slice(0, args.length - 2);
+        return (...args2) => {
+            t.assert(
+                args2.length == inSpec.length,
+                () => `received ${args2.length} args instead of ${inSpec.length}`);
+            args2.forEach((arg, i) => t.shape(inSpec[i], arg));
+            const result = func(...args2);
+            t.shape(outSpec, result);
+            return result;
+        };
+    };
+    guard.meta = `Wraps a function (last param) with t.shape checkers\
+ for all its input and output.`;
 
-    const extend = (key, newFunc) => {
-        if(!extensionsEnabled) return;
-        t.shape('string', key);
-        t.shape('function', newFunc);
-        extensions[key] = newFunc;
-    }
-    extend.doc = `string key -> function f -> undefined -- Registers a\
- function with the provided key so that it overrides any extension points that\
- use the same key. (see t.extensionPoint)`;
+    // Documentation system
 
-    const clearExtension = key => {
-        t.shape('string', key);
-        extensions[key] = undefined;
-    }
-    clearExtension.doc = `string key -> undefined -- Clears the extension\
- for the specified key (if applicable). (see t.extensionPoint, t.extend,\
-      t.clearAllExtensions)`;
+    const functionDocs = {};
 
-    const clearAllExtensions = () => {
-        for(let key in extensions)
-            extensions[key] = undefined;
+    const functions = () => {
+        const list = {};
+        for(const func in functionDocs) {
+            const doc = functionDocs[func];
+            list[doc.name] = doc;
+        }
+        return list;
+    };
+
+    const recordFunctionDoc = (moduleName, name, func) => {
+        // Ensure the function has meta data
+        if(func.meta === undefined) func.meta = {};
+        if(typeof func.meta === 'string') func.meta = { desc: func.meta };
+
+        // Record name of function
+        func.meta.name = moduleName + '.' + name;
+
+        // Register function's meta data
+        functionDocs[func] = func.meta;
+
+        // Link functions to related functions
+        if(func.meta.see !== undefined) {
+            shape(['function'], func.meta.see);
+            const see = {};
+            func.meta.see.forEach(otherFunc => {
+                const otherMeta = functionDocs[otherFunc];
+                if(otherMeta === undefined)
+                    t.warn(`${func.meta.name}'s meta data links to` +
+                        ` a function that is located AFTER it in the module.`);
+                if(otherMeta.see === undefined) otherMeta.see = {};
+                otherMeta.see[func.meta.name] = func.meta;
+                see[otherMeta.name] = otherMeta;
+            });
+            func.meta.see = see;
+        }
     }
-    clearAllExtensions.doc = `Clears all currently registered\
- extensions. (see t.clearExtension, t.extend, t.extensionPoint)`;
+
+    const documentModule = (name, module) => {
+        for(let field in module) {
+            const item = module[field];
+            if(typeof item === 'function')
+                recordFunctionDoc(name, field, item);
+            else if(typeof item === 'object')
+                documentModule(name + '.' + field, item);
+        }
+    };
 
     // Functional programming
 
@@ -322,14 +280,14 @@ const t = (function() {
         }
         return obj;
     }
-    freeze.doc = `object o -> object o -- Freezes object o and all the objects\
+    freeze.meta = `object o -> object o -- Freezes object o and all the objects\
  within it recursively. (see t.mutable)`;
 
     const mutable = obj => {
         return (typeof obj === 'object' || typeof obj === 'function') &&
                !Object.isFrozen(obj);
     }
-    mutable.doc = `any x -> boolean -- Indicates wether or not x is\
+    mutable.meta = `any x -> boolean -- Indicates wether or not x is\
  mutable. (see t.freeze)`;
 
     const trampoline = func => {
@@ -337,7 +295,7 @@ const t = (function() {
             func = func();
         return func;
     }
-    trampoline.doc = `any x -> any y -- If x is a function, call it without\
+    trampoline.meta = `any x -> any y -- If x is a function, call it without\
  arguments. If its return value is also a function, call that function.\
  Continue until something other than a function is returned. Return that.\
  The purpose of this is to allow functions to be written in a more\
@@ -362,7 +320,7 @@ const t = (function() {
             init,
         };
     }
-    module.doc = `(moduleName, init) => undefined
+    module.meta = `(moduleName, init) => undefined
 Defines a module. The signature of the init function should be
 config => module
 That is, it takes an immutable config object, accesses whichever\
@@ -374,6 +332,7 @@ Note: When the module object is returned, it will be automatically\
     const loadModule = (moduleName, config) => {
         const moduleDefinition = modules[moduleName];
         const module = moduleDefinition.init(config);
+        documentModule(moduleName, module);
         try {
             t.shape({}, module);
         } catch {
@@ -396,32 +355,37 @@ Note: When the module object is returned, it will be automatically\
             loadModule(moduleName, config);
         return moduleDefinition.module;
     }
-    require.doc = `(moduleName, config) => module
+    require.meta = `(moduleName, config) => module
 Lazy loades the requested module. The config parameter must\
  be either 'undefined' or an immutable object (see t.freeze).`;
+
+    const unusedModules = () => {
+        const unusedModuleNames = [];
+        for(const moduleName in modules) {
+            const moduleDef = modules[moduleName];
+            if(moduleDef.module === undefined)
+                unusedModuleNames.push(moduleName);
+        }
+        return unusedModuleNames;
+    };
+    unusedModules.meta = `Lists all the modules that were\
+ defined but not required.`;
 
     return {
         enable,
         disable,
+        log,
+        warn,
         interactive,
         assert,
         shape,
-        log,
-        warn,
-        tag,
-        transferTags,
-        tags,
-        help,
-        keyDoc,
-        extensionPoint,
-        extend,
-        clearExtension,
-        clearAllExtensions,
+        guard,
+        functions,
         freeze,
         mutable,
         trampoline,
         module,
         require,
-        doc,
+        unusedModules,
     };
 })();
