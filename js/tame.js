@@ -92,7 +92,7 @@ const t = (function() {
             if(typeof message === 'function')
                 message = message();
             if(interactiveMode) {
-                t.warn('assert failed:', message);
+                warn('assert failed:', message);
 
                 debugger;
                 // ASSERT FAILED
@@ -148,7 +148,7 @@ const t = (function() {
                     }
                     for(const key in spec) {
                         if(key === 'doc') continue; // skip doc strings in spec
-                        const message = t.shape(spec[key], value[key], path + '.' + key);
+                        const message = shape(spec[key], value[key], path + '.' + key);
                         if(typeof message === 'string') {
                             if(isRootCall) throw new Error(message);
                             else return message;
@@ -164,7 +164,7 @@ const t = (function() {
                             return;
                     }
                     for(var i = 0; i < value.length; i++) {
-                        const message = t.shape(listSpec, value[i], `${path}[${i}]`);
+                        const message = shape(listSpec, value[i], `${path}[${i}]`);
                         if(typeof message === 'string') {
                             if(isRootCall) throw new Error(message);
                             else return message;
@@ -178,7 +178,7 @@ const t = (function() {
             if(isRootCall) return value;
         } catch(ex) {
             if(isRootCall)
-                t.warn(
+                warn(
                     'Expected shape:', spec,
                     '\nActual value:', value);
             if(isRootCall && interactiveMode) {
@@ -198,19 +198,19 @@ const t = (function() {
  matches the shape specified by spec. See an example in tame.js for usage.`;
 
     const guard = (...args) => {
-        t.shape(['any'], args);
-        t.assert(args.length >= 2, 't.guard needs at least two parameters');
+        shape(['any'], args);
+        assert(args.length >= 2, 't.guard needs at least two parameters');
         const func = args[args.length - 1];
-        t.shape('function', func);
+        shape('function', func);
         const outSpec = args[args.length - 2];
         const inSpec = args.slice(0, args.length - 2);
         return (...args2) => {
-            t.assert(
+            assert(
                 args2.length == inSpec.length,
                 () => `received ${args2.length} args instead of ${inSpec.length}`);
-            args2.forEach((arg, i) => t.shape(inSpec[i], arg));
+            args2.forEach((arg, i) => shape(inSpec[i], arg));
             const result = func(...args2);
-            t.shape(outSpec, result);
+            shape(outSpec, result);
             return result;
         };
     };
@@ -248,7 +248,7 @@ const t = (function() {
             func.meta.see.forEach(otherFunc => {
                 const otherMeta = functionDocs[otherFunc];
                 if(otherMeta === undefined)
-                    t.warn(`${func.meta.name}'s meta data links to` +
+                    warn(`${func.meta.name}'s meta data links to` +
                         ` a function that is located AFTER it in the module.`);
                 if(otherMeta.see === undefined) otherMeta.see = {};
                 otherMeta.see[func.meta.name] = func.meta;
@@ -334,21 +334,21 @@ Note: When the module object is returned, it will be automatically\
         const module = moduleDefinition.init(config);
         documentModule(moduleName, module);
         try {
-            t.shape({}, module);
+            shape({}, module);
         } catch {
-            t.warn(`Module '${moduleName}' did not return an object`);
+            warn(`Module '${moduleName}' did not return an object`);
             return;
         }
         moduleDefinition.module = freeze(module);
     }
 
     const require = (moduleName, config) => {
-        assert(!t.mutable(config), 'config must be immutable. (see t.freeze)');
+        assert(!mutable(config), 'config must be immutable. (see t.freeze)');
         if(typeof config !== 'undefined')
-            t.shape({}, config);
+            shape({}, config);
         const moduleDefinition = modules[moduleName];
         if(moduleDefinition === undefined) {
-            t.warn(`module '${moduleName}' is missing`);
+            warn(`module '${moduleName}' is missing`);
             return undefined;
         }
         if(moduleDefinition.module === undefined)
