@@ -323,7 +323,7 @@ const t = (function() {
     // Modules
     
     const modules = {};
-    const Module = t.freeze({
+    const Module = freeze({
         init: 'function',
     });
 
