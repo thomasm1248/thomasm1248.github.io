@@ -233,11 +233,17 @@ Buttons
 b
 611
 574
-vibesbtn3.gif
+https://vibequest.neocities.org/vibesbtn3.gif
 https://vibes.fish
 
 b
 625
 525
-thomasm1248-button.gif
+images/thomasm1248-button.gif
 https://thomasmason.us
+
+b
+735
+561
+https://onio.neocities.org/thebutton.gif
+https://onio.neocities.org

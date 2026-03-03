@@ -106,7 +106,7 @@ fetch('content.txt')
           b.style.left = parts[1] + 'px';
           b.style.top = parts[2] + 'px';
           const bImg = document.createElement('img');
-          bImg.src = 'images/' + parts[3];
+          bImg.src = parts[3];
           b.appendChild(bImg);
           b.href = parts[4];
           document.body.appendChild(b);
