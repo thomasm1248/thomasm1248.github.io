@@ -109,6 +109,7 @@ fetch('content.txt')
           bImg.src = parts[3];
           b.appendChild(bImg);
           b.href = parts[4];
+          b.target = '_blank';
           document.body.appendChild(b);
           break;
         default:
