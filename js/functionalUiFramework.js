@@ -26,7 +26,6 @@ t.module('functionalUiFramework', config => {
         // Initialization
         let currentState = t.freeze(initialState);
         let viewIsDirty = true;
-        let viewState;
 
         // Dispatch
         const dispatch = message => {
@@ -53,7 +52,7 @@ t.module('functionalUiFramework', config => {
 
         // Animation Loop
         const updateView = () => {
-            viewState = t.freeze(viewer(viewState, currentState));
+            viewer(currentState);
         };
         let timeOfLastAnimationLoop = Date.now();
         const animationLoop = () => {
@@ -77,9 +76,10 @@ t.module('functionalUiFramework', config => {
 Parameters:
 initialState: An immutable value.
 reducer: (currentState, message) => { newState, commands: [...] (optional) }
-viewer: (viewState | undefined, currentState) => newViewState
+viewer: currentState => undefined
 actor: command => Promise (async) | undefined (sync)`,
     };
 
     return e;
 });
+
