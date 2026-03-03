@@ -99,6 +99,18 @@ fetch('content.txt')
           i.src = 'images/' + parts[5];
           document.body.appendChild(i);
           break;
+        case 'b':
+          t.assert(parts.length >= 5, `'b' has ${parts.length} lines instead of 5`);
+          const b = document.createElement('a');
+          b.classList.add('button');
+          b.style.left = parts[1] + 'px';
+          b.style.top = parts[2] + 'px';
+          const bImg = document.createElement('img');
+          bImg.src = 'images/' + parts[3];
+          b.appendChild(bImg);
+          b.href = parts[4];
+          document.body.appendChild(b);
+          break;
         default:
           t.log('Content type not recognized: ' + parts[0]);
           break;
