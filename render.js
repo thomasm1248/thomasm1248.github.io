@@ -112,6 +112,17 @@ fetch('content.txt')
           b.target = '_blank';
           document.body.appendChild(b);
           break;
+        case 'H':
+          t.assert(
+            parts.length >= 3,
+            `'H' has ${parts.length} lines when it needed at least 3`);
+          const d = document.createElement('div');
+          d.classList.add('freeform');
+          d.style.left = parts[1] + 'px';
+          d.style.top = parts[2] + 'px';
+          d.innerHTML = parts.slice(3).join('\n');
+          document.body.appendChild(d);
+          break;
         default:
           t.log('Content type not recognized: ' + parts[0]);
           break;

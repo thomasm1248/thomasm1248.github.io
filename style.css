@@ -18,7 +18,8 @@ body {
 .card,
 .page,
 .image,
-.button
+.button,
+.freeform
 {
   position: absolute;
 }
