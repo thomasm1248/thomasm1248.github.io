@@ -34,6 +34,10 @@
  * Write pure, immutable, explicit code.
  *  Validate at boundaries. Fail loudly in
  *  dev, disappear in prod.
+ * Single orchestration program serves as
+ *  entry point.
+ * Modules have no state and no
+ *  hidden side-effects
  */
 
 'use strict';
@@ -217,57 +221,6 @@ const t = (function() {
     guard.meta = `Wraps a function (last param) with t.shape checkers\
  for all its input and output.`;
 
-    // Documentation system
-
-    const functionDocs = {};
-
-    const functions = () => {
-        const list = {};
-        for(const func in functionDocs) {
-            const doc = functionDocs[func];
-            list[doc.name] = doc;
-        }
-        return list;
-    };
-
-    const recordFunctionDoc = (moduleName, name, func) => {
-        // Ensure the function has meta data
-        if(func.meta === undefined) func.meta = {};
-        if(typeof func.meta === 'string') func.meta = { desc: func.meta };
-
-        // Record name of function
-        func.meta.name = moduleName + '.' + name;
-
-        // Register function's meta data
-        functionDocs[func] = func.meta;
-
-        // Link functions to related functions
-        if(func.meta.see !== undefined) {
-            shape(['function'], func.meta.see);
-            const see = {};
-            func.meta.see.forEach(otherFunc => {
-                const otherMeta = functionDocs[otherFunc];
-                if(otherMeta === undefined)
-                    warn(`${func.meta.name}'s meta data links to` +
-                        ` a function that is located AFTER it in the module.`);
-                if(otherMeta.see === undefined) otherMeta.see = {};
-                otherMeta.see[func.meta.name] = func.meta;
-                see[otherMeta.name] = otherMeta;
-            });
-            func.meta.see = see;
-        }
-    }
-
-    const documentModule = (name, module) => {
-        for(let field in module) {
-            const item = module[field];
-            if(typeof item === 'function')
-                recordFunctionDoc(name, field, item);
-            else if(typeof item === 'object')
-                documentModule(name + '.' + field, item);
-        }
-    };
-
     // Functional programming
 
     const freeze = obj => {
@@ -309,6 +262,20 @@ const t = (function() {
         init: 'function',
     });
 
+    const moduleIsLoaded = name =>
+        modules[name].module !== undefined;
+
+    const getModules = () => {
+        // Returns a dictionary of currently
+        // loaded modules
+        const loadedModules = {};
+        for(const name in modules) {
+            if(moduleIsLoaded(name))
+                loadedModules[name] = modules[name].module;
+        }
+        return loadedModules;
+    };
+
     const module = (moduleName, init) => {
         shape('string', moduleName);
         shape('function', init);
@@ -322,17 +289,15 @@ const t = (function() {
     }
     module.meta = `(moduleName, init) => undefined
 Defines a module. The signature of the init function should be
-config => module
-That is, it takes an immutable config object, accesses whichever\
- portions of it that it needs to, uses t.require to obtain dependencies\
+() => module
+That is, it uses t.require to obtain dependencies\
  then returns an object that represents the module.
 Note: When the module object is returned, it will be automatically\
  frozen with t.freeze.`;
 
-    const loadModule = (moduleName, config) => {
+    const loadModule = moduleName => {
         const moduleDefinition = modules[moduleName];
-        const module = moduleDefinition.init(config);
-        documentModule(moduleName, module);
+        const module = moduleDefinition.init();
         try {
             shape({}, module);
         } catch {
@@ -342,22 +307,18 @@ Note: When the module object is returned, it will be automatically\
         moduleDefinition.module = freeze(module);
     }
 
-    const require = (moduleName, config) => {
-        assert(!mutable(config), 'config must be immutable. (see t.freeze)');
-        if(typeof config !== 'undefined')
-            shape({}, config);
+    const require = moduleName => {
         const moduleDefinition = modules[moduleName];
         if(moduleDefinition === undefined) {
             warn(`module '${moduleName}' is missing`);
             return undefined;
         }
         if(moduleDefinition.module === undefined)
-            loadModule(moduleName, config);
+            loadModule(moduleName);
         return moduleDefinition.module;
     }
     require.meta = `(moduleName, config) => module
-Lazy loades the requested module. The config parameter must\
- be either 'undefined' or an immutable object (see t.freeze).`;
+Lazy loades the requested module.`;
 
     const unusedModules = () => {
         const unusedModuleNames = [];
@@ -380,11 +341,11 @@ Lazy loades the requested module. The config parameter must\
         assert,
         shape,
         guard,
-        functions,
         freeze,
         mutable,
         trampoline,
         module,
+        modules: getModules,
         require,
         unusedModules,
     };
