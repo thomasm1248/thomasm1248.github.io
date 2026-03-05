@@ -228,7 +228,7 @@ h
 592
 448
 354
-Links
+Buttons & Banners
 
 b
 611
@@ -253,3 +253,15 @@ b
 622
 images/88x31 blanket fort ani.gif
 https://blanketfort.neocities.org/
+
+b
+731
+504
+images/john316.gif
+https://protonaurum.neocities.org/assets/images/buttons/316.gif
+
+b
+512
+670
+images/normalize-email-banner.png
+mailto://thomasm1248@gmail.com
