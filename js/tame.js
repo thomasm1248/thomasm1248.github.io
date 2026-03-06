@@ -1,14 +1,14 @@
 /* #####  ###  #   # #####   ##### #   # #####
- *   #   #   # ## ## #         #   #   # #
- *   #   ##### # # # ####      #   ##### ####
- *   #   #   # #   # #         #   #   # #
- *   #   #   # #   # #####     #   #   # #####
+ *   #   #   # ## ## #     #   #   # #
+ *   #   ##### # # # ####    #   ##### ####
+ *   #   #   # #   # #     #   #   # #
+ *   #   #   # #   # #####   #   #   # #####
  * 
  * ####  #####  ###   #### #####
- * #   # #     #   # #       #
- * ####  ####  #####  ###    #
- * #   # #     #   #     #   #
- * ####  ##### #   # ####    #
+ * #   # #   #   # #     #
+ * ####  ####  #####  ###  #
+ * #   # #   #   #   #   #
+ * ####  ##### #   # ####  #
  *
  * by Thomas Mason (thomasm1248@gmail.com)
  *
@@ -44,309 +44,307 @@
 
 const t = (function() {
 
-    // Diagnostics
+  // Diagnostics
 
-    let enabled = true;
-    
-    const enable = () => enabled = true;
-    enable.meta = `Enables diagnostics. (see t.disable)`;
+  let enabled = true;
+  
+  const enable = () =>
+    // Enables diagnostics. (see t.disable)
+    enabled = true;
 
-    const disable = () => enabled = false;
-    disable.meta = `Disables diagnostics. (see t.enable)`;
+  const disable = () =>
+    // Disables diagnostics. (see t.enable)
+    enabled = false;
 
-    const log = (...args) => {
-        if(!enabled) return args[args.length-1];
-        let newArgs = [];
-        for(let key in args) {
-            const value = args[key];
-            if (typeof value !== 'function' && mutable(value)) newArgs.push('(mutable)');
-            newArgs.push(value);
-        }
-        console.log(...newArgs);
-        return args[args.length-1];
+  const log = (...args) => {
+    // ...args -> last -- A thin wrapper around console.log that
+    // adds a '(mutable)' warning to mutable objects. The last argument is
+    // returned.
+    if(!enabled) return args[args.length-1];
+    let newArgs = [];
+    for(let key in args) {
+      const value = args[key];
+      if (typeof value !== 'function' && mutable(value)) newArgs.push('(mutable)');
+      newArgs.push(value);
     }
-    log.meta = `...args -> last -- A thin wrapper around console.log that\
- adds a '(mutable)' warning to mutable objects. The last argument is\
- returned.`;
+    console.log(...newArgs);
+    return args[args.length-1];
+  }
 
-    const warn = (...args) => {
-        if (!enabled) return args[args.length - 1];
-        let newArgs = [];
-        for (let key in args) {
-            const value = args[key];
-            if (mutable(value)) newArgs.push('(mutable)');
-            newArgs.push(value);
-        }
-        console.warn(...newArgs);
-        return args[args.length - 1];
+  const warn = (...args) => {
+    // ...args -> last -- A thin wrapper around console.warn that
+    // adds a '(mutable)' warning to mutable objects. The last argument is
+    // returned.
+    if (!enabled) return args[args.length - 1];
+    let newArgs = [];
+    for (let key in args) {
+      const value = args[key];
+      if (mutable(value)) newArgs.push('(mutable)');
+      newArgs.push(value);
     }
-    warn.meta = `...args -> last -- A thin wrapper around console.warn that\
- adds a '(mutable)' warning to mutable objects. The last argument is\
- returned.`;
+    console.warn(...newArgs);
+    return args[args.length - 1];
+  }
 
-    // Data validation
+  // Data validation
 
-    let interactiveMode = false;
+  let interactiveMode = false;
 
-    const interactive = (newValue = true) => interactiveMode = newValue;
+  const interactive = (newValue = true) => interactiveMode = newValue;
 
-    const assert = (condition, message) => {
-        if(!enabled) return;
-        if(!condition) {
-            if(typeof message === 'function')
-                message = message();
-            if(interactiveMode) {
-                warn('assert failed:', message);
+  const assert = (condition, message) => {
+    // boolean condition -> any message -> undefined -- If
+    // condition is true, throw an error containing the provided message.
+    // The message can be any type, but if it's a function, the function
+    // will be called to obtain the real message.
+    if(!enabled) return;
+    if(!condition) {
+      if(typeof message === 'function')
+        message = message();
+      if(interactiveMode) {
+        warn('assert failed:', message);
 
-                debugger;
-                // ASSERT FAILED
-                // (see log)
-                //
-                // Return to context:
-                return;
+        debugger;
+        // ASSERT FAILED
+        // (see log)
+        //
+        // Return to context:
+        return;
 
-            }
-            throw new Error(`assert failed: ${message}`);
-        }
+      }
+      throw new Error(`assert failed: ${message}`);
     }
-    assert.meta = `boolean condition -> any message -> undefined -- If\
- condition is true, throw an error containing the provided message.\
- The message can be any type, but if it's a function, the function\
- will be called to obtain the real message.`;
+  }
 
-    const shape = (spec, value, path) => {
-        if(!enabled) return value;
-        let isRootCall = false;
-        if(path === undefined) {
-            path = 'obj';
-            isRootCall = true;
+  const shape = (spec, value, path) => {
+    // any spec -> any value -> any value -- Verifies that the value
+    // matches the shape specified by spec. See an example in tame.js for usage.
+    if(!enabled) return value;
+    let isRootCall = false;
+    if(path === undefined) {
+      path = 'obj';
+      isRootCall = true;
+    }
+    try {
+      if(spec === 'any') {
+        if(isRootCall)
+          return value;
+        else
+          return;
+      }
+      if(typeof spec === 'string') {
+        if(typeof value !== spec) {
+          const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
+          if(isRootCall) throw new Error(message);
+          else return message;
         }
+      } else if(typeof spec === 'function') {
         try {
-            if(spec === 'any') {
-                if(isRootCall)
-                    return value;
-                else
-                    return;
+          spec(value);
+        } catch(e) {
+          const message = `custom shape function threw an error:\n${e.message}`;
+          if(isRootCall) throw new Error(message);
+          else return message;
+        }
+      } else if(typeof spec === 'object') {
+        if(spec.length === undefined) {
+          // Object
+          if(typeof value !== 'object') {
+            const message = `expected 'object' from ${path}, got '${typeof value}'`;
+            if(isRootCall) throw new Error(message);
+            else return message;
+          }
+          for(const key in spec) {
+            if(key === 'doc') continue; // skip doc strings in spec
+            const message = shape(spec[key], value[key], path + '.' + key);
+            if(typeof message === 'string') {
+              if(isRootCall) throw new Error(message);
+              else return message;
             }
-            if(typeof spec === 'string') {
-                if(typeof value !== spec) {
-                    const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
-                    if(isRootCall) throw new Error(message);
-                    else return message;
-                }
-            } else if(typeof spec === 'function') {
-                try {
-                    spec(value);
-                } catch(e) {
-                    const message = `custom shape function threw an error:\n${e.message}`;
-                    if(isRootCall) throw new Error(message);
-                    else return message;
-                }
-            } else if(typeof spec === 'object') {
-                if(spec.length === undefined) {
-                    // Object
-                    if(typeof value !== 'object') {
-                        const message = `expected 'object' from ${path}, got '${typeof value}'`;
-                        if(isRootCall) throw new Error(message);
-                        else return message;
-                    }
-                    for(const key in spec) {
-                        if(key === 'doc') continue; // skip doc strings in spec
-                        const message = shape(spec[key], value[key], path + '.' + key);
-                        if(typeof message === 'string') {
-                            if(isRootCall) throw new Error(message);
-                            else return message;
-                        }
-                    }
-                } else {
-                    // List
-                    let listSpec = spec[0];
-                    if(listSpec === 'any') {
-                        if(isRootCall)
-                            return value;
-                        else
-                            return;
-                    }
-                    for(var i = 0; i < value.length; i++) {
-                        const message = shape(listSpec, value[i], `${path}[${i}]`);
-                        if(typeof message === 'string') {
-                            if(isRootCall) throw new Error(message);
-                            else return message;
-                        }
-                    }
-                }
-            }
-            else {
-                throw new Error("'spec' must be of type 'string', 'function, or 'object'");
-            }
-            if(isRootCall) return value;
-        } catch(ex) {
+          }
+        } else {
+          // List
+          let listSpec = spec[0];
+          if(listSpec === 'any') {
             if(isRootCall)
-                warn(
-                    'Expected shape:', spec,
-                    '\nActual value:', value);
-            if(isRootCall && interactiveMode) {
-
-                debugger;
-                // INVALID SHAPE
-                // (see log)
-                //
-                // Return to context:
-                return value;
-
+              return value;
+            else
+              return;
+          }
+          for(var i = 0; i < value.length; i++) {
+            const message = shape(listSpec, value[i], `${path}[${i}]`);
+            if(typeof message === 'string') {
+              if(isRootCall) throw new Error(message);
+              else return message;
             }
-            throw ex;
+          }
         }
-    }
-    shape.meta = `any spec -> any value -> any value -- Verifies that the value\
- matches the shape specified by spec. See an example in tame.js for usage.`;
+      }
+      else {
+        throw new Error("'spec' must be of type 'string', 'function, or 'object'");
+      }
+      if(isRootCall) return value;
+    } catch(ex) {
+      if(isRootCall)
+        warn(
+          'Expected shape:', spec,
+          '\nActual value:', value);
+      if(isRootCall && interactiveMode) {
 
-    const guard = (...args) => {
-        shape(['any'], args);
-        assert(args.length >= 2, 't.guard needs at least two parameters');
-        const func = args[args.length - 1];
-        shape('function', func);
-        const outSpec = args[args.length - 2];
-        const inSpec = args.slice(0, args.length - 2);
-        return (...args2) => {
-            assert(
-                args2.length == inSpec.length,
-                () => `received ${args2.length} args instead of ${inSpec.length}`);
-            args2.forEach((arg, i) => shape(inSpec[i], arg));
-            const result = func(...args2);
-            shape(outSpec, result);
-            return result;
-        };
+        debugger;
+        // INVALID SHAPE
+        // (see log)
+        //
+        // Return to context:
+        return value;
+
+      }
+      throw ex;
+    }
+  }
+
+  const guard = (...args) => {
+    // Wraps a function (last param) with t.shape checkers
+    // for all its input and output.
+    shape(['any'], args);
+    assert(args.length >= 2, 't.guard needs at least two parameters');
+    const func = args[args.length - 1];
+    shape('function', func);
+    const outSpec = args[args.length - 2];
+    const inSpec = args.slice(0, args.length - 2);
+    return (...args2) => {
+      assert(
+        args2.length == inSpec.length,
+        () => `received ${args2.length} args instead of ${inSpec.length}`);
+      args2.forEach((arg, i) => shape(inSpec[i], arg));
+      const result = func(...args2);
+      shape(outSpec, result);
+      return result;
     };
-    guard.meta = `Wraps a function (last param) with t.shape checkers\
- for all its input and output.`;
+  };
 
-    // Functional programming
+  // Functional programming
 
-    const freeze = obj => {
-        Object.freeze(obj);
-        for(const key of Object.getOwnPropertyNames(obj)) {
-            const value = obj[key];
-            if(value && typeof value === 'object' && !Object.isFrozen(value)) {
-                freeze(value);
-            }
-        }
-        return obj;
+  const freeze = obj => {
+    // object o -> object o -- Freezes object o and all the objects
+    // within it recursively. (see t.mutable)
+    Object.freeze(obj);
+    for(const key of Object.getOwnPropertyNames(obj)) {
+      const value = obj[key];
+      if(value && typeof value === 'object' && !Object.isFrozen(value)) {
+        freeze(value);
+      }
     }
-    freeze.meta = `object o -> object o -- Freezes object o and all the objects\
- within it recursively. (see t.mutable)`;
+    return obj;
+  }
 
-    const mutable = obj => {
-        return (typeof obj === 'object' || typeof obj === 'function') &&
-               !Object.isFrozen(obj);
+  const mutable = obj => {
+    // any x -> boolean -- Indicates wether or not x is
+    // mutable. (see t.freeze)`;
+    return (typeof obj === 'object' || typeof obj === 'function') &&
+           !Object.isFrozen(obj);
+  }
+
+  const trampoline = func => {
+    // any x -> any y -- If x is a function, call it without
+    // arguments. If its return value is also a function, call that function.
+    // Continue until something other than a function is returned. Return that.
+    // The purpose of this is to allow functions to be written in a more
+    // functional-programming style even though Javascript doesn't officially
+    // support tail-call-optimization.
+    while(typeof func !== 'function')
+      func = func();
+    return func;
+  }
+
+  // Modules
+  
+  const modules = {};
+  const Module = freeze({
+    init: 'function',
+  });
+
+  const module = (moduleName, init) => {
+    // (moduleName, init) => undefined
+    // Defines a module. The signature of
+    // the init function should be
+    // () => module
+    // That is, it uses t.require to obtain dependencies
+    // then returns an object that represents the module.
+    // Note: When the module object is returned, it will be automatically
+    // frozen with t.freeze.
+    shape('string', moduleName);
+    shape('function', init);
+    if(modules[moduleName] !== undefined) {
+      log(`module '${moduleName}' was defined again (ignored)`);
+      return;
     }
-    mutable.meta = `any x -> boolean -- Indicates wether or not x is\
- mutable. (see t.freeze)`;
-
-    const trampoline = func => {
-        while(typeof func !== 'function')
-            func = func();
-        return func;
-    }
-    trampoline.meta = `any x -> any y -- If x is a function, call it without\
- arguments. If its return value is also a function, call that function.\
- Continue until something other than a function is returned. Return that.\
- The purpose of this is to allow functions to be written in a more\
- functional-programming style even though Javascript doesn't officially\
- support tail-call-optimization.`;
-
-    // Modules
-    
-    const modules = {};
-    const Module = freeze({
-        init: 'function',
-    });
-
-    const moduleIsLoaded = name =>
-        modules[name].module !== undefined;
-
-    const getModules = () => {
-        // Returns a dictionary of currently
-        // loaded modules
-        const loadedModules = {};
-        for(const name in modules) {
-            if(moduleIsLoaded(name))
-                loadedModules[name] = modules[name].module;
-        }
-        return loadedModules;
+    modules[moduleName] = {
+      init,
     };
+  }
 
-    const module = (moduleName, init) => {
-        shape('string', moduleName);
-        shape('function', init);
-        if(modules[moduleName] !== undefined) {
-            log(`module '${moduleName}' was defined again (ignored)`);
-            return;
-        }
-        modules[moduleName] = {
-            init,
-        };
+  const loadModule = moduleName => {
+    const moduleDefinition = modules[moduleName];
+    const module = moduleDefinition.init();
+    try {
+      shape({}, module);
+    } catch {
+      warn(`Module '${moduleName}' did not return an object`);
+      return;
     }
-    module.meta = `(moduleName, init) => undefined
-Defines a module. The signature of the init function should be
-() => module
-That is, it uses t.require to obtain dependencies\
- then returns an object that represents the module.
-Note: When the module object is returned, it will be automatically\
- frozen with t.freeze.`;
+    moduleDefinition.module = freeze(module);
+    m[moduleName] = module;
+  }
 
-    const loadModule = moduleName => {
-        const moduleDefinition = modules[moduleName];
-        const module = moduleDefinition.init();
-        try {
-            shape({}, module);
-        } catch {
-            warn(`Module '${moduleName}' did not return an object`);
-            return;
-        }
-        moduleDefinition.module = freeze(module);
+  const require = moduleName => {
+    // (moduleName, config) => module
+    // Lazy loades the requested module.
+    const moduleDefinition = modules[moduleName];
+    if(moduleDefinition === undefined) {
+      warn(`module '${moduleName}' is missing`);
+      return undefined;
     }
+    if(moduleDefinition.module === undefined)
+      loadModule(moduleName);
+    return moduleDefinition.module;
+  }
 
-    const require = moduleName => {
-        const moduleDefinition = modules[moduleName];
-        if(moduleDefinition === undefined) {
-            warn(`module '${moduleName}' is missing`);
-            return undefined;
-        }
-        if(moduleDefinition.module === undefined)
-            loadModule(moduleName);
-        return moduleDefinition.module;
+  const unusedModules = () => {
+    // Lists all the modules that were
+    // defined but not required.
+    const unusedModuleNames = [];
+    for(const moduleName in modules) {
+      const moduleDef = modules[moduleName];
+      if(moduleDef.module === undefined)
+        unusedModuleNames.push(moduleName);
     }
-    require.meta = `(moduleName, config) => module
-Lazy loades the requested module.`;
+    return unusedModuleNames;
+  };
 
-    const unusedModules = () => {
-        const unusedModuleNames = [];
-        for(const moduleName in modules) {
-            const moduleDef = modules[moduleName];
-            if(moduleDef.module === undefined)
-                unusedModuleNames.push(moduleName);
-        }
-        return unusedModuleNames;
-    };
-    unusedModules.meta = `Lists all the modules that were\
- defined but not required.`;
+  return {
+    enable,
+    disable,
+    log,
+    warn,
+    interactive,
+    assert,
+    shape,
+    guard,
+    freeze,
+    mutable,
+    trampoline,
+    module,
+    require,
+    unusedModules,
 
-    return {
-        enable,
-        disable,
-        log,
-        warn,
-        interactive,
-        assert,
-        shape,
-        guard,
-        freeze,
-        mutable,
-        trampoline,
-        module,
-        modules: getModules,
-        require,
-        unusedModules,
-    };
+    // Shortcuts for console
+    l: log,
+    i: () => interactive(true),
+    r: require,
+    u: unusedModules,
+  };
 })();
+
+// For browsing modules in console
+const m = {};
