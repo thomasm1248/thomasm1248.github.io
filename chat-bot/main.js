@@ -1,4 +1,4 @@
-const initChatBot = () => {
+(() => {
   
   // Load modules
   const parser = t.require('chatLanguage');
@@ -120,10 +120,11 @@ const initChatBot = () => {
   };
 
   const openUrl = (url, newTab) => {
-    const link = document.createElement('a');
-    link.href = url;
-    if(newTab) link.target = '_blank';
-    link.click();
+    t.log(url, newTab);
+    if(newTab)
+      window.open(url, '_blank').focus();
+    else
+      window.open(url).focus();
   };
 
 
@@ -131,4 +132,4 @@ const initChatBot = () => {
   // Initialize UI
   renderUi();
 
-};
+})();

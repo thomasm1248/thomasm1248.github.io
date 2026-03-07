@@ -198,7 +198,7 @@ https://pketh.org/internet-phonebook.html
 j
 5028
 4894
-0
+356
 I like using paper
 5904
 2492
@@ -274,18 +274,46 @@ b
 images/normalize-email-banner.png
 mailto:thomasm1248@gmail.com
 
-H
-25
-556
-<div id='demon-chat-bot'>
-    <img src="chat-bot/demon-bear.png"/>
-    <p id="demon-says"></p>
-    <ul id="option-list">
-    </ul>
-</div>
+j
+5134
+4966
+4
+I like to code
+0
+10000
 
 h
-166
-519
-3
-Website Guardian
+82
+9666
+345
+Coding Corner
+
+t
+365
+9706
+250
+353
+I've done quite a bit of coding, so I'll plan to put coding-related stuff here for those who are also interested in coding for some reason.
+
+j
+5179
+4836
+4
+Weird / Random Interests
+10000
+10000
+
+h
+9591
+9858
+14
+Weird / Random Interests
+
+c
+9685
+9313
+200
+5
+toki-pona-logo.png
+Toki Pona is a miniature language with only ~130 words in its dictionary. That makes it really quick to memorize the entire language. It's an interesting experiment, and it has a sizeable community around it.
+https://tokipona.org/

@@ -74,6 +74,7 @@ fetch('content.txt')
           caption.innerText = parts[6];
           c.appendChild(caption);
           c.href = parts[7];
+          c.target = '_blank';
           document.body.appendChild(c);
           break;
         case 'p':
@@ -128,9 +129,6 @@ fetch('content.txt')
           break;
       }
     });
-  })
-  .then(_ => {
-    initChatBot();
   })
   .catch(error => {
     t.log('Error: ' + error);
