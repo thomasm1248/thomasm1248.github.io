@@ -129,6 +129,9 @@ fetch('content.txt')
       }
     });
   })
+  .then(_ => {
+    initChatBot();
+  })
   .catch(error => {
     t.log('Error: ' + error);
   });

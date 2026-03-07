@@ -111,3 +111,40 @@ body {
 .image {
   /* Nothing needed! :) */
 }
+
+/* Demon Bear Chat Bot */
+
+#demon-chat-bot {
+  max-width: 300px;
+  padding: 10px;
+  background-color: black;
+}
+
+#demon-chat-bot img {
+  width: 280px;
+}
+
+#demon-says, #option-list li {
+  margin: 0;
+  padding: 3px;
+  cursor: pointer;
+  background-color: #4b2929;
+  color: red;
+}
+
+#option-list {
+  list-style-type: disclosure-closed;
+  padding-left: 15px;
+}
+
+#option-list li {
+  margin: 5px;
+}
+
+#option-list li:hover {
+  background-color: #6d2222;
+}
+
+#option-list li:active {
+  background-color: lightblue;
+}

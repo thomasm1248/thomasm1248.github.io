@@ -248,8 +248,7 @@ H
 <textarea cols='35' rows='3'>
 <a href="https://thomasmason.us">
     <img src="<DOWNLOAD THE GIF>"/>
-</a>
-</textarea>
+</a></textarea>
 
 b
 621
@@ -274,3 +273,19 @@ b
 693
 images/normalize-email-banner.png
 mailto:thomasm1248@gmail.com
+
+H
+25
+556
+<div id='demon-chat-bot'>
+    <img src="chat-bot/demon-bear.png"/>
+    <p id="demon-says"></p>
+    <ul id="option-list">
+    </ul>
+</div>
+
+h
+166
+519
+3
+Website Guardian
