@@ -252,7 +252,7 @@ const t = (function() {
     // The purpose of this is to allow functions to be written in a more
     // functional-programming style even though Javascript doesn't officially
     // support tail-call-optimization.
-    while(typeof func !== 'function')
+    while(typeof func === 'function')
       func = func();
     return func;
   }
@@ -260,9 +260,6 @@ const t = (function() {
   // Modules
   
   const modules = {};
-  const Module = freeze({
-    init: 'function',
-  });
 
   const module = (moduleName, init) => {
     // (moduleName, init) => undefined
@@ -270,44 +267,40 @@ const t = (function() {
     // the init function should be
     // () => module
     // That is, it uses t.require to obtain dependencies
-    // then returns an object that represents the module.
+    // then returns an object that represents the module. If something
+    // other than a function is provided instead, that value/object
+    // is treated as the module itself.
     // Note: When the module object is returned, it will be automatically
     // frozen with t.freeze.
     shape('string', moduleName);
-    shape('function', init);
     if(modules[moduleName] !== undefined) {
       log(`module '${moduleName}' was defined again (ignored)`);
       return;
     }
-    modules[moduleName] = {
-      init,
-    };
+    modules[moduleName] = init;
   }
 
   const loadModule = moduleName => {
-    const moduleDefinition = modules[moduleName];
-    const module = moduleDefinition.init();
-    try {
-      shape({}, module);
-    } catch {
-      warn(`Module '${moduleName}' did not return an object`);
-      return;
-    }
-    moduleDefinition.module = freeze(module);
+    let module = modules[moduleName];
+    module = trampoline(module);
+    freeze(module);
+    modules[moduleName] = module;
     m[moduleName] = module;
+    return module;
   }
 
   const require = moduleName => {
     // (moduleName, config) => module
     // Lazy loades the requested module.
-    const moduleDefinition = modules[moduleName];
-    if(moduleDefinition === undefined) {
+    const module = modules[moduleName];
+    if(module === undefined) {
       warn(`module '${moduleName}' is missing`);
       return undefined;
     }
-    if(moduleDefinition.module === undefined)
-      loadModule(moduleName);
-    return moduleDefinition.module;
+    if(typeof module === 'function')
+      return loadModule(moduleName);
+    m[moduleName] = module;
+    return module;
   }
 
   const unusedModules = () => {
@@ -315,8 +308,8 @@ const t = (function() {
     // defined but not required.
     const unusedModuleNames = [];
     for(const moduleName in modules) {
-      const moduleDef = modules[moduleName];
-      if(moduleDef.module === undefined)
+      const module = modules[moduleName];
+      if(typeof module === 'function')
         unusedModuleNames.push(moduleName);
     }
     return unusedModuleNames;
