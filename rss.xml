@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+<channel>
+  <title>Thomas Mason's Website</title>
+  <link>https://thomasmason.us</link>
+  <image>
+    <url>https://thomasmason.us/images/logo.png</url>
+    <title>Thomas Mason's Website</title>
+    <link>https://thomasmason.us</link>
+  </image>
+  <description>Since my website has a bit of an unconventional design, the purpose of this feed is to provide a sort of changelog rather than a simple list of new posts.</description>
+
+  <item>
+    <title>Added RSS</title>
+    <description>I added RSS to my website to serve as a changelog.</description>
+    <guid>https://thomasmason.us/1</guid>
+  </item>
+
+</channel>
+</rss>
