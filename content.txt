@@ -317,3 +317,42 @@ c
 toki-pona-logo.png
 Toki Pona is a miniature language with only ~130 words in its dictionary. That makes it really quick to memorize the entire language. It's an interesting experiment, and it has a sizeable community around it.
 https://tokipona.org/
+
+j
+4887
+4683
+13
+Stuff I'm learning about
+8316
+2272
+
+h
+8316
+2272
+351
+Current Research
+
+t
+8333
+2365
+150
+0
+Here's where I'm collecting my research. This is mostly to serve as a handy reference for myself.
+
+c
+8560
+2351
+200
+2
+almanac-logo.png
+Detailed instructions for how to save seeds.
+https://www.almanac.com/how-save-vegetable-seeds
+
+c
+8491
+2532
+200
+348
+verywell-fit-logo.png
+Rucking is a form of exercise where you go on a walk with a weighted backpack.
+https://www.verywellfit.com/what-is-rucking-8619172

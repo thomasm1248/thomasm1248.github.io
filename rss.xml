@@ -11,6 +11,18 @@
   <description>Since my website has a bit of an unconventional design, the purpose of this feed is to provide a sort of changelog rather than a simple list of new posts.</description>
 
   <item>
+    <title>Rucking</title>
+    <description>I did some research about rucking, which is a form of exercise where you basically go for a walk with a weighted backpack on. This might be the only way I'll be able to get myself to do any sort of cardio. This content is from Verywell Fit.</description>
+    <link>https://www.verywellfit.com/what-is-rucking-8619172</link>
+  </item>
+
+  <item>
+    <title>How to save seeds</title>
+    <description>I found some nice instructions for how to save vegetable seeds at Almanac.com.</description>
+    <link>https://www.almanac.com/how-save-vegetable-seeds</link>
+  </item>
+
+  <item>
     <title>Added RSS</title>
     <description>I added RSS to my website to serve as a changelog.</description>
     <guid>https://thomasmason.us/1</guid>
