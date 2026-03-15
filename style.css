@@ -147,12 +147,6 @@ body {
   box-shadow: none;
 }
 
-/* Item: image */
-
-.image {
-  /* Nothing needed! :) */
-}
-
 /* Demon Bear Chat Bot */
 
 #demon-chat-bot {
@@ -188,4 +182,24 @@ body {
 
 #option-list li:active {
   background-color: lightblue;
+}
+
+/* Nabeel Valley Webring */
+
+#nabeel-valley-webring {
+  padding: 10px;
+  background-color: white;
+  color: black;
+  text-decoration: none;
+  border: 1px solid black;
+  border-radius: 3px;
+}
+#nabeel-valley-webring.night-time {
+  background-color: black;
+  color: white;
+  border: 1px solid white;
+}
+#nabeel-valley-webring a {
+  display: inline-block;
+  padding: 5px;
 }

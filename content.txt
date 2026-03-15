@@ -365,3 +365,20 @@ c
 wallet-on-amazon.png
 Want to carry around a pocket-sized notebook with you? I recommend getting this inexpensive leather passport wallet. It can fit several standard sizes of pocket-sized notebooks, particularly the super-cheap notebooks that Wallmart sells, as well as the more expensive Field Note inserts.
 https://www.amazon.com/New-Item-Leather-Passport-Blocking/dp/B07JMW1WQL/ref=sr_1_9?crid=1YF53HK5NE7UV&dib=eyJ2IjoiMSJ9.5A8xddDyk2NEb4NQmWhkw7C3S6bPJ-FxhcTnRoCZqFp6de4Cnkn-cGC8F1tY75wR5qaEL3Z1pA_SbF90PgEQIwqmgIwAig4xeqQePL61uqxzENlBhyIlQ5esHfL0O3rV1dx5F-qZvoU1OHPUV1qiU-ADQtaej_8eXThu5dXcNj0vh5UTO-Tv2kretVLMKvOWDypmZiT0NY4Yf99zmqEY0e_WUAHDPaw7jOGWZ2FuWwcvwEpTUm_OvMK_4xhXRJkcCAOwc1yMd-QYGFEbA9tDMzJTD5CR7SoDIHKMno4tZs0.nEVS7O917gQVNWRiM1d7YhK-zXBf574xOBdqk-e0WJs&dib_tag=se&keywords=leather%2Bpassport%2Bwallet&qid=1773517196&sprefix=leather%2Bpassport%2Bwalle%2Caps%2C250&sr=8-9&th=1
+
+h
+150
+758
+357
+Webrings
+
+H
+105
+852
+<div id="nabeel-valley-webring">
+  <a href="https://webring.nabeelvalley.co.za"><em>Nabeel Valley's Webring</em></a>
+  <br>
+  <a href="https://webring.nabeelvalley.co.za/previous">Previous</a>
+  <a href="https://webring.nabeelvalley.co.za/random">Random</a>
+  <a href="https://webring.nabeelvalley.co.za/next">Next</a>
+</div> 
