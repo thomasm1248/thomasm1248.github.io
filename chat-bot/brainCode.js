@@ -1,4 +1,4 @@
-t.module('brainCode', () => ({ code: `
+t.module('brainCode', `
 ->start
 
 TODO: This path hasn't been coded yet \\:
@@ -44,5 +44,7 @@ ohIThoughtYouWereDehydrated: Oh, I could have sworn I felt your soul slowly dimi
 .okay: Okay, whatever
 
 whatToDoMaster: Master, what shall I do for thee?
-.nothing: Nothing yet
-`}));
+.nothing: Nothing for now
+.darkMode: Activate dark mode
+->javascript: (()=>{document.getElementsByTagName('body')[0].classList.add('night-time');darkmodePermanentlyOn=true;})()
+`);

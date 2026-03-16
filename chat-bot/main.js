@@ -2,7 +2,7 @@
   
   // Load modules
   const parser = t.require('chatLanguage');
-  const brainCode = t.require('brainCode').code;
+  const brainCode = t.require('brainCode');
   const convoManager = t.require('conversationCore');
   const chatBotUi = t.require('chatBotUi');
 
@@ -120,11 +120,15 @@
   };
 
   const openUrl = (url, newTab) => {
-    t.log(url, newTab);
+    t.log('url:\n', url, '\nnew tab?', newTab);
     if(newTab)
       window.open(url, '_blank').focus();
-    else
-      window.open(url).focus();
+    else {
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '';
+      link.click();
+    }
   };
 
 
