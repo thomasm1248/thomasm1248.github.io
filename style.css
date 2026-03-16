@@ -104,6 +104,7 @@ body {
 .card img {
   width: 100%;
   border: 1px dashed black;
+  background-color: white;
 }
 .night-time .card img {
   border: 1px dashed white;
@@ -194,7 +195,7 @@ body {
   border: 1px solid black;
   border-radius: 3px;
 }
-#nabeel-valley-webring.night-time {
+.night-time #nabeel-valley-webring {
   background-color: black;
   color: white;
   border: 1px solid white;
@@ -202,4 +203,7 @@ body {
 #nabeel-valley-webring a {
   display: inline-block;
   padding: 5px;
+}
+.night-time #nabeel-valley-webring a {
+  color: #3eb4ff;
 }
