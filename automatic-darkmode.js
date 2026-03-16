@@ -1,3 +1,5 @@
+var darkmodePermanentlyOn = false;
+
 (() => {
   const isNightTime = date =>
     // date => bool
@@ -16,6 +18,7 @@
 
   const checkForDarkMode = () =>
     setDarkMode(
+      darkmodePermanentlyOn ||
       isNightTime(
         new Date()));
 
