@@ -148,6 +148,12 @@ body {
   box-shadow: none;
 }
 
+/* Item: freeform */
+
+.freeform.add-white-background {
+  background-color: white;
+}
+
 /* Demon Bear Chat Bot */
 
 #demon-chat-bot {
@@ -188,6 +194,7 @@ body {
 /* Nabeel Valley Webring */
 
 #nabeel-valley-webring {
+  width: 180px;
   padding: 10px;
   background-color: white;
   color: black;

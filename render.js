@@ -24,7 +24,7 @@ fetch('content.txt')
   .then(data => {
     data.split('\r\n\r\n').forEach(chunk => {
       const parts = chunk.split('\r\n');
-      switch(parts[0]) {
+      switch(parts[0][0]) {
         case 't':
           t.assert(parts.length >= 6, `'t' has ${parts.length} lines instead of 6`);
           const tx = document.createElement('p');
@@ -119,6 +119,8 @@ fetch('content.txt')
             `'H' has ${parts.length} lines when it needed at least 3`);
           const d = document.createElement('div');
           d.classList.add('freeform');
+          if(parts[0].endsWith('w'))
+            d.classList.add('add-white-background');
           d.style.left = parts[1] + 'px';
           d.style.top = parts[2] + 'px';
           d.innerHTML = parts.slice(3).join('\n');
@@ -128,6 +130,18 @@ fetch('content.txt')
           t.log('Content type not recognized: ' + parts[0]);
           break;
       }
+    });
+  })
+  .then(() => {
+    const scripts = document.querySelectorAll('.content-script');
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+
+      newScript.src = oldScript.src;
+      for(const attr of oldScript.attributes)
+        newScript.setAttribute(attr.name, attr.value);
+
+      oldScript.parentNode.replaceChild(newScript, oldScript);
     });
   })
   .catch(error => {

@@ -382,3 +382,13 @@ H
   <a href="https://webring.nabeelvalley.co.za/random">Random</a>
   <a href="https://webring.nabeelvalley.co.za/next">Next</a>
 </div> 
+
+Hw
+654
+251
+<script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
+
+H
+791
+256
+<script class="content-script" widget-style='rainbow-dark' src='https://gdt.fireye.coffee/scripts/widget.js'></script>
