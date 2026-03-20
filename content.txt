@@ -373,8 +373,8 @@ h
 Webrings
 
 H
-635
-144
+632
+125
 <div id="nabeel-valley-webring">
   <a href="https://webring.nabeelvalley.co.za"><em>Nabeel Valley's Webring</em></a>
   <br>
@@ -384,11 +384,11 @@ H
 </div> 
 
 Hw
-654
-251
+856
+41
 <script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
 
 H
-791
-256
+632
+235
 <script class="content-script" widget-style='rainbow-dark' src='https://gdt.fireye.coffee/scripts/widget.js'></script>
