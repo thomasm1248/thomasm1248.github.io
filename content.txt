@@ -293,7 +293,7 @@ t
 9706
 250
 353
-I've done quite a bit of coding, so I'll plan to put coding-related stuff here for those who are also interested in coding for some reason.
+I've done quite a bit of coding, so I'll plan to put coding-related stuff here for those who are also interested in coding for some reason, or who are willing to explore my more boring/unfinished projects.
 
 j
 5179
@@ -399,3 +399,57 @@ t
 300
 -4
 Gemini - An alternative to HTTP. Currently, websites are all served to users with HTTP, but it's not the only option. There's also Gemini, which is a much more minimalist way of hosting a website (instead of pages, there's just text and files), but very few people actually use it. One reason it goes mostly unused is that web-browsers generally don't support it. If Gemini had more support, this whole website would probably be made for Gemini instead of HTML + HTTP.
+
+c
+52
+9350
+300
+2
+utah-thumbnail.png
+A randomly-generated Utah plateau animation.
+https://thomasmason.us/utah/utah.html
+
+c
+676
+9634
+300
+5
+tilebots-thumbnail.png
+A turn-based strategy game about building robots.
+https://thomasmason.us/Tilebots/Tilebots.html
+
+c
+436
+9191
+300
+-2
+cookie-coin-thumbnail.png
+A digital currency that uses internal browser storage to keep track of your coins. Pretty foolproof, unless you're decent at computer programming.
+https://thomasmason.us/Cookie-Coin/CookieCoin.html
+
+c
+33
+9006
+150
+-1
+circle-generator-thumbnail.png
+A circle generator for pixel art and Minecraft. Has a unique feature that lets you fine-tune the circle.
+https://thomasmason.us/circle-generator/circle-generator.html
+
+c
+834
+9148
+300
+3
+gladiators.png
+A stupid little game where each player only uses one button to control their gladiator. Spacebar starts an auction, Enter starts a round. First gladiator to die each round dies permanently, losing their progress. Figure out the rest yourself.
+https://thomasmason.us/gladiators/
+
+c
+290
+8867
+200
+7
+car-sim.png
+A very simple car simulator. Arrow-keys to steer, U to activate invincibility.
+https://thomasmason.us/car-sim/
