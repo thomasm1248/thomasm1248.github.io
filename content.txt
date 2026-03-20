@@ -392,3 +392,10 @@ H
 632
 235
 <script class="content-script" widget-style='rainbow-dark' src='https://gdt.fireye.coffee/scripts/widget.js'></script>
+
+t
+9296
+9500
+300
+-4
+Gemini - An alternative to HTTP. Currently, websites are all served to users with HTTP, but it's not the only option. There's also Gemini, which is a much more minimalist way of hosting a website (instead of pages, there's just text and files), but very few people actually use it. One reason it goes mostly unused is that web-browsers generally don't support it. If Gemini had more support, this whole website would probably be made for Gemini instead of HTML + HTTP.
