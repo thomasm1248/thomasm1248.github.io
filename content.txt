@@ -453,3 +453,12 @@ c
 car-sim.png
 A very simple car simulator. Arrow-keys to steer, U to activate invincibility.
 https://thomasmason.us/car-sim/
+
+c
+375
+313
+100
+2
+rss-icon.png
+Subscribe to website updates
+rss.xml
