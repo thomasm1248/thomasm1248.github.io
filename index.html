@@ -3,10 +3,32 @@
 <head lang='en'>
   <title>Thomas Mason</title>
   <link rel='stylesheet' type='text/css' href='style.css'>
+  <link rel='alternate' type='application/rss+xml' href='/rss.xml'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <div id='background'></div>
+
+  <div id='demon-chat-bot' style="position: fixed; bottom: 10px; left: 10px; z-index: 1">
+    <img src="chat-bot/demon-bear.png"/>
+    <p id="demon-says"></p>
+    <ul id="option-list">
+    </ul>
+  </div>
+
+  <!-- Tame Javascript -->
   <script src='js/tame.js'></script>
+
+  <!-- Render all content -->
   <script src='render.js'></script>
+  <script src='automatic-darkmode.js'></script>
+
+  <!-- Chatbot scripts -->
+  <script src="chat-bot/chatLanguage.js"></script>
+  <script src="chat-bot/brainCode.js"></script>
+  <script src="chat-bot/conversationCore.js"></script>
+  <script src="chat-bot/chatBotUi.js"></script>
+  <script src="chat-bot/main.js"></script>
+
 </body>
 </html> 

@@ -1,15 +1,39 @@
 body {
   padding: 30px;
   max-width: 500px;
-  margin: 0 auto;
+  margin: 20px auto;
+}
+.night-time {
+  background-color: black;
+}
+
+#home-link {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+.night-time #home-link {
+  color: #3eb4ff;
 }
 
 .date {
-  color: gray; /* TODO replace with brand color */
+  color: gray; /* TODO replace with brand color? */
+}
+.night-time .date {
+  color: gray; /* make sure it isn't overridden */
 }
 
 p, li {
   font-size: 1.2em;
+}
+
+.night-time h1,
+.night-time h2,
+.night-time h3,
+.night-time h4,
+.night-time p,
+.night-time li {
+  color: white;
 }
 
 li {

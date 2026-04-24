@@ -198,7 +198,7 @@ https://pketh.org/internet-phonebook.html
 j
 5028
 4894
-356
+0
 I like using paper
 5904
 2492
@@ -237,28 +237,29 @@ https://vibequest.neocities.org/vibesbtn3.gif
 https://vibes.fish
 
 b
-470
-573
+625
+525
 images/thomasm1248-button.gif
 https://thomasmason.us
 
 H
-371
-626
-<textarea cols='35' rows='3'>
+0
+0
+<textarea cols='20' rows='6'>
 <a href="https://thomasmason.us">
     <img src="<DOWNLOAD THE GIF>"/>
-</a></textarea>
+</a>
+</textarea>
 
 b
-621
-525
+735
+561
 https://onio.neocities.org/thebutton.gif
 https://onio.neocities.org
 
 b
-728
-563
+687
+622
 images/88x31 blanket fort ani.gif
 https://blanketfort.neocities.org/
 
@@ -269,196 +270,7 @@ images/john316.gif
 https://www.biblegateway.com/passage/?search=John%203%3A16&version=NIV
 
 b
-391
-693
+512
+670
 images/normalize-email-banner.png
 mailto:thomasm1248@gmail.com
-
-j
-5134
-4966
-4
-I like to code
-0
-10000
-
-h
-82
-9666
-345
-Coding Corner
-
-t
-365
-9706
-250
-353
-I've done quite a bit of coding, so I'll plan to put coding-related stuff here for those who are also interested in coding for some reason, or who are willing to explore my more boring/unfinished projects.
-
-j
-5179
-4836
-4
-Weird / Random Interests
-10000
-10000
-
-h
-9591
-9858
-14
-Weird / Random Interests
-
-c
-9685
-9313
-200
-5
-toki-pona-logo.png
-Toki Pona is a miniature language with only ~130 words in its dictionary. That makes it really quick to memorize the entire language. It's an interesting experiment, and it has a sizeable community around it.
-https://tokipona.org/
-
-j
-4887
-4683
-13
-Stuff I'm learning about
-8316
-2272
-
-h
-8316
-2272
-351
-Current Research
-
-t
-8333
-2365
-150
-0
-Here's where I'm collecting my research. This is mostly to serve as a handy reference for myself.
-
-c
-8560
-2351
-200
-2
-almanac-logo.png
-Detailed instructions for how to save seeds.
-https://www.almanac.com/how-save-vegetable-seeds
-
-c
-8491
-2532
-200
-348
-verywell-fit-logo.png
-Rucking is a form of exercise where you go on a walk with a weighted backpack.
-https://www.verywellfit.com/what-is-rucking-8619172
-
-c
-6088
-2492
-300
-4
-wallet-on-amazon.png
-Want to carry around a pocket-sized notebook with you? I recommend getting this inexpensive leather passport wallet. It can fit several standard sizes of pocket-sized notebooks, particularly the super-cheap notebooks that Wallmart sells, as well as the more expensive Field Note inserts.
-https://www.amazon.com/New-Item-Leather-Passport-Blocking/dp/B07JMW1WQL/ref=sr_1_9?crid=1YF53HK5NE7UV&dib=eyJ2IjoiMSJ9.5A8xddDyk2NEb4NQmWhkw7C3S6bPJ-FxhcTnRoCZqFp6de4Cnkn-cGC8F1tY75wR5qaEL3Z1pA_SbF90PgEQIwqmgIwAig4xeqQePL61uqxzENlBhyIlQ5esHfL0O3rV1dx5F-qZvoU1OHPUV1qiU-ADQtaej_8eXThu5dXcNj0vh5UTO-Tv2kretVLMKvOWDypmZiT0NY4Yf99zmqEY0e_WUAHDPaw7jOGWZ2FuWwcvwEpTUm_OvMK_4xhXRJkcCAOwc1yMd-QYGFEbA9tDMzJTD5CR7SoDIHKMno4tZs0.nEVS7O917gQVNWRiM1d7YhK-zXBf574xOBdqk-e0WJs&dib_tag=se&keywords=leather%2Bpassport%2Bwallet&qid=1773517196&sprefix=leather%2Bpassport%2Bwalle%2Caps%2C250&sr=8-9&th=1
-
-h
-642
-59
-357
-Webrings
-
-H
-632
-125
-<div id="nabeel-valley-webring">
-  <a href="https://webring.nabeelvalley.co.za"><em>Nabeel Valley's Webring</em></a>
-  <br>
-  <a href="https://webring.nabeelvalley.co.za/previous">Previous</a>
-  <a href="https://webring.nabeelvalley.co.za/random">Random</a>
-  <a href="https://webring.nabeelvalley.co.za/next">Next</a>
-</div> 
-
-Hw
-856
-41
-<script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
-
-H
-632
-235
-<script class="content-script" widget-style='rainbow-dark' src='https://gdt.fireye.coffee/scripts/widget.js'></script>
-
-t
-9296
-9500
-300
--4
-Gemini - An alternative to HTTP. Currently, websites are all served to users with HTTP, but it's not the only option. There's also Gemini, which is a much more minimalist way of hosting a website (instead of pages, there's just text and files), but very few people actually use it. One reason it goes mostly unused is that web-browsers generally don't support it. If Gemini had more support, this whole website would probably be made for Gemini instead of HTML + HTTP.
-
-c
-52
-9350
-300
-2
-utah-thumbnail.png
-A randomly-generated Utah plateau animation.
-https://thomasmason.us/utah/utah.html
-
-c
-676
-9634
-300
-5
-tilebots-thumbnail.png
-A turn-based strategy game about building robots.
-https://thomasmason.us/Tilebots/Tilebots.html
-
-c
-436
-9191
-300
--2
-cookie-coin-thumbnail.png
-A digital currency that uses internal browser storage to keep track of your coins. Pretty foolproof, unless you're decent at computer programming.
-https://thomasmason.us/Cookie-Coin/CookieCoin.html
-
-c
-33
-9006
-150
--1
-circle-generator-thumbnail.png
-A circle generator for pixel art and Minecraft. Has a unique feature that lets you fine-tune the circle.
-https://thomasmason.us/circle-generator/circle-generator.html
-
-c
-834
-9148
-300
-3
-gladiators.png
-A stupid little game where each player only uses one button to control their gladiator. Spacebar starts an auction, Enter starts a round. First gladiator to die each round dies permanently, losing their progress. Figure out the rest yourself.
-https://thomasmason.us/gladiators/
-
-c
-290
-8867
-200
-7
-car-sim.png
-A very simple car simulator. Arrow-keys to steer, U to activate invincibility.
-https://thomasmason.us/car-sim/
-
-c
-375
-313
-100
-2
-rss-icon.png
-Subscribe to website updates
-rss.xml
