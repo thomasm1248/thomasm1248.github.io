@@ -61,7 +61,7 @@ const viewer = (viewState, state) => {
 
     // Abbie's names
     ctx.save();
-    ctx.translate(textWidth + 0, 30 + state.yOffset);
+    ctx.translate(textWidth, 30 + state.yOffset);
     state.names.forEach(name => {
         ctx.fillText(name, 0, 0);
         ctx.translate(0, config.yStep);
@@ -70,12 +70,12 @@ const viewer = (viewState, state) => {
 
     // Cover up next name
     ctx.fillStyle = 'white';
-    ctx.fillRect(195, 2, maxNameWidth, nextNameCoverHeight);
+    ctx.fillRect(textWidth, 2, maxNameWidth, nextNameCoverHeight);
 
     // Fade old names
     ctx.fillStyle = fadeGradient;
     ctx.fillRect(
-        195,
+        textWidth,
         -maxNameHistoryHeight - extraCoverAtTop,
         maxNameWidth,
         maxNameHistoryHeight + extraCoverAtTop);
