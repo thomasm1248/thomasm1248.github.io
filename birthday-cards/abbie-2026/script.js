@@ -35,9 +35,11 @@ const reducer = (state, message) => {
 
 // Viewer
 
-const maxNameWidth = 200;
+const startXOffsetFromLeft = 50;
+const maxNameWidth = 900;
 const maxNameHistoryHeight = 250;
 const extraCoverAtTop = 50;
+const nextNameCoverHeight = config.yStep + 10;
 const fadeGradient = ctx.createLinearGradient(
     0, -maxNameHistoryHeight, 0, 0);
 fadeGradient.addColorStop(0, '#ffffffff');
@@ -49,7 +51,7 @@ const viewer = (viewState, state) => {
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.save();
-    ctx.translate(canvas.width / 2 - 170, canvas.height / 2);
+    ctx.translate(startXOffsetFromLeft, canvas.height / 2);
 
     // Main message
     ctx.fillStyle = 'black';
@@ -67,7 +69,7 @@ const viewer = (viewState, state) => {
 
     // Cover up next name
     ctx.fillStyle = 'white';
-    ctx.fillRect(195, 2, maxNameWidth, config.yStep);
+    ctx.fillRect(195, 2, maxNameWidth, nextNameCoverHeight);
 
     // Fade old names
     ctx.fillStyle = fadeGradient;
@@ -139,14 +141,30 @@ const doAnimationFrame = (state, delta) => {
 
 const nameList = t.freeze([
     'Abbie',
-    'Abbles',
-    'Abbs',
-    'Abble Pie',
-    'Abblebabble',
-    'Abbiecadabrie',
-    'Abbismal',
-    'Abb',
+    "Abbitha",
+    "Tabby the Bully",
+    "The Dude Monster",
+    "Abbitude",
+    "'B'tha",
+    "Gale",
     'Rock-hard Abbs',
+    "Abster",
+    "The Couch",
+    'Abbiecadabrie',
+    "AbbleGabbleBibbleBabbleJiggyReneJackyJeanMayoMuskMoldaBun",
+    "Bibblybabblyboo",
+    "Tabby",
+    "Tabigail",
+    "The Witch",
+    "Abble Gabble",
+    "Tabitha",
+    "Abbismal",
+    "Tabulligail",
+    "Abbiebabbie",
+    "Abbidale",
+    "HOT ABBS",
+    'Abble Pie',
+    'Abb',
     'Abble Juice',
 ]);
 
