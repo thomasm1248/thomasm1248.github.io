@@ -56,11 +56,12 @@ const viewer = (viewState, state) => {
     // Main message
     ctx.fillStyle = 'black';
     ctx.font = '30px Serif';
-    ctx.fillText('Happy birthday', 0, 0);
+    ctx.fillText('Happy birthday ', 0, 0);
+    const textWidth = ctx.measureText('Happy birthday ').width;
 
     // Abbie's names
     ctx.save();
-    ctx.translate(195, 30 + state.yOffset);
+    ctx.translate(textWidth + 0, 30 + state.yOffset);
     state.names.forEach(name => {
         ctx.fillText(name, 0, 0);
         ctx.translate(0, config.yStep);
