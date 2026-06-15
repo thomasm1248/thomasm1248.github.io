@@ -305,15 +305,19 @@ const t = (function() {
   const importScriptTagAsync = async moduleName => {
     // Create a promise that we can control locally
     let completePromise;
-    const promise = new Promise(resolve =>
-      completePromise = resolve);
+    let failPromise;
+    const promise = new Promise((resolve, reject) => {
+      completePromise = resolve;
+      failPromise = reject;
+    });
 
     // Create the script tag
     const scriptTag = document.createElement('script');
-    scriptTag.src = `${currentLocation}lib/${moduleName}.js`;
+    scriptTag.src = `${currentLocation}${moduleName}.js`;
 
     // When the script loads, complete the promise
     scriptTag.onload = () => completePromise();
+    scriptTag.onerror = () => failPromise(new Error(`Failed to import script '${moduleName}.js'. Double-check that the path exists.`));
 
     // Add the script to the head
     document.head.appendChild(scriptTag);
@@ -329,10 +333,21 @@ const t = (function() {
     // (which means it can't be loaded), this
     // function will attempt to import the module
     // by creating a script tag for it dynamically.
-    // This only works if the module is stored in
-    // a 'lib' folder in the same directory as
-    // tame.js. The filename of the module (without
-    // the extension) must match the name of the file.
+    // This only works if the module's name
+    // describes its location relative to the
+    // location of this tame.js file.
+    //
+    // For example, if your folder structure
+    // looks like this:
+    //
+    // root
+    //  | tame.js
+    //  | lib
+    //     | myModule.js
+    // 
+    // then the module's name should be
+    // 'lib/myModule', and it should be imported
+    // with `await t.requireAsync('lib/myModule');
     let module = modules[moduleName];
     if(module === undefined)
       await importScriptTagAsync(moduleName);
