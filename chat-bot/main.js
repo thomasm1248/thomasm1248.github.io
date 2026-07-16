@@ -37,7 +37,7 @@
   // Start a conversation
   const startConversation = () => {
     currentSectionLabel = convoManager.startConversation(brain),
-    t.shape('string', currentSectionLabel);
+    t.shape(currentSectionLabel, 'string');
     renderUi();
   };
 

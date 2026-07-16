@@ -388,11 +388,6 @@ Hw
 41
 <script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
 
-H
-632
-235
-<script class="content-script" widget-style='rainbow-dark' src='https://gdt.fireye.coffee/scripts/widget.js'></script>
-
 t
 9296
 9500

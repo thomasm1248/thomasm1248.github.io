@@ -6,7 +6,7 @@ t.module('conversationCore', () => {
   e.startConversation = brain => {
     // brain => sectionLabel
     // Chooses a section to start with and returns it.
-    t.shape({
+    t.shape(brain, {
       'system options': {
         options: {
           'entry points': {
@@ -14,8 +14,7 @@ t.module('conversationCore', () => {
           },
         },
       },
-    },
-    brain);
+    });
 
     const entryPointLabels =
       brain['system options'].options['entry points'].jumps;
@@ -71,8 +70,8 @@ t.module('conversationCore', () => {
   e.checkForInterrupts = (brain, passedMS) => {
     // (interrupts, passedMS) => label | null
     // Checks if one of the interrupts happened during the passed ms.
-    t.shape('object', brain);
-    t.shape('number', passedMS);
+    t.shape(brain, 'object');
+    t.shape(passedMS, 'number');
 
     // Randomly choose sections based on interval
     const interruptsThatHappened = [];

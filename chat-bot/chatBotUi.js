@@ -14,7 +14,7 @@ t.module('chatBotUi', () => {
     }
 
     // We're in a conversation
-    t.shape('string', sectionLabel);
+    t.shape(sectionLabel, 'string');
     t.log('about to render section:', sectionLabel);
     const section = brain[sectionLabel];
 

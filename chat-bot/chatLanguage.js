@@ -12,13 +12,13 @@ t.module('chatLanguage', () => {
   const Optional = shape =>
     value => {
       if(value === undefined) return;
-      t.shape(shape, value);
+      t.shape(value, shape);
     };
   const Dictionary = shape =>
     value => {
-      t.shape({}, value);
+      t.shape(value, {});
       for(const key in value)
-        t.shape(shape, value[key]);
+        t.shape(value[key], shape);
     };
   const Option = t.freeze({
     text: 'string',
@@ -59,10 +59,10 @@ t.module('chatLanguage', () => {
           },
         },
       };
-    t.shape(Brain, brain);
+    t.shape(brain, Brain);
     t.assert(t.mutable(brain), 'brain must be mutable');
-    t.shape('string', text);
-    t.shape('string', textSourceName);
+    t.shape(text, 'string');
+    t.shape(textSourceName, 'string');
 
     // Parse text
     const parsedLines = text
