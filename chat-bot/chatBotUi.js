@@ -1,45 +1,73 @@
 'use strict';
 
-t.module('chatBotUi', () => {
+t.module('../chat-bot/chatBotUi', () => {
   const e = {};
 
-  e.displaySectionOfBrain =
-    (brain, sectionLabel, sectionTextElement, optionListElement) => {
+  e.createChatBot = brain => {
+    let currentState = null;
+    const memoryFromStorage = localStorage.getItem('chat-bot-memory');
+    const memory = memoryFromStorage
+      ? JSON.parse(memoryFromStorage)
+      : {};
 
-    if(sectionLabel === null) {
-      // No conversation currently
-      sectionTextElement.innerHTML = 'Click to start conversation';
-      optionListElement.innerHTML = '';
-      return;
+    const { root, refs } = t.createComponent(`
+      <div>
+        <img src="chat-bot/demon-bear.png"/>
+        <p data-ref='demonSays'></p>
+        <ul data-ref='optionList'></ul>
+        <input data-ref='input' class='hidden'/>
+      </div>
+    `);
+
+    function render() {
+      if(currentState === null) {
+        refs.demonSays.innerText = 'Click to start conversation.';
+        refs.optionList.innerHTML = '';
+        refs.input.classList.add('hidden');
+      } else if(currentState.type === 'options') {
+        refs.demonSays.innerText = currentState.text(memory);
+        refs.optionList.innerHTML = '';
+        currentState.options
+          .forEach(option => {
+            const { root: element } = t.createComponent(`
+              <li>${t.escapeHTML(option.text(memory))}</li>
+            `);
+            element.onclick = e => {
+              currentState = option.respond(memory);
+              localStorage.setItem(
+                'chat-bot-memory', JSON.stringify(memory));
+              render();
+              e.stopPropagation();
+            };
+            refs.optionList.appendChild(element);
+          });
+        refs.input.classList.add('hidden');
+      } else if(currentState.type === 'prompt') {
+        refs.demonSays.innerText = currentState.text(memory);
+        refs.optionList.innerHTML = '';
+        refs.input.value = '';
+        refs.input.classList.remove('hidden');
+      } else {
+        t.warn('invalid state type');
+      }
     }
 
-    // We're in a conversation
-    t.shape(sectionLabel, 'string');
-    t.log('about to render section:', sectionLabel);
-    const section = brain[sectionLabel];
+    render();
 
-    // Display section text
-    sectionTextElement.innerHTML =
-      encodeTextForHtml(section.text);
+    root.onclick = e => {
+      if(currentState !== null) return;
+      currentState = brain.start;
+      render();
+    };
 
-    // Display options
-    optionListElement.innerHTML = '';
-    const options = section.options;
-    for(const label in options) {
-      const option = options[label];
-      const htmlText =
-        encodeTextForHtml(option.text);
-      optionListElement.innerHTML +=
-        `<li data-option-label="${label}">${htmlText}</li>`;
-    }
-  };
+    refs.input.onkeydown = e => {
+      if(e.key !== 'Enter') return;
+      currentState = currentState.respond(refs.input.value, memory);
+      localStorage.setItem('chat-bot-memory', JSON.stringify(memory));
+      render();
+    };
 
-  const encodeTextForHtml = text => {
-    // Encodes a string so that it
-    // can be safely written to HTML.
-    const textArea = document.createElement('textarea');
-    textArea.innerText = text;
-    return textArea.innerHTML.split('<br>').join('\n');
+    return root;
   };
 
   return e;

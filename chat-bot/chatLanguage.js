@@ -1,249 +1,138 @@
 'use strict';
 
-t.module('chatLanguage', () => {
+t.module('../chat-bot/chatLanguage', () => {
   const e = {};
 
   // Types
   
-  const Int = value => {
-    if(Math.round(value) !== value)
-      throw new Error('value was not an integer');
-  };
-  const Optional = shape =>
-    value => {
-      if(value === undefined) return;
-      t.shape(value, shape);
-    };
-  const Dictionary = shape =>
-    value => {
-      t.shape(value, {});
-      for(const key in value)
-        t.shape(value[key], shape);
-    };
-  const Option = t.freeze({
-    text: 'string',
-    jumps: ['string'],
-  });
-  const Section = t.freeze({
-    text: 'string',
-    interval: Optional('number'), // minutes
-    options: Dictionary(Option),
-  });
-  const Brain = Dictionary(Section);
-
-  // Parsing
-
-  e.parse = (brain, text, textSourceName) => {
-    // (brain, text, sourceName) => brain
-    // If brain is null, then a new empty brain
-    // will be created. Either way, the text will be
-    // parsed, and the brain will be updated to contain
-    // the declarations in the text.
-
-    // Validation
-    if(brain === null)
-      // Default brain if none was provided
-      brain = {
-        'system options': {
-          text: 'These options belong to the system,' +
-                ' and can only be modified at the' +
-                ' start of a module.',
-          options: {
-            'entry points': {
-              text: 'These define the entry points' +
-                    ' that new conversations can' +
-                    ' start on. One will be chosen' +
-                    ' at random.',
-              jumps: [],
-            },
+  const sampleBrain = {
+    'start': {
+      text: memory => 'What is your name?',
+      type: 'prompt',
+      respond: (answer, memory) => {
+        memory.userName = answer;
+        return sampleBrain['greeting'];
+      },
+    },
+    'greeting': {
+      text: memory => 'Greetings, ' + memory.userName + '.',
+      type: 'options',
+      options: [
+        {
+          text: memory => 'Greetings.',
+          respond: memory => {
+            return null;
           },
         },
+      ],
+    },
+  };
+
+  e.addTo = dictionary => {
+
+    const runWord = dictionary.run;
+    function run(sequence, state) {
+      state.stack.push(sequence);
+      runWord({
+        state,
+      });
+    }
+
+    function jump(address) {
+      if(address.startsWith('http')) {
+        t.log('opening ' + address + ' in a new tab');
+        window.open(address, '_blank').focus();
+        return null;
+      }
+      if(address.startsWith('mailto:')) {
+        t.log('opening ' + address + ' in a new tab');
+        window.open(address, '_blank').focus();
+        return null;
+      } else if(address.startsWith('javascript:')) {
+        t.log('opening ' + address + ' in current tab');
+        const link = document.createElement('a');
+        link.href = address;
+        link.target = '';
+        link.click();
+        return null;
+      }
+      const newState = dictionary[address];
+      if(newState === undefined) {
+        t.warn(`State "${address}" is not defined.`);
+        return null;
+      }
+      t.log('switching to state "' + address + '"');
+      return newState;
+    }
+
+    dictionary.exit = null;
+
+    dictionary.random = f => {
+      const numOptions = f.state.stack.pop();
+      const start = f.state.stack.pop();
+      f.state.stack.push(Math.floor(Math.random() * numOptions) + start);
+    };
+
+    dictionary['options:'] = f => {
+      const text = f.state.stack.pop();
+      const key = f.state.stack.pop();
+      const state = {
+        text: typeof text === 'string'
+          ? memory => text
+          : memory => {
+            // text is a sequence that needs to be executed
+            const stack = [memory];
+            run(text, {
+              stack,
+            });
+            return jump(stack.pop());
+          },
+        type: 'options',
+        options: [],
       };
-    t.shape(brain, Brain);
-    t.assert(t.mutable(brain), 'brain must be mutable');
-    t.shape(text, 'string');
-    t.shape(textSourceName, 'string');
+      dictionary[key] = state;
+      f.state.currentOptionsList = state.options;
+    };
 
-    // Parse text
-    const parsedLines = text
-      // Split text into lines
-      .split('\n')
-      // Trim lines and record line numbers
-      .map((l, i) => ({
-        text: l.trim(),
-        lineNumber: i + 1,
-      }))
-      // Discard empty lines
-      .filter(l => l.text.length > 0)
-      // Parse each line
-      .map(l => {
-        const firstCharacter = l.text[0];
-        try {
-          switch(firstCharacter) {
-            case '~': // Interrupt interval
-              {
-                const match = l.text.match(/^~(?<amount>\d+)(?<unit>[mhDMY])$/);
-                if(match === null)
-                  throw new Error('Expected a valid interrupt interval line.');
-                const amount = match.groups.amount;
-                const unit = match.groups.unit;
-                // Convert unit to minutes
-                let minutes;
-                switch(unit) {
-                  case 'm':
-                    minutes = amount * 1; // cast as number
-                    break;
-                  case 'h':
-                    minutes = amount * 60;
-                    break;
-                  case 'D':
-                    minutes = amount * 24 * 60;
-                    break;
-                  case 'M':
-                    minutes = amount * 30 * 24 * 60;
-                    break;
-                  case 'Y':
-                    minutes = amount * 365 * 24 * 60;
-                    break;
-                  default:
-                    throw new Error('Unit was not [mhdMy].');
-                }
-                return {
-                  ...l,
-                  type: 'interrupt interval',
-                  minutes,
-                };
-              }
-            case '.': // Option
-              {
-                const match = l.text.match(/^\.(?<label>[^\s:]+):(?<text>.*)$/);
-                if(match === null)
-                  throw new Error('Expected a valid option line.');
-                const label = match.groups.label;
-                const text = match.groups.text.trim();
-                return {
-                  ...l,
-                  type: 'option',
-                  label,
-                  text,
-                };
-              }
-            case '-': // Jump
-              {
-                const match = l.text.match(/^->(?<jump>.+)$/);
-                if(match === null)
-                  throw new Error('Expected a valid jump line.');
-                const jump = match.groups.jump.trim();
-                return {
-                  ...l,
-                  type: 'jump',
-                  jump,
-                };
-              }
-            default:  // Section
-              {
-                const match = l.text.match(/^(?<label>[^\s:]+):(?<text>.*)$/);
-                if(match === null)
-                  throw new Error('Expected a valid section line.');
-                const label = match.groups.label;
-                const text = match.groups.text.trim();
-                return {
-                  ...l,
-                  type: 'section',
-                  label,
-                  text,
-                };
-              }
-          }
-        } catch({ message }) {
-          return {
-            ...l,
-            type: 'error',
-            message,
-          };
+    dictionary['=>'] = f => {
+      const option = {
+      };
+      f.state.currentOption = option;
+      f.state.currentOptionsList.push(option);
+    };
+
+    dictionary['<<'] = f => {
+      const action = f.state.stack.pop();
+      const optionText = f.state.stack.pop();
+      f.state.currentOption.text = memory => optionText;
+      f.state.currentOption.respond = typeof action === 'object'
+        ? memory => {
+          // action is a sequence
+          const stack = [memory];
+          run(action, {
+            stack,
+          });
+          return jump(stack.pop());
         }
-      });
+        : memory =>
+          // action is a string
+          jump(action);
+    };
 
-    // Begin collecting errors
-    const errors = parsedLines.filter(l => l.type === 'error');
-
-    // Gather parsed lines into structured brain format
-    let section = brain['system options'];
-    let option = section.options['entry points'];
-    parsedLines
-      .filter(l => l.type !== 'error')
-      .forEach(l => {
-        switch(l.type) {
-          case 'section':
-            if(brain[l.label] === undefined) {
-              const newSection = {
-                text: l.text,
-                options: [],
-              };
-              brain[l.label] = newSection;
-              section = newSection;
-              option = null;
-              break;
-            }
-            errors.push({
-              ...l,
-              message: 'A section with that label is' +
-                       ' already defined.',
-            });
-            break;
-          case 'interrupt interval':
-            if(option === null &&
-               section.interval === undefined) {
-              section.interval = l.minutes;
-              break;
-            }
-            errors.push({
-              ...l,
-              message: 'You can only specify one' +
-                       ' interval for a section.',
-            });
-            break;
-          case 'option':
-            if(section.options[l.label] === undefined) {
-              const newOption = {
-                text: l.text,
-                jumps: [],
-              };
-              section.options[l.label] = newOption;
-              option = newOption;
-              break;
-            }
-            errors.push({
-              ...l,
-              message: 'An option can\'t be defined' +
-                       ' more than once for a section.',
-            });
-            break;
-          case 'jump':
-            if(option !== null) {
-              option.jumps.push(l.jump);
-              break;
-            }
-            errors.push({
-              ...l,
-              message: 'A jump must be defined after' +
-                       ' an option.',
-            });
-            break;
-          default:
-            t.warn('Parser created invalid data:', l);
-            break;
-        }
-      });
-
-    // Print errors to console
-    errors.forEach(e => {
-      console.warn(`Error: ${textSourceName}, line ${e.lineNumber}:\n` +
-             `  ${e.text}\n` +
-             `    "${e.message}"`);
-    });
-
-    return brain;
+    dictionary['make-prompt'] = f => {
+      const nextStateKey = f.state.stack.pop();
+      const variableName = f.state.stack.pop();
+      const text = f.state.stack.pop();
+      const key = f.state.stack.pop();
+      dictionary[key] = {
+        text: memory => text,
+        type: 'prompt',
+        respond: (value, memory) => {
+          memory[variableName] = value;
+          return jump(nextStateKey);
+        },
+      };
+    };
   };
 
   return e;
