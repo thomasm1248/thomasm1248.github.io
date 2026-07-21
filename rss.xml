@@ -10,11 +10,32 @@
   </image>
   <description>This is my curation feed. This is where I re-publish content that I like. You should make one too.</description>
 
+  <!--
+  
+  Categories:
+    Music
+    Videos
+      Youtube
+        Short Films
+
+  Template:
+
+  <item>
+    <title></title>
+    <description></description>
+    <link></link>
+    <pubDate>21 Jul 2026 24:00 MDT</pubDate>
+    <category></category>
+  </item>
+
+  -->
+
   <item>
     <title>HIDARI</title>
     <description>A stop-motion samurai film done anime style that's in the works. It probably won't be out for a while, but it's darn cool!</description>
     <link>https://www.youtube.com/watch?v=DpefYPLH67A</link>
     <pubDate>07 Jul 2026 19:04 MDT</pubDate>
+    <category>Videos/Youtube/Short Films</category>
   </item>
 
   <item>
@@ -22,6 +43,7 @@
     <description>I liked this song. It's an instrumental.</description>
     <link>https://www.youtube.com/watch?v=ImT4z4L4rvs</link>
     <pubDate>07 Jul 2026 19:04 MDT</pubDate>
+    <category>Music</category>
   </item>
 
 </channel>
