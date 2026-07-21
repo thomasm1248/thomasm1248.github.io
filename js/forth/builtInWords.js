@@ -1,5 +1,5 @@
 'use strict';
-t.module('forth/builtInWords', async () => {
+t.module(async () => {
 
   return {
     addTo: dictionary => {

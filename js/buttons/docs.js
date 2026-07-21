@@ -1,11 +1,9 @@
 'use strict';
 t.module(async () => {
-  const os = await t.requireAsync('js/os');
-
   return {
     title: 'Docs',
-    onclick: () =>
-      os.navigate('docs'),
+    onclick: navigateAsync =>
+      navigateAsync('docs'),
     draw: ctx => {
       const mx = 4;
       const my = 2;

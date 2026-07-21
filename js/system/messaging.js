@@ -2,7 +2,7 @@
 t.module(() => {
 
   function register(topic, callback, targetWindow = window.parent) {
-    targetWindow.addEventListener('message', e => {
+    window.addEventListener('message', e => {
       if(e.data?.topic !== topic) return;
       callback(e.data.message);
     });

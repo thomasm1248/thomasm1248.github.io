@@ -56,6 +56,6 @@ async function initialize() {
 // How to navigate to a page within the OS
 async function navigateAsync(pageName) {
   document.getElementById('app-frame').src = `pages/${pageName}.html`;
-  document.title = `${pageName} . HTMLOS`;
+  document.title = `${pageName} . Thomas Mason`;
   localStorage.setItem('lastOpenedAppName', pageName);
 }

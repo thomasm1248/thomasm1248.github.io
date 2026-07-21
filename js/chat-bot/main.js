@@ -7,10 +7,10 @@
     brainCode,
     chatBotUi,
   } = await t.requireModulesAsync({
-    forth: 'forth/core',
-    chatLanguage: '../chat-bot/chatLanguage',
-    brainCode: '../chat-bot/brainCode',
-    chatBotUi: '../chat-bot/chatBotUi',
+    forth: 'js/forth/core',
+    chatLanguage: 'js/chat-bot/chatLanguage',
+    brainCode: 'js/chat-bot/brainCode',
+    chatBotUi: 'js/chat-bot/chatBotUi',
   });
 
   // Parse brain

@@ -1,4 +1,4 @@
-t.module('../chat-bot/brainCode', `
+t.module(`
 
 "start"
 "WHO AWAKENS ME FROM MY SLUMBER?!"
@@ -66,5 +66,7 @@ options:
       null swap "userName" .set
       "exit"
     ] <<
+  => "Nothing."
+    "exit" <<
 
 `);

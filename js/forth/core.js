@@ -1,9 +1,9 @@
 'use strict';
-t.module('forth/core', async () => {
+t.module(async () => {
   const e = {};
 
-  const builtIns = await t.requireAsync('forth/builtInWords');
-  const baseLib = await t.requireAsync('forth/lib/base');
+  const builtIns = await t.requireAsync('js/forth/builtInWords');
+  const baseLib = await t.requireAsync('js/forth/lib/base');
 
   // Parsing
 

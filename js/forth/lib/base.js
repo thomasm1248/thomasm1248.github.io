@@ -1,4 +1,4 @@
-t.module('forth/lib/base', `
+t.module(`
 
 (--- Control Flow ---)
 

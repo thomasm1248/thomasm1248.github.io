@@ -3,7 +3,7 @@
   'use strict';
   let navigate;
   (async () => {
-    const os = await t.requireAsync('js/os');
+    const os = await t.requireAsync('js/system/os');
 
     navigate = async name => {
       await os.navigate(name);

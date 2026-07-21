@@ -1,11 +1,9 @@
 'use strict';
 t.module(async () => {
-  const os = await t.requireAsync('js/os');
-
   return {
     title: 'Pomodoro Timer',
-    onclick: () =>
-      os.navigate('pomodoro'),
+    onclick: navigateAsync =>
+      navigateAsync('pomodoro'),
     draw: ctx => {
       const m = 2;
       const thickness = 2;

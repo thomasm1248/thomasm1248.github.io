@@ -411,13 +411,20 @@ car-sim.png
 A very simple car simulator. Arrow-keys to steer, U to activate invincibility.
 https://thomasmason.us/car-sim/
 
+t
+75
+513
+250
+-2
+"As an alternative to engagement-driven algorithms, people ought to create 'curation feeds' where they re-post the valuable content they find. There are many tools online that make this easy to do." Here's mine:
+
 c
-375
-313
+175
+713
 100
 2
 rss-icon.png
-Subscribe to website updates
+Curation Feed
 rss.xml
 
 j

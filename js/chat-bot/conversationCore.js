@@ -1,6 +1,6 @@
 'use strict';
 
-t.module('conversationCore', () => {
+t.module(() => {
   const e = {};
 
   e.startConversation = brain => {

@@ -1,6 +1,6 @@
 'use strict';
 
-t.module('../chat-bot/chatLanguage', () => {
+t.module(() => {
   const e = {};
 
   // Types

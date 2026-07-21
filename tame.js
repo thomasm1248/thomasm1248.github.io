@@ -516,7 +516,6 @@ const t = (function() {
     // Shortcuts for use in the console
     l: log,
     r: requireAsync,
-    u: unusedModules,
   };
 })();
 
