@@ -47,14 +47,15 @@ const t = (function() {
   // Diagnostics
 
   let enabled = true;
+
+  const disable = () =>
+    // Disables diagnostics to improve performance.
+    // (see t.enable)
+    enabled = false;
   
   const enable = () =>
     // Enables diagnostics. (see t.disable)
     enabled = true;
-
-  const disable = () =>
-    // Disables diagnostics. (see t.enable)
-    enabled = false;
 
   const log = (...args) => {
     // A thin wrapper around console.log that
@@ -107,6 +108,30 @@ const t = (function() {
     // If the value does not match the shape specified
     // by spec, an error is thrown and a log message is
     // generated.
+    //
+    // Examples: (for now, assume that the two
+    //            params are swapped in each example)
+    //
+    // t.shape('this is a string', 'number'); // error: wrong type
+    // t.shape('this is a string', 'string');
+    // t.shape({ foo: 1 }, { foo: 'number' };
+    // t.shape([1, 2, 3], ['number']);
+    // t.shape([1, 2, 'hi'], ['number']); // error: 'hi' is not a number
+    // t.shape({
+    //   foo: 1,
+    //   bar: 'hello',
+    // }, {
+    //   foo: 'number',
+    //   bar: 'string',
+    //   baz: [['any']],
+    // }); // error: object did not contain property 'baz'
+    //     //        containing a two-dimensional list of
+    //     //        stuff (no type specified).
+    // t.shape(5, n => t.assert(n % 2 == 0)); // error: number not even
+    // const Optional = shape => v => {
+    //   if(v !== null) t.shape(v, shape);
+    // };
+    // t.shape(value, Optional('string'); // value must be either string or null
     if(!enabled) return value;
     let isRootCall = false;
     if(path === undefined) {
@@ -181,26 +206,6 @@ const t = (function() {
     }
   }
 
-  const guard = (...args) => {
-    // Wraps a function (last param) with t.shape checkers
-    // for all its input and output.
-    shape(args, ['any']);
-    assert(args.length >= 2, 't.guard needs at least two parameters');
-    const func = args[args.length - 1];
-    shape(func, 'function');
-    const outSpec = args[args.length - 2];
-    const inSpec = args.slice(0, args.length - 2);
-    return (...args2) => {
-      assert(
-        args2.length == inSpec.length,
-        () => `received ${args2.length} args instead of ${inSpec.length}`);
-      args2.forEach((arg, i) => shape(arg, inSpec[i]));
-      const result = func(...args2);
-      shape(result, outSpec);
-      return result;
-    };
-  };
-
   // Functional programming
 
   const freeze = obj => {
@@ -241,7 +246,7 @@ const t = (function() {
   const currentLocation = document.currentScript.src.slice(0, -7); // remove 'tame.js'
   const modules = {};
 
-  const module = (moduleName, module) => {
+  const module = module => {
     // Defines a module. The module can be of any type, but
     // is usually an object containing functions. If the module
     // is a function, then it's assumed that the function is a
@@ -269,7 +274,8 @@ const t = (function() {
     // Note: When the module system receives a module, the module
     // will be automatically frozen with t.freeze to prevent
     // users of the module from modifying it.
-    shape(moduleName, 'string');
+    const modulePath = document.currentScript.src;
+    const moduleName = modulePath.slice(currentLocation.length, -3);
     if(modules[moduleName] !== undefined) {
       log(`module '${moduleName}' was defined again (ignored)`);
       return;
@@ -323,7 +329,6 @@ const t = (function() {
     document.head.appendChild(scriptTag);
 
     await promise;
-    log(`Imported script tag for module '${moduleName}'.`);
   };
 
   const requireAsync = async moduleName => {
@@ -358,56 +363,159 @@ const t = (function() {
     }
     if(typeof module === 'function')
       return await loadModuleAsync(moduleName);
-    m[moduleName] = module;
+    m[moduleName.replaceAll('/', '_')] = module;
     return module;
   }
 
-  const require = moduleName => {
-    // Obtains the requested module, loading it
-    // if it hasn't been loaded yet.
-    const module = modules[moduleName];
-    if(module === undefined) {
-      warn(`module '${moduleName}' is missing`);
-      return undefined;
-    }
-    if(typeof module === 'function')
-      return loadModule(moduleName);
-    m[moduleName] = module;
-    return module;
-  }
+  const requireModulesAsync = async map => {
+    const entries = await Promise.all(
+      Object.entries(map).map(async ([name, path]) => [
+        name,
+        await requireAsync(path),
+      ])
+    );
 
-  const unusedModules = () => {
-    // Lists all the modules that were
-    // defined but not required.
-    const unusedModuleNames = [];
-    for(const moduleName in modules) {
-      const module = modules[moduleName];
-      if(typeof module === 'function')
-        unusedModuleNames.push(moduleName);
-    }
-    return unusedModuleNames;
+    return Object.fromEntries(entries);
   };
 
-  return {
-    enable,
+  // DOM helpers
+
+  const createComponent = html => {
+    // Returns {
+    //   root: <root element>,
+    //   refs: {
+    //     <id>: <internal element>,
+    //   },
+    // }
+    //
+    // Creates a compound HTML component from an
+    // HTML string, and returns references to the
+    // root element, and various internal elements
+    // that are marked with the 'data-ref' attribute.
+    //
+    // For example:
+    //
+    // const card = t.createComponent(`
+    //   <div>
+    //     <h1 class='card-header'>${title}</h1>
+    //     <p data-ref='text'></p>
+    //     <button data-ref='button'>${actionText}</button>
+    //   </div>
+    // `);
+    // card.refs.text.innerText = 'Hello.';
+    // card.refs.button.onclick = func;
+    // return card.root;
+    const wrapper = document.createElement('template');
+    wrapper.innerHTML = html.trim();
+    const root = wrapper.content.firstChild;
+
+    const refs = {};
+    root.querySelectorAll('[data-ref]').forEach(subElement => {
+      const refName = subElement.dataset.ref;
+      refs[refName] = subElement;
+      subElement.removeAttribute('data-ref');
+    });
+
+    return { root, refs };
+  };
+
+  const escapeHTML = str => {
+    // Prepares text to be inserted into the DOM
+    // by replacing various special characters
+    // with their corresponding HTML codes/tags.
+    if (!str) return '';
+    
+    const map = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;',
+      '\n': '<br>',
+    };
+    
+    return str.replace(/[&<>"'\n]/g, match => map[match]);
+  };
+
+  // Misc helpers for writing more terse code
+  
+  const repeat = func => {
+    // Allows repeated calls to a function.
+    //
+    // For example:
+    //
+    // const listOfMonkeys = t.repeat(makeMonkey)
+    //   ('Don', 3, 'energetic')
+    //   ('Marco', 5, 'envious')
+    //   ('Jack', 2, 'pious')
+    // (); // ends the call chain
+    //
+    // Is the same as:
+    //
+    // const listOfMonkeys = [
+    //   makeMonkey('Don', 3, 'energetic'),
+    //   makeMonkey('Marco', 5, 'envious'),
+    //   makeMonkey('Jack', 2, 'pious'),
+    // ];
+    const builder = (listSoFar = []) =>
+      (...args) => {
+        if(args.length === 0) return listSoFar;
+        listSoFar.push(func(...args));
+        return builder(listSoFar);
+      };
+    return builder();
+  };
+  
+  const table = (...keys) =>
+    // A quick way to build tables of data in javascript.
+    //
+    // For example:
+    //
+    // const myTable = t.table
+    //   ('col1',  'col2' )
+    //   //////////////////
+    //   ('hello', 'world')
+    //   (1,       2      )
+    //   (true            )
+    //   (null,    0,  123)
+    // ();
+    //
+    // Produces the same result as:
+    // 
+    // const myTable = [
+    //   { col1: 'hello', col2: 'world' },
+    //   { col1: 1,       col2: 2 },
+    //   { col1: true,    col2: undefined },
+    //   { col1: null,    col2: 0 },
+    // ];
+    repeat((...args) => {
+      const object = {};
+      for(let i = 0; i < keys.length; i++)
+        object[keys[i]] = args[i];
+      return object;
+    });
+
+  return/* Exports */{
     disable,
+    enable,
     log,
     warn,
     assert,
     shape,
-    guard,
     freeze,
     mutable,
     trampoline,
     module,
-    require,
     requireAsync,
-    unusedModules,
+    requireModulesAsync,
+    createComponent,
+    escapeHTML,
+    repeat,
+    table,
 
     // Shortcuts for use in the console
     l: log,
-    r: require,
-    ra: requireAsync,
+    r: requireAsync,
     u: unusedModules,
   };
 })();

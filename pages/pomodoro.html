@@ -1,0 +1,95 @@
+<p id='countdown'></p>
+<button id='skip' type='button'>Skip</button>
+
+<script src='../tame.js'></script>
+<script>
+  const pCountdown = document.getElementById('countdown');
+  const bSkip = document.getElementById('skip');
+  let startTime = Date.now();
+  const numberOfPomodorosCompleted = 0;
+
+  async function init() {
+    const {
+      os,
+      beep,
+    } = await t.requireModulesAsync({
+      os: 'js/system/os',
+      beep: 'js/utils/beep',
+    });
+
+    const schedule = t.table
+      ('name', 'minutes')
+      ///////////////////
+      ('Work 1',      25)
+      ('Rest',         5)
+      ('Work 2',      25)
+      ('Rest',         5)
+      ('Work 3',      25)
+      ('Rest',         5)
+      ('Work 4',      25)
+      ('Long Rest',   15)
+    ();
+
+    let currentScheduleIndex = 0;
+    let endTime = 0;
+
+    function startItem(index) {
+      currentScheduleIndex = index;
+      endTime = Date.now() + schedule[index].minutes * 60 * 1000;
+    }
+
+    startItem(0);
+
+    function tick() {
+      const now = Date.now();
+      if(now >= endTime) {
+        beep.playBeep();
+        startItem((currentScheduleIndex + 1) % schedule.length);
+      }
+      const remainingSeconds = Math.floor((endTime - now) / 1000);
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+      let secondsText = '' + seconds;
+      if(secondsText.length < 2)
+        secondsText = '0' + secondsText;
+      const itemName = schedule[currentScheduleIndex].name;
+      const text = `${itemName} - ${minutes}:${secondsText}`;
+      pCountdown.innerText = text;
+      os.updateTitle(text);
+    }
+
+    tick();
+    setInterval(tick, 1000);
+
+    bSkip.onclick = () => {
+      startItem((currentScheduleIndex + 1) % schedule.length);
+      tick();
+    };
+  }
+
+  init();
+
+</script>
+
+<style>
+#countdown {
+  font-size: 5em;
+  margin: 200px 0 0 0;
+  text-align: center;
+}
+#skip {
+  display: block;
+  font-size: 2em;
+  margin: 40px auto 0 auto;
+  background-color: #d7d7d7;
+  border-radius: 5px;
+  border: none;
+  padding: 6px 10px;
+}
+#skip:hover {
+  background-color: #e7e7e7;
+}
+#skip:active {
+  background-color: #c7c7c7;
+}
+</style>

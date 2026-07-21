@@ -1,34 +1,45 @@
 <!DOCTYPE html>
-<html>
-<head lang='en'>
-  <title>Thomas Mason</title>
-  <link rel='stylesheet' type='text/css' href='style.css'>
-  <link rel='alternate' type='application/rss+xml' href='/rss.xml'>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-  <div id='background'></div>
+<html style=''>
+    <head>
+        <title>HTMLOS</title>
 
-  <div id='demon-chat-bot' style="position: fixed; bottom: 10px; left: 10px; z-index: 1">
-    <img src="chat-bot/demon-bear.png"/>
-    <p id="demon-says"></p>
-    <ul id="option-list">
-    </ul>
-  </div>
+        <script src='tame.js'></script>
+        <script src="main.js"></script>
 
-  <!-- Tame Javascript -->
-  <script src='js/tame.js'></script>
+        <style>
+        html, body {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+        }
+        body {
+          display: flex;
+        }
+        #os-bar {
+          width: 30px;
+          background-color: black;
+          padding: 2.5px 0;
+        }
+        #os-bar div {
+          cursor: pointer;
+          padding: 2.5px 5px;
+          width: 20px;
+          height: 20px;
+        }
+        #os-bar div canvas {
+          background-color: #222;
+        }
+        #header.hide {
+          display: none;
+        }
+        #app-frame {
+          flex: 1 0 auto;
+        }
+        </style>
 
-  <!-- Render all content -->
-  <script src='render.js'></script>
-  <script src='automatic-darkmode.js'></script>
-
-  <!-- Chatbot scripts -->
-  <script src="chat-bot/chatLanguage.js"></script>
-  <script src="chat-bot/brainCode.js"></script>
-  <script src="chat-bot/conversationCore.js"></script>
-  <script src="chat-bot/chatBotUi.js"></script>
-  <script src="chat-bot/main.js"></script>
-
-</body>
-</html> 
+    </head>
+    <body onload='initialize()' style='overflow:hidden;'>
+      <div id='os-bar'></div>
+      <iframe id='app-frame' style='border:none;'/>
+    </body>
+</html>

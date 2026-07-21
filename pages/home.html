@@ -1,0 +1,88 @@
+<script src='../tame.js'></script>
+<script>
+  'use strict';
+  let navigate;
+  (async () => {
+    const os = await t.requireAsync('js/os');
+
+    navigate = async name => {
+      await os.navigate(name);
+    }
+  })()
+</script>
+
+<h1>Hello, welcome to the HTMLOS.</h1>
+
+<p>Pages:
+<ul class='apps-nav'>
+  <li>Home (this)</li>
+  <li onclick="navigate('javascript-playground')">JS Playground</li>
+  <li onclick="navigate('docs')">Library Docs</li>
+</ul>
+
+<h2>About</h2>
+
+<p>This is a lightweight system that uses Javascript and HTML to create a foundation whereon an individual can
+build their own system of reusable code, and ad-hoc views. It's good for note-taking, automation, art, and whatever
+else you can think of. Think of it as a personal, modifiable operating system. Here are some of the notable
+features:
+<ul>
+  <li><strong>No Additional Tools Required:</strong> Requires no tools besides a text editor, a web-browser, and
+    itself. This is because the entire system is stored as text files, and can be 'executed' by opening HTMLOS.html
+    in a web-browser. You can inspect and debug the system with your web-browser's devtools.</li>
+  <li><strong>Very modular:</strong> As long as you follow the architecture guidelines, your version of this system
+    will remain flexible and easy to work with.</li>
+  <li><strong>Open-source:</strong> Literally all the code is owned by you.</li>
+  <li><strong>Simple:</strong> The core of the system consists only of the following files which are each very
+    small and easy to understand:
+    <ul>
+      <li><strong>HTMLOS.html -</strong> Creates a button bar for buttons, and an iframe for whichever page is
+        currently being viewed.</li>
+      <li><strong>main.js -</strong> Used by HTMLOS.html to render the buttons and to manage the current page.</li>
+      <li><strong>tame.js -</strong> A relatively small JS library that provides the module system that the entire
+        operating system runs on, as well as a bunch of helper functions that make it easier to diagnose issues in
+        JS code. The module system also serves as a documentation system.</li>
+      <li><strong>modules/os.js -</strong> A module that allows pages to make requests to the OS, even though
+        they're sandboxed within an iframe.</li>
+    </ul>
+  </li>
+</ul>
+</p>
+
+<h2>Architecture Guidelines</h2>
+
+<p>The entire system consists of three concepts:
+<ul>
+  <li><strong>Data:</strong> This is the stuff you're wanting to interact with. It can be files, web API's, or even 
+    ephemeral storage services provided by the web-browser such as cookies, internalStorage, IndexedDB, or OPFS.
+    Even Pages and Modules are considered a form of data.</li>
+  <li><strong>Modules:</strong> These are reusable, composable scripts written in Javascript. They should contain
+    all the functionality, features, behavior, and even UI
+    components of the system. Literally anything that you might want to reuse should be a module.</li>
+  <li><strong>Pages:</strong> On their own, modules are pretty much just a list of functions, which aren't very
+    useful unless you have a console window pulled up so that you can type and execute Javascript. The purpose of
+    pages is to compose modules together into an HTML page that lets you see and interact with data via modules.
+    </li>
+</ul>
+Basically, the mental model you should have is this: You compose modules together into pages, then use the pages to
+read/modify data.</p>
+
+<p>As you modify this system, you should probably keep the following guidelines in mind (and maybe even add your
+own):
+<ul>
+  <li><strong>Modules don't own state:</strong> Think of modules as tools that don't assume how or when or where
+    they're going to be used. Rather than holding on to stuff internally, they should expect to be handed the stuff
+    every time they're used. This makes it possible for multiple pieces of code to be using the same module at the
+    same time. It also makes it possible for modules to be used in a greater variety of ways.</li>
+  <li><strong>Keep pages simple:</strong> If a page contains a lot of logic, find a way to move the logic to a
+    module so that the logic can be reused elsewhere. Rather than containing a bunch of code, pages should be built
+    from modules like Legos. Rather than using pages to do stuff, use modules to do stuff; pages should only be thin
+    containers that let you use modules without having to pull up a console.</li>
+</ul>
+</p>
+
+<style>
+.apps-nav li {
+  cursor: pointer;
+}
+</style>

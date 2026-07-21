@@ -1,0 +1,27 @@
+<script src='../tame.js'></script>
+<script>
+
+  // Put all module names here:
+  const moduleNames = [
+    'js/fileAccess',
+    'js/indentedListBuilder',
+    'js/os',
+  ];
+
+  // This loads all the modules
+  (async () => {
+    for(const name of moduleNames)
+      await t.requireAsync(name);
+
+    // This logs the module list so you can
+    // inspect it in the devtools console
+    t.log(m);
+
+  })()
+</script>
+
+<h1>HTMLOS Library Docs</h1>
+
+<p>To explore all the libraries in this OS, open devtools and browse the object that has been printed to the console.</p>
+
+<p>When you create new libraries, make sure to add them to this page with a script tag.</p>

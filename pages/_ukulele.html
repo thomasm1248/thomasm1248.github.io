@@ -1,0 +1,51 @@
+<h1>Chord Progression Transposer</h1>
+
+<img id='ukulele-chord-sheet' src='https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwww.typecalendar.com%2Fwp-content%2Fuploads%2F2023%2F08%2FUkulele-Chord-Chart-Word-Download.jpg&f=1&nofb=1&ipt=a40d97607ec3e2e723004414a7db3c7bdbd586a8d2460e100f2f1165f252e9fc'/>
+
+<textarea id='chord-progression-text'>I,IIIm,IV,V</textarea>
+
+<div id='results'></div>
+
+<script src='../tame.js'></script>
+<script>
+  let x; // for debugging
+
+  const chordProgressionTextBox = document.getElementById('chord-progression-text');
+  const resultBox = document.getElementById('results');
+
+  (async () => {
+    const music = await t.requireAsync('js/music/theoryHelpers');
+    x = music;
+
+    function recalculateChords() {
+      resultBox.innerHTML = '';
+      const chordsText = chordProgressionTextBox.value;
+      const chords = music.parseChordProgression(chordsText);
+      music.noteNames
+        .map(noteName => `In ${noteName} major: ` + chords
+          .map(chordInfo => ({
+            ...chordInfo,
+            note: music.relativeNoteToAbsoluteNote(chordInfo.root, noteName),
+          }))
+          .map(chordInfo => `${chordInfo.note}${chordInfo.type}`)
+          .join(', '))
+        .map(chordList => {
+          const p = document.createElement('p');
+          p.innerText = chordList;
+          return p;
+        })
+        .forEach(pElement => resultBox.appendChild(pElement));
+    };
+
+    chordProgressionTextBox.oninput = recalculateChords;
+
+    recalculateChords();
+  })();
+</script>
+
+<style>
+#ukulele-chord-sheet {
+  float: right;
+  width: 600px;
+}
+</style>

@@ -1,0 +1,112 @@
+<button onclick='newProgram()'>New</button>
+<button onclick='pushProgram()'>Fork</button>
+<button onclick='cyclePrograms()'>Cycle</button>
+<button onclick='deleteProgram()'>Delete</button>
+<span id='status'></span>
+
+<br>
+
+<textarea id="code" rows='35' cols='70' spellcheck='false'></textarea>
+<canvas id="canvas" width='400' height='400' style='border: 1px solid black'></canvas>
+
+<script src='../tame.js'></script>
+<script>
+'use strict';
+
+const codeBox = document.getElementById("code");
+codeBox.value = localStorage.getItem('code');
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+const statusLine = document.getElementById('status');
+
+let loopFunc = null;
+const loop = f => loopFunc = f;
+
+const codeStack = JSON.parse(localStorage.getItem('code-stack')) ?? [];
+
+function save() {
+  localStorage.setItem('code-stack', JSON.stringify(codeStack));
+  localStorage.setItem('code', codeBox.value);
+}
+
+function newProgram() {
+  codeStack.push(codeBox.value);
+  codeBox.value = '';
+  save();
+  refreshStatus();
+}
+
+function pushProgram() {
+  codeStack.push(codeBox.value);
+  save();
+  refreshStatus();
+}
+
+function popProgram() {
+  codeBox.value = codeStack.pop();
+  save();
+  refreshStatus();
+}
+
+function cyclePrograms() {
+  codeStack.unshift(codeBox.value);
+  codeBox.value = codeStack.pop();
+  save();
+}
+
+function deleteProgram() {
+  if(codeStack.length > 0) {
+    popProgram();
+    return;
+  }
+  codeBox.value = '';
+  save();
+}
+
+function refreshStatus() {
+  statusLine.innerText = `${codeStack.length} other programs`;
+}
+
+function execute() {
+  // Save copy of code
+  localStorage.setItem('code', codeBox.value);
+
+  // Run code
+  loopFunc = null;
+  eval("(async () => {\n" + codeBox.value + "\n})()");
+}
+
+document.addEventListener('keydown', e => {
+  // Check for Ctrl
+  if (!e.ctrlKey) return;
+
+  // Prevent Ctrl + S (Save)
+  if (e.key === 's') {
+    e.preventDefault();
+    return;
+  }
+
+  // Ctrl + Enter -> Execute
+  if (e.key === 'Enter')
+    execute();
+
+}, false);
+
+function loopDriver() {
+  window.requestAnimationFrame(loopDriver);
+  if (loopFunc !== null) loopFunc();
+}
+
+// Run page
+refreshStatus();
+loopDriver();
+execute();
+</script>
+
+<style>
+#code {
+  margin-top: 20px;
+}
+</style>

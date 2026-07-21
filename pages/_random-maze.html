@@ -1,0 +1,65 @@
+<canvas id='output'></canvas>
+
+<script src="../tame.js"></script>
+<script>
+  const output = document.getElementById('output');
+  const ctx = output.getContext('2d');
+
+  const density = .5;
+  const cellSize = 5;
+  const height = 50;
+  const width = 50;
+
+  output.width = width * cellSize;
+  output.height = height * cellSize;
+
+  const map = {};
+  for(let x = 0; x < width; x++)
+    for(let y = 0; y < height; y++)
+        map[x + ',' + y] = Math.random() < density;
+
+  const open = {};
+  let changeHasBeenMade = true;
+  while(changeHasBeenMade) {
+    changeHasBeenMade = false;
+
+    for(let x = 0; x < width; x++)
+    for(let y = 0; y < height; y++) {
+      if(open[x+','+y]) continue;
+      if(map[x+','+y]) continue;
+      if(x === 0 ||
+         x === width - 1 ||
+         y === 0 ||
+         y === height - 1) {
+        open[x + ',' + y] = true;
+        changeHasBeenMade = true;
+        continue;
+      }
+      [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1],
+      ]
+        .forEach(coords => {
+          const checkX = x + coords[0];
+          const checkY = y + coords[1];
+          if(open[checkX+','+checkY]) {
+            open[x+','+y] = true;
+            changeHasBeenMade = true;
+          }
+        });
+    }
+
+    for(let x = 0; x < width; x++)
+    for(let y = 0; y < height; y++) {
+      if(map[x+','+y])
+        ctx.fillStyle = 'black';
+      else if(open[x+','+y])
+        ctx.fillStyle = 'green';
+      else
+        continue;
+      ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+    }
+  }
+</script>

@@ -1,0 +1,25 @@
+
+<script src='../tame.js'></script>
+<script>(async () => {
+  const forth = await t.requireAsync('js/forth/core');
+
+  // Create core dictionary
+  const dictionary = forth.createCoreDictionary();
+
+  // Run program
+  forth.read(`
+
+    [
+      print
+    ]
+    as-function
+    "main" set
+
+    123 "num" set
+
+  `,
+  dictionary);
+
+  dictionary.main(dictionary.num);
+
+})()</script>
