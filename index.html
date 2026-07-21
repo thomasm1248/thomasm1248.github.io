@@ -1,45 +1,45 @@
 <!DOCTYPE html>
 <html style=''>
-    <head>
-        <title>HTMLOS</title>
+  <head>
+    <title>Thomas Mason</title>
 
-        <script src='tame.js'></script>
-        <script src="main.js"></script>
+    <script src='tame.js'></script>
+    <script src="main.js"></script>
 
-        <style>
-        html, body {
-          margin: 0;
-          padding: 0;
-          height: 100%;
-        }
-        body {
-          display: flex;
-        }
-        #os-bar {
-          width: 30px;
-          background-color: black;
-          padding: 2.5px 0;
-        }
-        #os-bar div {
-          cursor: pointer;
-          padding: 2.5px 5px;
-          width: 20px;
-          height: 20px;
-        }
-        #os-bar div canvas {
-          background-color: #222;
-        }
-        #header.hide {
-          display: none;
-        }
-        #app-frame {
-          flex: 1 0 auto;
-        }
-        </style>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+      }
+      body {
+        display: flex;
+      }
+      #os-bar {
+        width: 30px;
+        background-color: black;
+        padding: 2.5px 0;
+      }
+      #os-bar div {
+        cursor: pointer;
+        padding: 2.5px 5px;
+        width: 20px;
+        height: 20px;
+      }
+      #os-bar div canvas {
+        background-color: #222;
+      }
+      #header.hide {
+        display: none;
+      }
+      #app-frame {
+        flex: 1 0 auto;
+      }
+    </style>
 
-    </head>
-    <body onload='initialize()' style='overflow:hidden;'>
-      <div id='os-bar'></div>
-      <iframe id='app-frame' style='border:none;'/>
-    </body>
+  </head>
+  <body onload='initialize()' style='overflow:hidden;'>
+    <div id='os-bar'></div>
+    <iframe id='app-frame' style='border:none;'/>
+  </body>
 </html>
