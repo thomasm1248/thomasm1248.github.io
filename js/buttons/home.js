@@ -2,7 +2,7 @@
 t.module(() => ({
   title: 'Home',
   onclick: navigateAsync =>
-    navigateAsync('home'),
+    navigateAsync('homepage'),
   draw: ctx => {
     const margin = 3;
     const roofHeight = 5;

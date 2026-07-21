@@ -17,7 +17,7 @@ async function initialize() {
   else if(storedPage)
     await navigateAsync(storedPage);
   else
-    await navigateAsync('home');
+    await navigateAsync('homepage');
 
   // Populate button bar with buttons
   const bar = document.getElementById('os-bar');
