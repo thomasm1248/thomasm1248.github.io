@@ -1,0 +1,34 @@
+<title>RSS Manager</title>
+
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    createEntries,
+  } = await t.requireModulesAsync({
+    createEntries: 'js/rss/createEntries',
+  });
+
+  // Do stuff
+  document.body.appendChild(createEntries.createForm(t.log));
+  
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+.rss-entry-form {
+  padding-top: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rss-entry-form * {
+  margin: 3px;
+  width: 600px;
+}
+
+</style>
