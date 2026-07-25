@@ -11,24 +11,7 @@
   <description>This is my curation feed. This is where I re-publish content that I like. You should make one too.</description>
 
   <!--
-  
-  Categories:
-    Music
-    Videos
-      Youtube
-        Short Films
-
-  Template:
-
-  <item>
-    <title></title>
-    <description></description>
-    <link></link>
-    <pubDate>21 Jul 2026 24:00 MDT</pubDate>
-    <category></category>
-  </item>
-
-  -->
+  INSERT AFTER HERE -->
 
   <item>
     <title>HIDARI</title>
