@@ -513,6 +513,9 @@ const t = (function() {
     repeat,
     table,
 
+    // Expose root (from perspective of tame.js)
+    root: currentLocation,
+
     // Shortcuts for use in the console
     l: log,
     r: requireAsync,
@@ -521,3 +524,6 @@ const t = (function() {
 
 // For browsing modules in console
 const m = {};
+
+// If it exists, load the 'global' module by default
+t.requireAsync('global');
