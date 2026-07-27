@@ -12,7 +12,7 @@ t.module(() => {
 
     const { root, refs } = t.createComponent(`
       <div>
-        <img src="../files/homepage-assets/chat-bot/demon-bear.png"/>
+        <img src="files/homepage-assets/chat-bot/demon-bear.png"/>
         <p data-ref='demonSays'></p>
         <ul data-ref='optionList'></ul>
         <input data-ref='input' class='hidden'/>
