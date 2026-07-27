@@ -1,0 +1,117 @@
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    engine,
+  } = await t.requireModulesAsync({
+    engine: 'js/gameEngine/core',
+  });
+
+  // Config
+  const FRICTION = .90;
+  const SPEED = 80;
+
+  // Util functions
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  // Setup
+  const canvas = engine.makeCanvas();
+  const mainMenuOverlay = engine.makeOverlay(`
+    <h1>Main Menu</h1>
+    <button data-ref='start'>Start</button>
+  `, {
+    style: `border: 1px solid black;
+            padding: 30px;
+            border-radius: 3px;
+            margin-top: 20px;`,
+    center: true,
+  });
+  mainMenuOverlay.start.onclick = () => {
+    game.switchToState(gameplay);
+  };
+
+  // Model
+  const things = [];
+
+  for(let i = 0; i < 100; i++) {
+    things.push({
+      randomMovement: SPEED,
+      friction: FRICTION,
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      xv: 0,
+      yv: 0,
+    });
+  }
+
+  // Draw
+  function draw(ctx) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for(const thing of things) {
+      ctx.save();
+      ctx.translate(thing.x, thing.y);
+      ctx.fillRect(-1, -1, 2, 2);
+      ctx.restore();
+    }
+  }
+
+  // States
+
+  function mainMenu() {
+    mainMenuOverlay.show();
+    return {
+      cleanup: () => {
+        mainMenuOverlay.hide();
+      },
+    };
+  }
+
+  function gameplay() {
+    return {
+      draw,
+      simulation: [
+        /* Friction */ dt => {
+          things.filter(t => t.friction)
+            .forEach(t => {
+              t.xv = lerp(t.xv, t.xv * t.friction, dt);
+              t.yv = lerp(t.yv, t.yv * t.friction, dt);
+            });
+        },
+        /* Random Movement */ dt => {
+          things.filter(t => t.randomMovement)
+            .forEach(t => {
+              t.xv += (Math.random() * 2 - 1) * t.randomMovement * dt;
+              t.yv += (Math.random() * 2 - 1) * t.randomMovement * dt;
+            });
+        },
+        /* Apply velocity to position */ dt => {
+          things.forEach(t => {
+            t.x += t.xv * dt;
+            t.y += t.yv * dt;
+          });
+        },
+        /* Wrap */ dt => {
+          things.forEach(t => {
+            if(t.x < 0) t.x += canvas.width;
+            if(t.x > canvas.width) t.x -= canvas.width;
+            if(t.y < 0) t.y += canvas.height;
+            if(t.y > canvas.height) t.y -= canvas.height;
+          });
+        },//*/
+      ],
+    };
+  }
+
+  // Start
+  const game = engine.runGame(canvas, mainMenu);
+
+})();</script>
+
+
+
+<style>
+
+</style>
