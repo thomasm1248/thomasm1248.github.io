@@ -9,6 +9,19 @@ t.module(async () => {
     format: 'js/rss/format',
     catagoryList: 'js/rss/catagories',
   });
+
+  function getCurrentTimeAsDatetimeString() {
+    const pad = n => String(n).padStart(2, '0');
+    const now = new Date();
+    return [
+      now.getFullYear(),
+      pad(now.getMonth() + 1),
+      pad(now.getDate())
+    ].join('-') + 'T' + [
+      pad(now.getHours()),
+      pad(now.getMinutes())
+    ].join(':');
+  }
   
   function createForm() {
     const {
@@ -36,16 +49,7 @@ t.module(async () => {
     });
 
     // Set current date-time
-    const pad = n => String(n).padStart(2, '0');
-    const now = new Date();
-    refs.date.value = [
-      now.getFullYear(),
-      pad(now.getMonth() + 1),
-      pad(now.getDate())
-    ].join('-') + 'T' + [
-      pad(now.getHours()),
-      pad(now.getMinutes())
-    ].join(':');
+    refs.date.value = getCurrentTimeAsDatetimeString();
 
     // Cache reference to root folder of system
     let folder = null;
@@ -89,6 +93,12 @@ t.module(async () => {
 
       // Write new text to the RSS file
       const currentText = await files.writeFileAsync(folder, 'rss.xml', newText);
+
+      // Clear the form
+      refs.title.value = '';
+      refs.desc.value = '';
+      refs.link.value = '';
+      refs.date.value = getCurrentTimeAsDatetimeString();
     };
 
     return root;
