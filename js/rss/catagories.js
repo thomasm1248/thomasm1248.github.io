@@ -1,6 +1,7 @@
 t.module([
   'Music',
   'Videos/Youtube/Short Films',
-  'Videas/Youtube/Wellbeing',
+  'Videos/Youtube/Wellbeing',
+  'Websites',
   'Feeds',
 ]);
