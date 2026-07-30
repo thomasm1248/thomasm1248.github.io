@@ -16,7 +16,7 @@
     <title>foo</title>
     <description>foo</description>
     <link>foo</link>
-    <pubDate>Web, 29 Jul 2026 17:54:00 MDT</pubDate>
+    <pubDate>Web, 29 Jul 2026 20:17:00 MDT</pubDate>
     <category>foo</category>
   </item>
 
@@ -25,10 +25,28 @@
     Youtube
       Short Films
       Wellbeing
+      Channels
   Websites
+    Tools
   Feeds
 
   INSERT AFTER HERE -->
+  
+  <item>
+    <title>Youtube to RSS</title>
+    <description>A handy tool I found that can take any Youtube channel link and convert it into an RSS feed link.</description>
+    <link>https://seotools.davidbreder.com/youtube-rss</link>
+    <pubDate>Web, 29 Jul 2026 20:17:00 MDT</pubDate>
+    <category>Websites/Tools</category>
+  </item>
+  
+  <item>
+    <title>Robot Pencil</title>
+    <description>Found a nice channel where a guy talks about stuff while painting digitally. Here's the first video I saw that inspired me to subscribe.</description>
+    <link>https://www.youtube.com/watch?v=mQd2d26PVoo</link>
+    <pubDate>Web, 29 Jul 2026 20:16:00 MDT</pubDate>
+    <category>Youtube/Channels</category>
+  </item>
   
   <item>
     <title>Hypertext TV</title>
