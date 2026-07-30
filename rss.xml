@@ -1,24 +1,49 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 <channel>
-  <title>Thomas Mason's Curation Feed</title>
-  <link>https://thomasmason.us/files/posts/curation-feed.html</link>
+  <title>Thomas Mason's Internet Journal</title>
+  <link>https://thomasmason.us/pages/posts/internet-journaling.html</link>
   <image>
     <url>https://thomasmason.us/images/logo.png</url>
     <title>Thomas Mason's Website</title>
     <link>https://thomasmason.us</link>
   </image>
-  <description>This is my curation feed. This is where I re-publish content that I like. You should make one too.</description>
+  <description>This is my internet journal. This is where I re-publish content I like that I find on the internet. You should make one too (https://thomasmason.us/pages/posts/internet-journaling.html).</description>
 
   <!--
+  
+  <item>
+    <title>foo</title>
+    <description>foo</description>
+    <link>foo</link>
+    <pubDate>Web, 29 Jul 2026 17:54:00 MDT</pubDate>
+    <category>foo</category>
+  </item>
+
+  Music
+  Videos
+    Youtube
+      Short Films
+      Wellbeing
+  Websites
+  Feeds
+
   INSERT AFTER HERE -->
+  
+  <item>
+    <title>Hypertext TV</title>
+    <description>A website that pretends to be an old TV that hosts webpages at different times of the day, just like how TV's host different channels throughout the day. It has a large, constantly-changing collection of cool content.</description>
+    <link>https://hypertext.tv/</link>
+    <pubDate>Web, 29 Jul 2026 17:57:00 MDT</pubDate>
+    <category>Websites</category>
+  </item>
 
   <item>
-    <title>test</title>
-    <description>test</description>
-    <link>ontehutnh</link>
-    <pubDate>Tue, 28 Jul 2026 20:15:00 MDT</pubDate>
-    <category>Music</category>
+    <title>Cloudhiker</title>
+    <description>"Discover the most interesting, weird and awesome Websites of the Internet"</description>
+    <link>https://cloudhiker.net/</link>
+    <pubDate>Wed, 29 Jul 2026 17:54:00 MDT</pubDate>
+    <category>Websites</category>
   </item>
 
   <item>
@@ -31,7 +56,7 @@
 
   <item>
     <title>Art of Manliness RSS</title>
-    <description>This blog posts a lot of great content about embracing wholesome manliness. I especially like the Odds & Ends posts.</description>
+    <description>This blog posts a lot of great content about embracing wholesome manliness. I especially like the Odds &amp; Ends posts.</description>
     <link>https://feeds2.feedburner.com/TheArtOfManliness</link>
     <pubDate>Mon, 27 Jul 2026 21:29:00 MDT</pubDate>
     <category>Feeds</category>
