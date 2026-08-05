@@ -17,33 +17,40 @@ t.module(async () => {
 
   // Runtime
   
-  function run(sequence, state) {
-    const frame = {
-      pc: 0,
-      sequence,
-      state,
-    };
-    while(frame.pc < sequence.length) {
-      const action = sequence[frame.pc];
-      frame.pc++;
-      if(typeof action === 'function')
-        // Action is a function
-        action(frame);
-      else
-        // Action is a sequence
-        run(action, state);
+  function eval(item, state) {
+    if(typeof item === 'function') {
+      item(state);
+    } else if(typeof item === 'object' && item.length !== undefined) {
+      for(let i = 0; i < item.length; i++) {
+        const subItem = item[i];
+        eval(subItem, state);
+      }
+    } else {
+      state.stack.push(item);
     }
   }
 
-  function read(tokens, dictionary, programs) {
+  function read(tokens, dictionary) {
     const state = {
       stack: [],
-      sequence: [],
       dictionary,
       tokens,
       nextToken: 0,
-      programs,
+      parsers: [{
+        // Main parser, runs program
+        terminators: [], // never ends
+        sequence: [],
+        postParse: state => {
+          // Get the compiled program
+          const sequence = state.stack.pop();
+          // Run the program
+          eval(sequence, state);
+        },
+      }],
     };
+    function currentSequence() {
+      return state.parsers[state.parsers.length-1].sequence;
+    }
     while(state.nextToken < tokens.length) {
       const token = tokens[state.nextToken];
       state.nextToken++;
@@ -52,8 +59,7 @@ t.module(async () => {
       // Numbers
       if(token.match(/^\d/)) {
         const number = token * 1;
-        state.sequence.push(f =>
-          f.state.stack.push(number));
+        currentSequence().push(number);
         continue;
       }
       // Strings
@@ -63,43 +69,54 @@ t.module(async () => {
           .replaceAll('\\n', '\n')
           .replaceAll('\\\\', '\\')
           .replaceAll('\\"', '"');
-        state.sequence.push(f =>
-          f.state.stack.push(string));
+        currentSequence().push(string);
         continue;
       }
       // Words
+      const currentParser = state.parsers[state.parsers.length-1];
+      if(currentParser.terminators.contains(token)) {
+        state.stack.push(token);
+        state.stack.push(currentParser.sequence);
+        state.parsers.pop();
+        eval(currentParser.postParse, state);
+        continue;
+      }
       const action = dictionary[token];
       if(!action)
         throw new Error(`Word "${token}" is not defined.`);
-      if(action.immediate) {
-        run([action], state);
-      } else {
-        state.sequence.push(action);
-      }
+      if(action.postParse) {
+        state.parsers.push({
+          ...action,
+          sequence: [],
+        });
+        if(action.preParse)
+          eval(action.preParse, state);
+      } else
+        currentSequence().push(action);
     }
     
-    if(state.sequence.length > 0) {
-      const sequence = state.sequence;
-      state.sequence = [];
-      run(sequence, state);
+    if(state.parsers.length > 1) {
+      const currentParser = state.parsers.pop();
+      throw new Error(`Code ended too soon. Expected:` +
+        ` ${currentParser.terminators.join(', ')}.`);
     }
+    const mainParser = state.parsers.pop();
+    state.stack.push(mainParser.sequence);
+    eval(mainParser.postParse, state);
   }
 
   // Public functions
   
   e.createCoreDictionary = () => {
     const dictionary = {
-      'tokenize': f => {
-        const code = f.state.stack.pop();
-        f.state.stack.push(tokenize(code));
+      'tokenize': s => {
+        const code = s.stack.pop();
+        s.stack.push(tokenize(code));
       },
-      'run': f => {
-        const sequence = f.state.stack.pop();
-        run(sequence, f.state);
-      },
-      'read': f => {
-        const tokens = f.state.stack.pop();
-        read(tokens, f.state.dictionary, f.state.programs);
+      'eval': eval,
+      'read': s => {
+        const tokens = s.stack.pop();
+        read(tokens, s.dictionary);
       },
     };
     builtIns.addTo(dictionary);
@@ -107,9 +124,9 @@ t.module(async () => {
     return dictionary;
   };
 
-  e.read = (code, dictionary, programs = {}) => {
+  e.read = (code, dictionary) => {
     const tokens = tokenize(code);
-    read(tokens, dictionary, programs);
+    read(tokens, dictionary);
   };
 
   e.preloadLibsAsync = async (...paths) => {

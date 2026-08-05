@@ -4,315 +4,285 @@ t.module(async () => {
   return {
     addTo: dictionary => {
 
-      function func(name, implementation, immediate = false) {
-        if(immediate)
-          implementation.immediate = true;
+      function func(name, implementation, terminators = null) {
+        if(terminators)
+          implementation = {
+            postParse: implementation,
+            terminators,
+          };
         dictionary[name] = implementation;
       }
 
-      const runFunc = dictionary.run;
-      const run = (sequence, state) => {
-        state.stack.push(sequence);
-        runFunc({
-          state,
-        });
-      };
+      const eval = dictionary.eval;
+
+      function getCurrentSequence(state) {
+        const currentParser = state.parsers[state.parsers.length-1];
+        return currentParser.sequence;
+      }
 
       // Meta
+
+      func('read-token', s => {
+        s.stack.push(s.tokens[s.nextToken++]);
+      });
       
-      func('get', f => {
-        const name = f.state.stack.pop();
-        f.state.stack.push(f.state.dictionary[name]);
+      func('dictionary', s => {
+        s.stack.push(s.dictionary);
       });
 
-      func('set', f => {
-        const name = f.state.stack.pop();
-        const value = f.state.stack.pop();
-        f.state.dictionary[name] = value;
+      func('compile', s => {
+        const item = s.stack.pop();
+        getCurrentSequence(s).push(item);
       });
 
-      func(';', f => {
-        const sequence = f.state.sequence;
-        const name = f.state.sequenceName;
-        f.state.sequenceName = null;
-        f.state.sequence = [];
-        if(name) {
-          // Compile new word
-          if(f.state.sequenceIsImmediate)
-            sequence.immediate = true;
-          f.state.dictionary[name] = sequence;
-        } else {
-          // Execute code immediately
-          run(sequence, f.state);
-        }
-        f.state.sequenceIsImmediate = false;
-      }, true);
-
-      func(':', f => {
-        // Execute preceeding code
-        const sequence = f.state.sequence;
-        f.state.sequenceName = null;
-        f.state.sequence = [];
-        f.state.sequenceIsImmediate = false;
-        run(sequence, f.state);
-        // Begin new word definition
-        f.state.sequenceName =
-          f.state.tokens[f.state.nextToken++];
-        f.state.sequence = [];
-      }, true);
-
-      func('immediate', f => {
-        f.state.sequenceIsImmediate = true;
-      }, true);
-
-      func('compile-sequence', f =>
-        f.state.stack.push(f.state.sequence));
-      
-      func('runtime-sequence', f =>
-        f.state.stack.push(f.sequence));
-
-      func('compile', f => {
-        const step = f.state.stack.pop();
-        f.state.sequence.push(step);
+      func('quote', s => {
+        const item = s.stack.pop();
+        s.stack.push(state =>
+          state.stack.push(item));
       });
 
-      func('compile-literal', f => {
-        const value = f.state.stack.pop();
-        f.state.sequence.push(frame =>
-          frame.state.stack.push(value));
+      func('as-parser', s => {
+        const action = s.stack.pop();
+        const ends = s.stack.pop().split('/');
+        action.parse = ends;
+        s.stack.push(action);
       });
 
-      func('convert-to-literal', f => {
-        const value = f.state.stack.pop();
-        f.state.stack.push(frame =>
-          frame.state.stack.push(value));
+      func('run-parser', s => {
+        const parser = s.stack.pop();
+        if(parser.preParse)
+          eval(parser.preParse, s);
+        s.parsers.push(parser);
       });
+
+      func('{', s => {
+        const sequence = s.stack.pop();
+        s.stack.pop();
+        eval(sequence, s);
+      }, ['}']);
+
+      func('[', s => {
+        const sequence = s.stack.pop();
+        s.stack.pop();
+        getCurrentSequence(s).push(s2 =>
+          s2.stack.push(sequence));
+      }, [']']);
 
       // Control Flow
+      
+      func('endif', s => {
+        const falseBody = s.stack.pop();
+        const trueBody = s.stack.pop();
+        const condition = s.stack.pop();
+        if(condition)
+          eval(trueBody, s);
+        else
+          eval(falseBody, s);
+      };
 
-      func('jump', f => {
-        const destination = f.state.stack.pop();
-        f.pc = destination;
-      });
-
-      func('jump-if-false', f => {
-        const destination = f.state.stack.pop();
-        const condition = f.state.stack.pop();
-        if(!condition)
-          f.pc = destination;
+      func('endwhile', s => {
+        const body = s.stack.pop();
+        let condition = s.stack.pop();
+        while(condition) {
+          eval(body, s);
+          condition = s.stack.pop();
+        }
       });
       
       // Stack
 
-      func('dup', f => {
-        const a = f.state.stack[f.state.stack.length-1];
-        f.state.stack.push(a);
+      func('dup', s => {
+        const a = s.stack[s.stack.length-1];
+        s.stack.push(a);
       });
 
-      func('2dup', f => {
-        const a = f.state.stack[f.state.stack.length-1];
-        const b = f.state.stack[f.state.stack.length-2];
-        f.state.stack.push(b);
-        f.state.stack.push(a);
+      func('2dup', s => {
+        const top2 = s.stack.slice(-2);
+        s.stack.push(...top2);
       });
 
-      func('over', f => {
-        const a = f.state.stack[f.state.stack.length-2];
-        f.state.stack.push(a);
+      func('over', s => {
+        const a = s.stack[s.stack.length-2];
+        s.stack.push(a);
       });
 
-      func('swap', f => {
-        const a = f.state.stack.pop();
-        const b = f.state.stack.pop();
-        f.state.stack.push(a);
-        f.state.stack.push(b);
+      func('swap', s => {
+        const topItem = s.stack.pop();
+        s.stack.splice(s.stack.length-1, 0, topItem);
       });
 
-      func('drop', f => {
-        f.state.stack.pop();
+      func('tuck', s => {
+        const topItem = s.stack[s.stack.length-1];
+        s.stack.splice(s.stack.length-1, 0, topItem);
       });
 
-      func('rot', f => {
-        // ( a b c ) -> ( c a b )
-        const c = f.state.stack.pop();
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(c);
-        f.state.stack.push(a);
-        f.state.stack.push(b);
+      func('drop', s => {
+        s.stack.pop();
       });
 
-      func('-rot', f => {
-        // ( a b c ) -> ( b c a )
-        const c = f.state.stack.pop();
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(b);
-        f.state.stack.push(c);
-        f.state.stack.push(a);
+      func('rot', s => {
+        // push top item under next two
+        const topItem = s.stack.pop();
+        s.stack.splice(s.stack.length-2, 0, topItem);
       });
 
-      func('nip', f => {
-        const top = f.state.stack.pop();
-        f.state.stack.pop();
-        f.state.stack.push(top);
+      func('-rot', s => {
+        // pull 3rd item to top
+        const third = s.stack.splice(s.stack.length-3, 1)[0];
+        s.stack.push(third);
+      });
+
+      func('nip', s => {
+        s.stack.splice(s.stack.length-2, 1);
       });
 
       // Literals
 
-      func('null', f => {
-        f.state.stack.push(null);
-      });
-
-      func('true', f => {
-        f.state.stack.push(true);
-      });
-
-      func('false', f => {
-        f.state.stack.push(false);
-      });
+      dictionary['null'] = null;
+      dictionary['true'] = true;
+      dictionary['false'] = false;
 
       // Logic
 
-      func('not', f => {
-        const v = f.state.stack.pop();
-        f.state.stack.push(!v);
+      func('not', s => {
+        const v = s.stack.pop();
+        s.stack.push(!v);
       });
 
-      func('and', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a && b);
+      func('and', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a && b);
       });
 
-      func('or', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a || b);
+      func('or', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a || b);
       });
 
-      func('=', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a === b);
+      func('=', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a === b);
       });
 
-      func('>', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a > b);
+      func('>', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a > b);
       });
 
-      func('>=', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a >= b);
+      func('>=', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a >= b);
       });
 
-      func('<', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a < b);
+      func('<', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a < b);
       });
 
-      func('<=', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a <= b);
+      func('<=', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a <= b);
       });
 
       // Math
 
-      func('+', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a + b);
+      func('+', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a + b);
       });
 
-      func('-', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a - b);
+      func('-', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a - b);
       });
 
-      func('/', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a / b);
+      func('/', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a / b);
       });
 
-      func('*', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a * b);
+      func('*', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a * b);
       });
 
-      func('%', f => {
-        const b = f.state.stack.pop();
-        const a = f.state.stack.pop();
-        f.state.stack.push(a % b);
+      func('%', s => {
+        const b = s.stack.pop();
+        const a = s.stack.pop();
+        s.stack.push(a % b);
       });
 
       // Strings
       
       // Arrays
 
-      func('length', f => {
-        const array = f.state.stack.pop();
-        f.state.stack.push(array.length);
+      func('length', s => {
+        const array = s.stack.pop();
+        s.stack.push(array.length);
       });
 
       // Debugging
 
-      func('print', f => {
-        t.log(f.state.stack.pop());
+      func('print', s => {
+        t.log(s.stack.pop());
       });
 
-      func('pause', f => {
-        t.log(f);
+      func('pause', s => {
+        t.log(s);
         debugger; // examine the runtime state in the console
       });
 
-      func('print-stack', f => {
-        t.log(JSON.stringify(f.state.stack));
+      func('print-stack', s => {
+        t.log(JSON.stringify(s.stack));
       });
 
       // JS Interop
 
-      func('.get', f => {
-        const key = f.state.stack.pop();
-        const object = f.state.stack.pop();
-        f.state.stack.push(object[key]);
+      func('.get', s => {
+        const key = s.stack.pop();
+        const object = s.stack.pop();
+        s.stack.push(object[key]);
       });
 
-      func('create-object', f => {
-        f.state.stack.push({});
+      func('create-object', s => {
+        s.stack.push({});
       });
 
-      func('.set', f => {
-        const key = f.state.stack.pop();
-        const object = f.state.stack.pop();
-        const value = f.state.stack.pop();
+      func('.set', s => {
+        const key = s.stack.pop();
+        const object = s.stack.pop();
+        const value = s.stack.pop();
         object[key] = value;
       });
 
-      func('call', f => {
-        const argCount = f.state.stack.pop();
-        const func = f.state.stack.pop();
-        const args = f.state.stack.splice(f.state.stack.length - argCount, argCount);
-        f.state.stack.push(func(...args));
+      func('call', s => {
+        const argCount = s.stack.pop();
+        const func = s.stack.pop();
+        const args = s.stack.splice(s.stack.length - argCount, argCount);
+        s.stack.push(func(...args));
       });
 
-      func('.call', f => {
-        const argCount = f.state.stack.pop();
-        const methodName = f.state.stack.pop();
-        const object = f.state.stack.pop();
-        const args = f.state.stack.splice(f.state.stack.length - argCount, argCount);
-        f.state.stack.push(object[methodName](...args));
+      func('.call', s => {
+        const argCount = s.stack.pop();
+        const methodName = s.stack.pop();
+        const object = s.stack.pop();
+        const args = s.stack.splice(s.stack.length - argCount, argCount);
+        s.stack.push(object[methodName](...args));
       });
 
-      func('as-function', f => {
-        const sequence = f.state.stack.pop();
+      func('as-function', s => {
+        const sequence = s.stack.pop();
         const func = (...args) => {
           const state = {
             stack: args,
@@ -321,13 +291,13 @@ t.module(async () => {
           const result = state.stack.pop();
           return result;
         };
-        f.state.stack.push(func);
+        s.stack.push(func);
       });
 
-      func('get-program', f => {
-        const name = f.state.stack.pop();
-        const code = f.state.programs[name];
-        f.state.stack.push(code);
+      func('get-program', s => {
+        const name = s.stack.pop();
+        const code = s.programs[name];
+        s.stack.push(code);
       });
         
     },
