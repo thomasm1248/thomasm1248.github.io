@@ -10,10 +10,8 @@
 
   async function init() {
     const {
-      os,
       beep,
     } = await t.requireModulesAsync({
-      os: 'js/system/os',
       beep: 'js/utils/beep',
     });
 
@@ -55,7 +53,7 @@
       const itemName = schedule[currentScheduleIndex].name;
       const text = `${itemName} - ${minutes}:${secondsText}`;
       pCountdown.innerText = text;
-      os.updateTitle(text);
+      document.title = text;
     }
 
     tick();
