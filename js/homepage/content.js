@@ -416,15 +416,23 @@ t
 513
 250
 -2
-"As an alternative to engagement-driven algorithms, people ought to create 'curation feeds' where they re-post the valuable content they find. There are many tools online that make this easy to do." Here's mine:
+An "internet journal" is a personal collection of cool stuff a person finds on the internet. I think everyone should make one. Click box below to learn why and how:
 
-c
-175
-713
+p
+77
+693
 100
 2
+Learn more
+internet-journaling.html
+
+c
+211
+704
+100
+-3
 rss-icon.png
-Curation Feed
+My Internet Journal (RSS)
 rss.xml
 
 j
