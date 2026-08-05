@@ -1,0 +1,106 @@
+<!-- Content -->
+<h3>Pauses</h3>
+<canvas id='wait-graph'></canvas>
+<h3>Presses</h3>
+<canvas id='length-graph'></canvas>
+<p id='output' style='margin-top: 100px'></p>
+
+
+
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    global,
+  } = await t.requireModulesAsync({
+    global: 'global',
+  });
+
+  // Config
+  const SIZE = 1000;
+  const MILLISECONDS_PER_GRAPH = 4000;
+
+  // Standard periods
+  const sequence = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+  ];
+  const standardPauses = sequence
+    .map(x => x * x * 8);
+  t.log(standardPauses);
+  const standardPresses = sequence
+    .map(x => x * x * 5);
+  t.log(standardPresses);
+
+  // Log
+  function prepareGraph(id) {
+    const canvas = document.getElementById(id);
+    canvas.width = SIZE;
+    canvas.height = 50;
+    const ctx = canvas.getContext('2d');
+    return ctx;
+  }
+  const log = [];
+  const waitGraphCtx = prepareGraph('wait-graph');
+  const lengthGraphCtx = prepareGraph('length-graph');
+  let text = '';
+  const output = document.getElementById('output');
+  function plot(ctx, num, color = 'black') {
+    const x = num / MILLISECONDS_PER_GRAPH * SIZE;
+    ctx.strokeStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, 50);
+    ctx.stroke();
+  }
+  standardPauses.map(x => plot(waitGraphCtx, x, 'blue'));
+  standardPresses.map(x => plot(lengthGraphCtx, x, 'blue'));
+  function logPress(wait, length) {
+    log.push({
+      wait,
+      length,
+    });
+    plot(waitGraphCtx, wait);
+    plot(lengthGraphCtx, length);
+    if(wait > MEMO_THRESHOLD)
+      text += ' | ';
+    else if(wait > LETTER_THRESHOLD)
+      text += ' ';
+    if(length > THRESHOLD)
+      text += '-';
+    else
+      text += '.';
+    output.innerText = text;
+  }
+
+  // Listen for spacebar presses/releases
+  let buttonPressed = false;
+  let pauseTime = null;
+  let lastTime = Date.now();
+  window.onkeydown = e => {
+    if(e.key !== ' ') return;
+    if(buttonPressed) return;
+    buttonPressed = true;
+    const now = Date.now();
+    pauseTime = now - lastTime;
+    lastTime = now;
+  };
+  window.onkeyup = e => {
+    if(e.key !== ' ') return;
+    buttonPressed = false;
+    const now = Date.now();
+    const pressTime = now - lastTime;
+    lastTime = now;
+    logPress(pauseTime, pressTime);
+  };
+  
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+/* Make the page look good */
+
+</style>
