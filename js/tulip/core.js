@@ -2,8 +2,8 @@
 t.module(async () => {
   const e = {};
 
-  const builtIns = await t.requireAsync('js/forth/builtInWords');
-  const baseLib = await t.requireAsync('js/forth/lib/base');
+  const builtIns = await t.requireAsync('js/tulip/builtInWords');
+  const baseLib = await t.requireAsync('js/tulip/lib/base');
 
   // Environment operations
 
@@ -11,15 +11,7 @@ t.module(async () => {
     if(!env) return undefined;
     const value = env[name];
     if(value !== undefined) return value;
-    return get(env.parent, name);
-  }
-
-  function update(env, name, value) {
-    if(!env) return;
-    if(env[name] !== undefined)
-      env[name] = value;
-    else
-      update(env.parent, name, value);
+    return get(env.__parent, name);
   }
 
   // Parsing
@@ -36,15 +28,61 @@ t.module(async () => {
   
   function eval(item, env) {
     if(typeof item === 'function') {
+      // Function
       item(env);
-    } else if(typeof item === 'object' && item.length !== undefined) {
+    } else if(typeof item !== 'object')
+      // Value
+      env.it = item;
+    } else if(item.__isValue) {
+      // Value wrapper
+      env.it = item.value;
+    } else if(item.__isToken) {
+      // Token
+      env.token = item;
+      const value = get(env, item.name);
+      env.it = value;
+      env.value = value;
+    } else if(item.length !== undefined) {
+      // List
       for(let i = 0; i < item.length; i++) {
         const subItem = item[i];
         eval(subItem, env);
       }
+    } else if(item.__type === 'if') {
+      // If
+      if(env.it)
+        eval(item.ifTrue, env);
+      else if(env.ifFalse)
+        eval(item.ifFalse, env);
+    } else if(item.__type === 'while') {
+      // While
+      while(env.it)
+        eval(item.body, env);
+    } else if(item.__type === 'scope') {
+      // Scope
+      const newScope = {
+        parent: env,
+      };
+      eval(item.body, newScope);
     } else {
+      // Something else
       env.it = item;
     }
+  }
+
+  const tokenDict = {};
+  const tokenNames = {};
+  function makeTokenObject(name) {
+    let tokenObject = tokenDict[name];
+    if(!tokenObject) {
+      tokenObject = {
+        __isToken = true,
+        name,
+      };
+      tokenDict[name] = tokenObject;
+      tokenNames[tokenObject] = name;
+    }
+    return tokenObject;
   }
 
   function read(tokens, dictionary) {
@@ -99,8 +137,8 @@ t.module(async () => {
       }
       const action = dictionary[token];
       if(!action)
-        throw new Error(`Word "${token}" is not defined.`);
-      if(action.postParse) {
+        currentSequence().push(makeTokenObject(token));
+      else if(action.postParse) {
         env.parsers.push({
           ...action,
           sequence: [],
@@ -130,8 +168,7 @@ t.module(async () => {
       },
       'eval': eval,
       'read': e => {
-        const tokens = s.stack.pop();
-        read(tokens, e.dictionary);
+        read(e.it, e.dictionary);
       },
     };
     builtIns.addTo(dictionary);
