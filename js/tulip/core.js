@@ -27,148 +27,166 @@ t.module(async () => {
   // Runtime
   
   function eval(item, env) {
-    if(typeof item === 'function') {
-      // Function
-      item(env);
-    } else if(typeof item !== 'object')
-      // Value
-      env.it = item;
-    } else if(item.__isValue) {
-      // Value wrapper
-      env.it = item.value;
-    } else if(item.__isToken) {
-      // Token
-      env.token = item;
-      const value = get(env, item.name);
-      env.it = value;
-      env.value = value;
-    } else if(item.length !== undefined) {
-      // List
-      for(let i = 0; i < item.length; i++) {
-        const subItem = item[i];
-        eval(subItem, env);
-      }
-    } else if(item.__type === 'if') {
-      // If
-      if(env.it)
-        eval(item.ifTrue, env);
-      else if(env.ifFalse)
-        eval(item.ifFalse, env);
-    } else if(item.__type === 'while') {
-      // While
-      while(env.it)
-        eval(item.body, env);
-    } else if(item.__type === 'scope') {
-      // Scope
-      const newScope = {
-        parent: env,
-      };
-      eval(item.body, newScope);
-    } else {
-      // Something else
-      env.it = item;
+    switch(item.__action) {
+      case 'value':
+        env.it = item.value;
+        break;
+      case 'symbol':
+        env.symbol = item;
+        env.it = get(env, symbol);
+      case 'native function':
+        item.func(env);
+        break;
+      case 'if':
+        if(env.it)
+          eval(item.ifTrue, env);
+        else if(item.ifFalse)
+          eval(item.ifFalse, env);
+        break;
+      case 'loop':
+        while(env.it)
+          eval(item.program, env);
+        break;
+      case 'program':
+        for(const subItem of item.program)
+          eval(subItem, env);
+        break;
+      case 'scope':
+        const newScope = {
+          __parent: env,
+        };
+        eval(item.program, newScope);
+        break;
+      default:
+        env.it = item;
+        break;
     }
   }
 
-  const tokenDict = {};
-  const tokenNames = {};
-  function makeTokenObject(name) {
-    let tokenObject = tokenDict[name];
-    if(!tokenObject) {
-      tokenObject = {
-        __isToken = true,
+  // Symbol table (for performance)
+
+  const symbolTable = {};
+
+  function makeSymbol(name) {
+    let symbol = symbolTable[name];
+    if(!symbol) {
+      symbol = {
+        __action: 'symbol',
         name,
       };
-      tokenDict[name] = tokenObject;
-      tokenNames[tokenObject] = name;
+      symbolTable[name] = symbol;
     }
-    return tokenObject;
+    return symbol;
   }
 
+  // Read program
+
   function read(tokens, dictionary) {
-    const env = {
-      dictionary,
-      tokens,
-      nextToken: 0,
-      parsers: [{
-        // Main parser, runs program
-        terminators: [], // never ends
-        sequence: [],
-        postParse: env => {
-          // Get the compiled program
-          const sequence = env.sequence;
-          // Run the program
-          eval(sequence, env);
-        },
-      }],
-    };
-    function currentSequence() {
-      return env.parsers[env.parsers.length-1].sequence;
-    }
-    while(env.nextToken < tokens.length) {
-      const token = tokens[env.nextToken];
-      env.nextToken++;
-      // Comments
-      if(token.startsWith('(')) continue;
+    let tokenIndex = 0;
+
+    // How to parse the next token
+    const wrappedReadNext = env =>
+      env.it = readNext();
+    function readNext() {
+      // Get next token
+      const token = tokens[tokenIndex++];
+      // Skip comments
+      while(token !== undefined && token.startsWith('('))
+        token = tokens[tokenIndex++];
+      // Exit if the end has been reached
+      if(token === undefined) return undefined;
       // Numbers
-      if(token.match(/^\d/)) {
-        const number = token * 1;
-        currentSequence().push(number);
-        continue;
-      }
+      if(token.match(/^\d/))
+        return token * 1;
       // Strings
-      if(token.match(/"$/)) {
-        const string = token
+      if(token.match(/"$/))
+        return token
           .slice(1, -1)
           .replaceAll('\\n', '\n')
           .replaceAll('\\\\', '\\')
           .replaceAll('\\"', '"');
-        currentSequence().push(string);
-        continue;
+      // Symbols
+      const symbol = makeSymbol(token);
+      const definition = dictionary[symbol];
+      if(definition.__action === 'parse') {
+        // Symbol refers to a parser, so activate it
+        return runParser(definition, env);
       }
-      // Words
-      const currentParser = env.parsers[env.parsers.length-1];
-      if(currentParser.terminators.contains(token)) {
-        env.terminator = token;
-        env.sequence = currentParser.sequence;
-        env.parsers.pop();
-        eval(currentParser.postParse, env);
-        continue;
-      }
-      const action = dictionary[token];
-      if(!action)
-        currentSequence().push(makeTokenObject(token));
-      else if(action.postParse) {
-        env.parsers.push({
-          ...action,
-          sequence: [],
-        });
-        if(action.preParse)
-          eval(action.preParse, env);
-      } else
-        currentSequence().push(action);
+      return symbol;
     }
-    
-    if(env.parsers.length > 1) {
-      const currentParser = env.parsers.pop();
-      throw new Error(`Code ended too soon. Expected:` +
-        ` ${currentParser.terminators.join(', ')}.`);
+
+    // How to run a parser
+    function runParser(parser, env) {
+      const parserEnv = {
+        __parent: env,
+        sequence: [],
+        readNext: wrappedReadNext,
+      };
+      eval(parser.program, parserEnv);
+      return parserEnv.it;
     }
-    const mainParser = env.parsers.pop();
-    env.sequence = mainParser.sequence;
-    eval(mainParser.postParse, env);
+
+    // Base parser
+    const baseParser = {
+      __action: 'parse',
+      program: {
+        __action: 'native function',
+        func: e => {
+          const dictionary = get(e, 'dictionary');
+          const program = [];
+
+          // Compile program
+          e.readNext(e);
+          while(e.it !== undefined) {
+            if(e.it.__action === 'symbol') {
+              // Compile symbols by looking them up in the dictionary
+              const definition = dictionary[e.it];
+              program.push(definition);
+            } else {
+              // Compile non-symbols directly
+              program.push(e.it);
+            }
+            e.readNext(e);
+          }
+
+          // Run the compiled program
+          eval({
+            __action: 'program',
+            program,
+          }, e);
+
+          // Return null
+          e.it = null;
+        },
+      },
+    };
+
+    // Create a root environment for the parsing
+    const parsingEnv = {
+      dictionary,
+    };
+
+    // Parse the tokens
+    return runParser(baseParser, parsingEnv);
   }
 
   // Public functions
   
   e.createCoreDictionary = () => {
     const dictionary = {
-      'tokenize': e => {
-        e.it = tokenize(e.it);
+      'make-symbol': makeSymbol,
+      [makeSymbol('eval')]: eval,
+      [makeSymbol('tokenize')]: {
+        __action: 'native function',
+        func: e => {
+          e.it = tokenize(e.it);
+        },
       },
-      'eval': eval,
-      'read': e => {
-        read(e.it, e.dictionary);
+      [makeSymbol('read')]: {
+        __action: 'native function',
+        func: e => {
+          e.it = read(e.it, get(e, 'dictionary'));
+        },
       },
     };
     builtIns.addTo(dictionary);

@@ -6,26 +6,26 @@ t.module(async () => {
 
       // Environment operations
 
-      function get(env, name) {
+      function get(env, symbol) {
         if(!env) return undefined;
-        const value = env[name];
+        const value = env[symbol];
         if(value !== undefined) return value;
-        return get(env.__parent, name);
+        return get(env.__parent, symbol);
       }
 
-      function update(env, name, value) {
+      function update(env, symbol, value) {
         if(!env) return;
-        if(env[name] !== undefined)
-          env[name] = value;
+        if(env[symbol] !== undefined)
+          env[symbol] = value;
         else
-          update(env.__parent, name, value);
+          update(env.__parent, symbol, value);
       }
 
-      function consumeFirstLocal(env, ...names) {
-        for(const name of names) {
-          const value = env[name];
+      function consumeFirstLocal(env, ...symbols) {
+        for(const symbol of symbols) {
+          const value = env[symbol];
           if(value !== undefined) {
-            env[name] = undefined;
+            env[symbol] = undefined;
             return value;
           }
         }
@@ -35,109 +35,128 @@ t.module(async () => {
       // Other utilities
       
       function func(name, implementation) {
-        dictionary[name] = implementation;
-      }
-
-      function parser(preParse, terminators, postParse) {
-        return {
-          preParse,
-          terminators,
-          postParse,
+        dictionary[name] = {
+          __action: 'native function',
+          func: implementation,
         };
       }
 
-      const eval = dictionary.eval;
-      dictionary.eval = e => {
-        eval(e.it, e);
+      function parser(name, implementation) {
+        dictionary[name] = {
+          __action: 'parse',
+          program: {
+            __action: 'native function',
+            func: implementation,
+          },
+        };
+      }
+
+      const makeSymbol = dictionary['make-symbol'];
+      dictionary['make-symbol'] = undefined;
+      dictionary[makeSymbol('make-symbol')] = {
+        __action: 'native function',
+        func: e => {
+          const symbol = makeSymbol(e.it);
+          e.it = symbol;
+          e.symbol = symbol;
+        },
       };
 
-      function getCurrentSequence(env) {
-        const parsers = get(env, 'parsers');
-        const currentParser = parsers[parsers.length-1];
-        return currentParser.sequence;
-      }
-
-      function getNextToken(env) {
-        const nextToken = get(e, 'nextToken');
-        const token = get(e, 'tokens')[nextToken++];
-        update(e, 'nextToken', nextToken);
-        return token;
-      }
-
-      function cancelParser(env) {
-        const parsers = get(env, 'parsers');
-        parsers.pop();
-      }
+      const evalSymbol = makeSymbol('eval');
+      const eval = dictionary[evalSymbol];
+      dictionary[evalSymbol];
+        __action: 'native function',
+        func: e => {
+          const item = e.it;
+          e.it = undefined;
+          eval(item, e);
+        },
+      };
 
       // Meta
 
-      func('read-token', e => {
-        const token = getNextToken(e);
-        e.it = token;
-        e.token = token;
-      });
-      
-      func('dictionary', e => {
-        const dictionary = get(e, 'dictionary');
-        e.it = dictionary;
-        e.dictionary = dictionary;
-      });
-
-      func('compile', e => {
-        getCurrentSequence(s).push(e.it);
-        e.it = undefined;
-      });
-
       func('quote', e => {
         e.it = {
-          __isValue: true,
+          __action: 'value',
           value: e.it,
         };
       });
 
-      func('as-parser', e => {
-        const action = e.action;
-        const ends = e.ends.split('/');
+      func('make-parser', e => {
         const parser = {
-          postParse: action,
-          terminators: ends,
+          __action: 'parse',
+          program: e.it,
         };
         e.it = parser;
         e.parser = parser;
       });
 
-      func('run-parser', e => {
-        const parser = consumeFirstLocal(e, 'parser', 'it');
-        if(parser.preParse)
-          eval(parser.preParse, e);
-        get(e, 'parsers').push(parser);
+      parser('{', e => {
+        const dictionary = get(e, 'dictionary');
+        const program = [];
+
+        // Compile program
+        e.readNext(e);
+        while(true) {
+          if(e.it.__action === 'symbol') {
+            // Stop when a '}' is reached
+            if(e.it.name === '}') break;
+            // Compile symbols by looking them up in the dictionary
+            const definition = dictionary[e.it];
+            program.push(definition);
+          } else {
+            // Compile non-symbols directly
+            program.push(e.it);
+          }
+          e.readNext(e);
+        }
+
+        // Run the compiled program
+        eval({
+          __action: 'program',
+          program,
+        }, e);
+
+        // Return null
+        e.it = null;
       });
 
-      dictionary['{'] = parser(
-        e => {
-        },
-        ['}'],
-        e => {
-          const sequence = e.sequence;
-          e.sequence = undefined;
-          eval(sequence, e);
-        }
-      );
+      parser('[', e => {
+        const dictionary = get(e, 'dictionary');
+        const program = [];
 
-      dictionary['['] = parser(
-        e => {
-        },
-        [']'],
-        e => {
-          getCurrentSequence(e).push({
-            __isValue: true,
-            value: e.sequence,
-          });
-          e.sequence = undefined;
+        // Compile program
+        e.readNext(e);
+        while(true) {
+          if(e.it.__action === 'symbol') {
+            // Stop when a '}' is reached
+            if(e.it.name === '}') break;
+            // Compile symbols by looking them up in the dictionary
+            const definition = dictionary[e.it];
+            program.push(definition);
+          } else {
+            // Compile non-symbols directly
+            program.push(e.it);
+          }
+          e.readNext(e);
         }
-      );
+
+        // Return the code as a value
+        e.it = {
+          __action: 'value',
+          value: {
+            __action: 'program',
+            program,
+          },
+        };
+      });
       
       // Environment manipulation
+      
+      parser('->', e => {
+        e.readNext(e);
+        const symbol = e.it;
+      });
       
       dictionary['->'] = parser(e => {
         e.nextToken(e);
@@ -172,6 +191,7 @@ t.module(async () => {
 
       // Literals
 
+      dictionary['undefined'] = undefined;
       dictionary['null'] = null;
       dictionary['true'] = true;
       dictionary['false'] = false;
