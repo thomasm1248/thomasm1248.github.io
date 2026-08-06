@@ -14,6 +14,7 @@
       task,
       start,
       runningPanel,
+      preReport,
       restart,
       abort,
       reportPanel,
@@ -31,6 +32,9 @@
           <button data-ref='start'>Start</button>
         </div>
         <div data-ref='runningPanel' class='hidden'>
+          <textarea data-ref='preReport' placeholder='Track what you're doing...'
+                    cols='40' rows='15'>
+          </textarea><br>
           <button data-ref='restart'>Restart</button>
           <button data-ref='abort'>Abort</button>
         </div>
@@ -54,6 +58,7 @@
     if(e.key !== 'Enter') return;
     if(currentState.start)
       currentState.start();
+    e.preventDefault();
   };
   restart.onclick = _ => {
     if(currentState.restart)
@@ -69,8 +74,10 @@
   };
   report.onkeydown = e => {
     if(e.key !== 'Enter') return;
+    if(e.shiftKey) return;
     if(currentState.finish)
       currentState.finish();
+    e.preventDefault();
   };
 
   let currentState = null;
@@ -117,7 +124,9 @@
       }
       displayTime();
       instructions.innerText = task;
+      preReport.value = '';
       runningPanel.classList.remove('hidden');
+      preReport.focus();
       return {
         tick: displayTime,
         restart: () => {
@@ -135,7 +144,7 @@
 
     function reportingState() {
       t.log('reporting state');
-      report.value = '';
+      report.value = preReport.value;
       reportPanel.classList.remove('hidden');
       report.focus();
       return {
