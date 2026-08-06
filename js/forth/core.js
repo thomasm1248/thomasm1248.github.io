@@ -5,6 +5,23 @@ t.module(async () => {
   const builtIns = await t.requireAsync('js/forth/builtInWords');
   const baseLib = await t.requireAsync('js/forth/lib/base');
 
+  // Environment operations
+
+  function get(env, name) {
+    if(!env) return undefined;
+    const value = env[name];
+    if(value !== undefined) return value;
+    return get(env.parent, name);
+  }
+
+  function update(env, name, value) {
+    if(!env) return;
+    if(env[name] !== undefined)
+      env[name] = value;
+    else
+      update(env.parent, name, value);
+  }
+
   // Parsing
 
   function tokenize(code) {
@@ -17,22 +34,21 @@ t.module(async () => {
 
   // Runtime
   
-  function eval(item, state) {
+  function eval(item, env) {
     if(typeof item === 'function') {
-      item(state);
+      item(env);
     } else if(typeof item === 'object' && item.length !== undefined) {
       for(let i = 0; i < item.length; i++) {
         const subItem = item[i];
-        eval(subItem, state);
+        eval(subItem, env);
       }
     } else {
-      state.stack.push(item);
+      env.it = item;
     }
   }
 
   function read(tokens, dictionary) {
-    const state = {
-      stack: [],
+    const env = {
       dictionary,
       tokens,
       nextToken: 0,
@@ -40,20 +56,20 @@ t.module(async () => {
         // Main parser, runs program
         terminators: [], // never ends
         sequence: [],
-        postParse: state => {
+        postParse: env => {
           // Get the compiled program
-          const sequence = state.stack.pop();
+          const sequence = env.sequence;
           // Run the program
-          eval(sequence, state);
+          eval(sequence, env);
         },
       }],
     };
     function currentSequence() {
-      return state.parsers[state.parsers.length-1].sequence;
+      return env.parsers[env.parsers.length-1].sequence;
     }
-    while(state.nextToken < tokens.length) {
-      const token = tokens[state.nextToken];
-      state.nextToken++;
+    while(env.nextToken < tokens.length) {
+      const token = tokens[env.nextToken];
+      env.nextToken++;
       // Comments
       if(token.startsWith('(')) continue;
       // Numbers
@@ -73,50 +89,49 @@ t.module(async () => {
         continue;
       }
       // Words
-      const currentParser = state.parsers[state.parsers.length-1];
+      const currentParser = env.parsers[env.parsers.length-1];
       if(currentParser.terminators.contains(token)) {
-        state.stack.push(token);
-        state.stack.push(currentParser.sequence);
-        state.parsers.pop();
-        eval(currentParser.postParse, state);
+        env.terminator = token;
+        env.sequence = currentParser.sequence;
+        env.parsers.pop();
+        eval(currentParser.postParse, env);
         continue;
       }
       const action = dictionary[token];
       if(!action)
         throw new Error(`Word "${token}" is not defined.`);
       if(action.postParse) {
-        state.parsers.push({
+        env.parsers.push({
           ...action,
           sequence: [],
         });
         if(action.preParse)
-          eval(action.preParse, state);
+          eval(action.preParse, env);
       } else
         currentSequence().push(action);
     }
     
-    if(state.parsers.length > 1) {
-      const currentParser = state.parsers.pop();
+    if(env.parsers.length > 1) {
+      const currentParser = env.parsers.pop();
       throw new Error(`Code ended too soon. Expected:` +
         ` ${currentParser.terminators.join(', ')}.`);
     }
-    const mainParser = state.parsers.pop();
-    state.stack.push(mainParser.sequence);
-    eval(mainParser.postParse, state);
+    const mainParser = env.parsers.pop();
+    env.sequence = mainParser.sequence;
+    eval(mainParser.postParse, env);
   }
 
   // Public functions
   
   e.createCoreDictionary = () => {
     const dictionary = {
-      'tokenize': s => {
-        const code = s.stack.pop();
-        s.stack.push(tokenize(code));
+      'tokenize': e => {
+        e.it = tokenize(e.it);
       },
       'eval': eval,
-      'read': s => {
+      'read': e => {
         const tokens = s.stack.pop();
-        read(tokens, s.dictionary);
+        read(tokens, e.dictionary);
       },
     };
     builtIns.addTo(dictionary);
