@@ -1,25 +1,22 @@
 
 <script src='../tame.js'></script>
 <script>(async () => {
-  const forth = await t.requireAsync('js/forth/core');
+  const tulip = await t.requireAsync('js/tulip/core');
 
   // Create core dictionary
-  const dictionary = forth.createCoreDictionary();
+  const dictionary = tulip.createCoreDictionary();
 
   // Run program
-  forth.read(`
+  tulip.read(`
 
-    [
-      print
-    ]
-    as-function
-    "main" set
-
-    123 "num" set
+    1 -> i
+    i 10 <= loop{
+      "counter = " i + print
+      i 1 + -> i
+      i 10 <=
+    }
 
   `,
   dictionary);
-
-  dictionary.main(dictionary.num);
 
 })()</script>

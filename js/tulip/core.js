@@ -26,38 +26,42 @@ t.module(async () => {
 
   // Runtime
   
-  function eval(item, env) {
+  function run(item, env) {
     switch(item.__action) {
       case 'value':
+        env.other = env.it;
         env.it = item.value;
         break;
       case 'symbol':
         env.symbol = item;
-        env.it = get(env, symbol);
+        env.other = env.it;
+        env.it = get(env, item.name);
+        break;
       case 'native function':
         item.func(env);
         break;
       case 'if':
         if(env.it)
-          eval(item.ifTrue, env);
+          run(item.ifTrue, env);
         else if(item.ifFalse)
-          eval(item.ifFalse, env);
+          run(item.ifFalse, env);
         break;
       case 'loop':
         while(env.it)
-          eval(item.program, env);
+          run(item.program, env);
         break;
       case 'program':
         for(const subItem of item.program)
-          eval(subItem, env);
+          run(subItem, env);
         break;
       case 'scope':
         const newScope = {
           __parent: env,
         };
-        eval(item.program, newScope);
+        run(item.program, newScope);
         break;
       default:
+        env.other = env.it;
         env.it = item;
         break;
     }
@@ -71,8 +75,8 @@ t.module(async () => {
     let symbol = symbolTable[name];
     if(!symbol) {
       symbol = {
-        __action: 'symbol',
         name,
+        __action: 'symbol',
       };
       symbolTable[name] = symbol;
     }
@@ -86,10 +90,10 @@ t.module(async () => {
 
     // How to parse the next token
     const wrappedReadNext = env =>
-      env.it = readNext();
-    function readNext() {
+      env.it = readNext(env);
+    function readNext(env) {
       // Get next token
-      const token = tokens[tokenIndex++];
+      let token = tokens[tokenIndex++];
       // Skip comments
       while(token !== undefined && token.startsWith('('))
         token = tokens[tokenIndex++];
@@ -107,8 +111,8 @@ t.module(async () => {
           .replaceAll('\\"', '"');
       // Symbols
       const symbol = makeSymbol(token);
-      const definition = dictionary[symbol];
-      if(definition.__action === 'parse') {
+      const definition = dictionary[symbol.name];
+      if(definition?.__action === 'parse') {
         // Symbol refers to a parser, so activate it
         return runParser(definition, env);
       }
@@ -122,7 +126,7 @@ t.module(async () => {
         sequence: [],
         readNext: wrappedReadNext,
       };
-      eval(parser.program, parserEnv);
+      run(parser.program, parserEnv);
       return parserEnv.it;
     }
 
@@ -140,8 +144,12 @@ t.module(async () => {
           while(e.it !== undefined) {
             if(e.it.__action === 'symbol') {
               // Compile symbols by looking them up in the dictionary
-              const definition = dictionary[e.it];
-              program.push(definition);
+              const definition = dictionary[e.it.name];
+              // Does symbol have a definition?
+              if(definition === undefined)
+                program.push(e.it); // Compile the symbol
+              else
+                program.push(definition); // Compile the definition
             } else {
               // Compile non-symbols directly
               program.push(e.it);
@@ -150,7 +158,7 @@ t.module(async () => {
           }
 
           // Run the compiled program
-          eval({
+          run({
             __action: 'program',
             program,
           }, e);
@@ -174,15 +182,16 @@ t.module(async () => {
   
   e.createCoreDictionary = () => {
     const dictionary = {
-      'make-symbol': makeSymbol,
-      [makeSymbol('eval')]: eval,
-      [makeSymbol('tokenize')]: {
+      'run': run,
+      'tokenize': {
+        name: 'tokenize',
         __action: 'native function',
         func: e => {
           e.it = tokenize(e.it);
         },
       },
-      [makeSymbol('read')]: {
+      'read': {
+        name: 'read',
         __action: 'native function',
         func: e => {
           e.it = read(e.it, get(e, 'dictionary'));

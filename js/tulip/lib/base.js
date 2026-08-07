@@ -1,9 +1,9 @@
 t.module(`
 
-(-- Testing --)
+(-- Compilation --)
 
-1 -> first
-2 -> second
-+ -> sum
+{
+  ( TODO implement : & parser: )
+}
 
 `);

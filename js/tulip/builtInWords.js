@@ -33,9 +33,10 @@ t.module(async () => {
       }
 
       // Other utilities
-      
+
       function func(name, implementation) {
         dictionary[name] = {
+          name,
           __action: 'native function',
           func: implementation,
         };
@@ -43,6 +44,7 @@ t.module(async () => {
 
       function parser(name, implementation) {
         dictionary[name] = {
+          name,
           __action: 'parse',
           program: {
             __action: 'native function',
@@ -51,27 +53,44 @@ t.module(async () => {
         };
       }
 
-      const makeSymbol = dictionary['make-symbol'];
-      dictionary['make-symbol'] = undefined;
-      dictionary[makeSymbol('make-symbol')] = {
-        __action: 'native function',
-        func: e => {
-          const symbol = makeSymbol(e.it);
-          e.it = symbol;
-          e.symbol = symbol;
-        },
-      };
+      const run = dictionary.run;
+      func('run', e => {
+        const item = e.it;
+        e.it = undefined;
+        run(item, e);
+      });
 
-      const evalSymbol = makeSymbol('eval');
-      const eval = dictionary[evalSymbol];
-      dictionary[evalSymbol];
-        __action: 'native function',
-        func: e => {
-          const item = e.it;
-          e.it = undefined;
-          eval(item, e);
-        },
-      };
+      function parseUntil(e, ...terminators) {
+        const dictionary = get(e, 'dictionary');
+        const program = [];
+
+        // Compile program
+        e.readNext(e);
+        while(true) {
+          if(e.it.__action === 'symbol') {
+            // Stop when a terminator is reached
+            if(terminators.find(t => t === e.it.name))
+              return {
+                program: {
+                  __action: 'program',
+                  program,
+                },
+                terminator: e.it.name,
+              };
+            // Compile symbols by looking them up in the dictionary
+            const definition = dictionary[e.it.name];
+            // Does symbol have a definition?
+            if(definition === undefined)
+              program.push(e.it); // Compile the symbol
+            else
+              program.push(definition); // Compile the definition
+          } else {
+            // Compile non-symbols directly
+            program.push(e.it);
+          }
+          e.readNext(e);
+        }
+      }
 
       // Meta
 
@@ -92,62 +111,50 @@ t.module(async () => {
       });
 
       parser('{', e => {
-        const dictionary = get(e, 'dictionary');
-        const program = [];
-
-        // Compile program
-        e.readNext(e);
-        while(true) {
-          if(e.it.__action === 'symbol') {
-            // Stop when a '}' is reached
-            if(e.it.name === '}') break;
-            // Compile symbols by looking them up in the dictionary
-            const definition = dictionary[e.it];
-            program.push(definition);
-          } else {
-            // Compile non-symbols directly
-            program.push(e.it);
-          }
-          e.readNext(e);
-        }
+        const program = parseUntil(e, '}').program;
 
         // Run the compiled program
-        eval({
-          __action: 'program',
-          program,
-        }, e);
+        run(program, e);
 
         // Return null
         e.it = null;
       });
 
       parser('[', e => {
-        const dictionary = get(e, 'dictionary');
-        const program = [];
-
-        // Compile program
-        e.readNext(e);
-        while(true) {
-          if(e.it.__action === 'symbol') {
-            // Stop when a '}' is reached
-            if(e.it.name === '}') break;
-            // Compile symbols by looking them up in the dictionary
-            const definition = dictionary[e.it];
-            program.push(definition);
-          } else {
-            // Compile non-symbols directly
-            program.push(e.it);
-          }
-          e.readNext(e);
-        }
+        const program = parseUntil(e, ']').program;
 
         // Return the code as a value
         e.it = {
           __action: 'value',
-          value: {
-            __action: 'program',
-            program,
-          },
+          value: program,
+        };
+      });
+
+      // Control flow
+
+      parser('then{', e => {
+        const {
+          program: ifTrue,
+          terminator,
+        } = parseUntil(e, '}else{', '}');
+
+        let ifFalse = terminator === '}else{'
+          ? parseUntil(e, '}').program
+          : undefined;
+
+        e.it = {
+          __action: 'if',
+          ifTrue,
+          ifFalse,
+        };
+      });
+
+      parser('loop{', e => {
+        const body = parseUntil(e, '}').program;
+
+        e.it = {
+          __action: 'loop',
+          program: body,
         };
       });
       
@@ -156,37 +163,53 @@ t.module(async () => {
       parser('->', e => {
         e.readNext(e);
         const symbol = e.it;
+        e.it = {
+          __action: 'native function',
+          does: `move 'it' to '${symbol.name}'`,
+          func: e => {
+            const value = e.it;
+            e.it = undefined;
+            e[symbol.name] = value;
+          },
+        };
       });
       
-      dictionary['->'] = parser(e => {
-        e.nextToken(e);
-        e.asSymbol(e);
-        const symbol = e.asSymbol(e.nextToken());
-        return [env => 
-          // Rename it -> [token]
-          env[t] = env.it;
-          env.it = undefined;
-        }
-      );
-
-      func('as', e => {
-      }, [], e => {
-        cancelParser(e);
-        const token = getNextToken(e);
-        getCurrentSequence(e).push(env => {
-          // Copy it -> [token]
-          env[token] = env.it;
-        });
+      parser('update', e => {
+        e.readNext(e);
+        const symbol = e.it;
+        e.it = {
+          __action: 'native function',
+          does: `move 'it' to '${symbol.name}' (of any scope)`,
+          func: e => {
+            const value = e.it;
+            e.it = undefined;
+            update(e, symbol.name, value);
+          },
+        };
       });
-
-      func('discard', e => {
-      }, [], e => {
-        cancelParser(e);
-        const token = getNextToken(e);
-        getCurrentSequence(e).push(env => {
-          // Discard [token]
-          env[token] = undefined;
-        });
+      
+      parser('as', e => {
+        e.readNext(e);
+        const symbol = e.it;
+        e.it = {
+          __action: 'native function',
+          does: `copy 'it' to '${symbol.name}'`,
+          func: e => {
+            e[symbol.name] = e.it;
+          },
+        };
+      });
+      
+      parser('discard', e => {
+        e.readNext(e);
+        const symbol = e.it;
+        e.it = {
+          __action: 'native function',
+          does: `discard '${symbol.name}'`,
+          func: e => {
+            e[symbol.name] = undefined;
+          },
+        };
       });
 
       // Literals
@@ -198,15 +221,78 @@ t.module(async () => {
 
       // Logic
       
+      func('&&', e => {
+        e.it = e.other && e.it;
+        e.other = undefined;
+      });
+      
+      func('||', e => {
+        e.it = e.other || e.it;
+        e.other = undefined;
+      });
+      
+      func('!', e => {
+        e.it = !e.it;
+      });
+
+      // Comparison
+      
+      func('==', e => {
+        e.it = e.other === e.it;
+        e.other = undefined;
+      });
+      
+      func('!=', e => {
+        e.it = e.other !== e.it;
+        e.other = undefined;
+      });
+      
+      func('>', e => {
+        e.it = e.other > e.it;
+        e.other = undefined;
+      });
+      
+      func('>=', e => {
+        e.it = e.other >= e.it;
+        e.other = undefined;
+      });
+      
+      func('<', e => {
+        e.it = e.other < e.it;
+        e.other = undefined;
+      });
+      
+      func('<=', e => {
+        e.it = e.other <= e.it;
+        e.other = undefined;
+      });
+      
       // Math
       
-      dictionary['='] = parser(
-        e => {
-        },
-        [],
-        e => {
-        }
-      );
+      func('+', e => {
+        e.it = e.other + e.it;
+        e.other = undefined;
+      });
+      
+      func('-', e => {
+        e.it = e.other - e.it;
+        e.other = undefined;
+      });
+      
+      func('*', e => {
+        e.it = e.other * e.it;
+        e.other = undefined;
+      });
+      
+      func('/', e => {
+        e.it = e.other / e.it;
+        e.other = undefined;
+      });
+      
+      func('%', e => {
+        e.it = e.other % e.it;
+        e.other = undefined;
+      });
 
       // Arrays
 
