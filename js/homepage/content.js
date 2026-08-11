@@ -285,7 +285,7 @@ I like to code
 
 h
 82
-9666
+9766
 345
 Coding Corner
 
@@ -305,14 +305,14 @@ Weird / Random Interests
 10000
 
 h
-9591
+9291
 9858
 14
 Weird / Random Interests
 
 c
 9685
-9313
+9213
 200
 5
 toki-pona-logo.png
@@ -434,29 +434,6 @@ c
 rss-icon.png
 My Internet Journal (RSS)
 rss.xml
-
-j
-5005
-4781
--3
-Tunes
-9291
-4097
-
-h
-9124
-4032
-5
-Recently discovered songs
-
-c
-9398
-4170
-150
--2
-the-sorcerer-by-cory-wong-thumbnail.png
-The Sorcerer by Cory Wong
-https://www.youtube.com/watch?v=ImT4z4L4rvs&list=PL2f-dJ-CNDCLeF77-K0ar7gpy6HpFqCbS&index=3
 
 c
 3778
