@@ -26,6 +26,39 @@ t.module(async () => {
 
   // Runtime
   
+  function resolveSymbol(env, name) {
+    if(name.startsWith('.'))
+      return env.it[name.slice(1)];
+    return get(env, name);
+  }
+
+  /*
+
+Same thing, but in Lisp:
+
+(define resolveSymbol (env name)
+  (if (= (slice name 0 1) ".")
+    (index (index env "it")
+           (slice name 1))
+    (get env name)))
+
+Same thing, but in tulip:
+
+func: resolveSymbol
+  define: value
+  scope{
+    name starts-with: "." then{
+      1 -> start
+      name slice -> name
+      env .it .: name => value
+    }else{
+      name get => value
+    }
+  }
+;
+
+   */
+  
   function run(item, env) {
     switch(item.__action) {
       case 'value':
@@ -35,7 +68,7 @@ t.module(async () => {
       case 'symbol':
         env.symbol = item;
         env.other = env.it;
-        env.it = get(env, item.name);
+        env.it = resolveSymbol(env, item.name);
         break;
       case 'native function':
         item.func(env);
