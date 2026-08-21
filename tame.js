@@ -29,8 +29,6 @@
  * No classes
  * No implicit coercion (==) (only use ===)
  * No prototype modification
- * No async in core logic
- * Document every function and object
  * Write pure, immutable, explicit code.
  *  Validate at boundaries. Fail loudly in
  *  dev, disappear in prod.
@@ -102,109 +100,60 @@ const t = (function() {
     }
   }
 
-  const shape = (value, spec, path) => {
+  const isShape = (value, shape, path) => {
     // shape(value, spec) => undefined
     // Parameter 'path' is for internal use.
     // If the value does not match the shape specified
-    // by spec, an error is thrown and a log message is
-    // generated.
-    //
-    // Examples: (for now, assume that the two
-    //            params are swapped in each example)
-    //
-    // t.shape('this is a string', 'number'); // error: wrong type
-    // t.shape('this is a string', 'string');
-    // t.shape({ foo: 1 }, { foo: 'number' };
-    // t.shape([1, 2, 3], ['number']);
-    // t.shape([1, 2, 'hi'], ['number']); // error: 'hi' is not a number
-    // t.shape({
-    //   foo: 1,
-    //   bar: 'hello',
-    // }, {
-    //   foo: 'number',
-    //   bar: 'string',
-    //   baz: [['any']],
-    // }); // error: object did not contain property 'baz'
-    //     //        containing a two-dimensional list of
-    //     //        stuff (no type specified).
-    // t.shape(5, n => t.assert(n % 2 == 0)); // error: number not even
-    // const Optional = shape => v => {
-    //   if(v !== null) t.shape(v, shape);
-    // };
-    // t.shape(value, Optional('string'); // value must be either string or null
-    if(!enabled) return value;
-    let isRootCall = false;
-    if(path === undefined) {
-      path = 'obj';
-      isRootCall = true;
+    // by spec, an error message is returned, otherwise,
+    // null is returned.
+    if(path === undefined)
+      path = 'x';
+    if(shape === 'any')
+      return null;
+    if(typeof shape === 'string') {
+      if(typeof value !== shape)
+        return `Expected ${path} to be '${shape}', but it was '${typeof value}'.`;
+    } else if(typeof shape === 'function') {
+      const result = shape(value);
+      if(result === null) return null;
+      else return `${path} failed a custom shape check: ${result}`;
+    } else if(typeof shape === 'object') {
+      if(Array.isArray(shape)) {
+        // List
+        let contentsShape = shape[0];
+        if(contentsShape === undefined) return null;
+        if(!Array.isArray(value))
+          return `Expected ${path} to be a list.`;
+        for(var i = 0; i < value.length; i++) {
+          const result = isShape(value[i], contentsShape, `${path}[${i}]`);
+          if(result) return result;
+        }
+        return null;
+      } else {
+        // Object
+        if(typeof value !== 'object')
+          return `Expected ${path} to be an object, but it was a '${typeof value}'.`;
+        for(const key in shape) {
+          const result = shape(value[key], shape[key], path + '.' + key);
+          if(result) return result;
+        }
+        return null;
+      }
     }
-    try {
-      if(spec === 'any') {
-        if(isRootCall)
-          return value;
-        else
-          return;
-      }
-      if(typeof spec === 'string') {
-        if(typeof value !== spec) {
-          const message = `expected '${spec}' from ${path}, got '${typeof value}'`;
-          if(isRootCall) throw new Error(message);
-          else return message;
-        }
-      } else if(typeof spec === 'function') {
-        try {
-          spec(value);
-        } catch(e) {
-          const message = `custom shape function threw an error:\n${e.message}`;
-          if(isRootCall) throw new Error(message);
-          else return message;
-        }
-      } else if(typeof spec === 'object') {
-        if(spec.length === undefined) {
-          // Object
-          if(typeof value !== 'object') {
-            const message = `expected 'object' from ${path}, got '${typeof value}'`;
-            if(isRootCall) throw new Error(message);
-            else return message;
-          }
-          for(const key in spec) {
-            if(key === 'doc') continue; // skip doc strings in spec
-            const message = shape(value[key], spec[key], path + '.' + key);
-            if(typeof message === 'string') {
-              if(isRootCall) throw new Error(message);
-              else return message;
-            }
-          }
-        } else {
-          // List
-          let listSpec = spec[0];
-          if(listSpec === 'any') {
-            if(isRootCall)
-              return value;
-            else
-              return;
-          }
-          for(var i = 0; i < value.length; i++) {
-            const message = shape(value[i], listSpec, `${path}[${i}]`);
-            if(typeof message === 'string') {
-              if(isRootCall) throw new Error(message);
-              else return message;
-            }
-          }
-        }
-      }
-      else {
-        throw new Error("'spec' must be of type 'string', 'function, or 'object'");
-      }
-      if(isRootCall) return value;
-    } catch(ex) {
-      if(isRootCall)
-        warn(
-          'Expected shape:', spec,
-          '\nActual value:', value);
-      throw ex;
+    else {
+      throw new Error("'shape' must be of type 'string', 'function, or 'object'");
     }
   }
+
+  const shape = (value, shape) => {
+    const result = isShape(value, shape);
+    if(result) {
+      warn(
+        'Expected shape:', shape,
+        '\nActual value:', value);
+      throw new Error(result);
+    }
+  };
 
   // Functional programming
 
@@ -239,11 +188,34 @@ const t = (function() {
     while(typeof func === 'function')
       func = func();
     return func;
+  };
+
+  const trampolineAsync = async func => {
+    // If func is a function, call it without
+    // arguments. If its return value is also a function, call that function.
+    // Continue until something other than a function is returned. Return that.
+    // The purpose of this is to allow functions to be written in a more
+    // functional-programming style even though Javascript doesn't officially
+    // support tail-call-optimization.
+    // 
+    // Also, since this is the async version of t.trampoline, if a function
+    // returns a promise, the promise will be awaited before continuing.
+    while(true) {
+      if(typeof func === 'function') {
+        func = func();
+        continue;
+      }
+      if(func + '' === '[object Promise]') {
+        func = await func;
+        continue;
+      }
+      return func;
+    }
   }
 
   // Modules
   
-  const currentLocation = document.currentScript.src.slice(0, -7); // remove 'tame.js'
+  const rootFolder = document.currentScript.src.slice(0, -7); // remove 'tame.js'
   const modules = {};
 
   const module = module => {
@@ -258,54 +230,36 @@ const t = (function() {
     // moduleName.js:
     //
     // 'use strict';
-    // t.module('moduleName', () => {
-    //   const e = {}; // exports
+    // t.module('moduleName', async () => {
     //
-    //   const utils = t.require('utils'); // import another module
+    //   const utils = await t.requireAsync('utils'); // import another module
     //
-    //   e.exportedFunction = (...args) => {
+    //   function myFunction(...args) {
     //     // Descriptive comment
     //     ...
-    //   };
+    //   }
     //
-    //   return e;
+    //   // Exports:
+    //   return {
+    //     myFunction,
+    //   };
     // });
     //
     // Note: When the module system receives a module, the module
     // will be automatically frozen with t.freeze to prevent
     // users of the module from modifying it.
     const modulePath = document.currentScript.src;
-    const moduleName = modulePath.slice(currentLocation.length, -3);
-    if(modules[moduleName] !== undefined) {
-      log(`module '${moduleName}' was defined again (ignored)`);
-      return;
-    }
-    modules[moduleName] = module;
-  }
-
-  const loadModule = moduleName => {
-    let module = modules[moduleName];
-    module = trampoline(module);
-    if(module + '' === '[object Promise]')
-      throw new Error(`Module '${moduleName}' is an async` +
-                      ' module, and so it requires' +
-                      ` t.requireAsync('${moduleName}')` +
-                      ' to be loaded');
-    freeze(module);
-    modules[moduleName] = module;
-    m[moduleName] = module;
-    return module;
-  }
-
-  const loadModuleAsync = async moduleName => {
-    let module = modules[moduleName];
-    module = trampoline(module);
-    if(module + '' === '[object Promise]')
-      module = await module;
-    freeze(module);
-    modules[moduleName] = module;
-    m[moduleName] = module;
-    return module;
+    const moduleName = modulePath.slice(rootFolder.length, -3); // remove '.js'
+    const existingEntry = modules[moduleName];
+    if(existingEntry?.__putRawModuleHere === null)
+      // Send module to be processed
+      existingEntry.__putRawModuleHere = module;
+    else if(existingEntry)
+      // Warn about double-defined module
+      warn(`Module "${moduleName}" has somehow been defined more` +
+           ` than once. New definition ignored.`);
+    else
+      throw new Error('Not sure how this happenned.');
   }
 
   const importScriptTagAsync = async moduleName => {
@@ -319,7 +273,7 @@ const t = (function() {
 
     // Create the script tag
     const scriptTag = document.createElement('script');
-    scriptTag.src = `${currentLocation}${moduleName}.js`;
+    scriptTag.src = `${rootFolder}${moduleName}.js`;
 
     // When the script loads, complete the promise
     scriptTag.onload = () => completePromise();
@@ -347,23 +301,50 @@ const t = (function() {
     //
     // root
     //  | tame.js
-    //  | lib
-    //     | myModule.js
+    //  + lib
+    //    | myModule.js
     // 
     // then the module's name should be
     // 'lib/myModule', and it should be imported
     // with `await t.requireAsync('lib/myModule');
+
+    // Try to get the module
     let module = modules[moduleName];
-    if(module === undefined)
-      await importScriptTagAsync(moduleName);
-    module = modules[moduleName];
+    // Am I responsible for importing the module?
     if(module === undefined) {
-      warn(`module '${moduleName}' is missing`);
-      return undefined;
+      // Begin importing script tag
+      const importPromise = importScriptTagAsync(moduleName);
+      // Prepare to give other requesters the final module
+      const finalModulePromise = makePromise();
+      modules[moduleName] = finalModulePromise.promise;
+      // When script tag loads, route it here
+      finalModulePromise.promise.__putRawModuleHere = null;
+      // TODO make use of __putRawModuleHere
+      // Wait for module to arrive
+      await importPromise;
+
+      // Process the module
+
+      // Get the raw module
+      const rawModule = finalModulePromise.promise.__putRawModuleHere;
+      if(!rawModule) {
+        warn(`Module ${moduleName} is missing.`);
+        finalModulePromise.succeed(undefined);
+        return undefined;
+      }
+      // Unpack the module
+      const finalModule = await trampolineAsync(rawModule);
+      freeze(finalModule);
+      // Make it so others can access the module
+      modules[moduleName] = finalModule;
+      finalModulePromise.succeed(finalModule);
+      m[moduleName.replaceAll('/', '_')] = finalModule;
+      return finalModule;
     }
-    if(typeof module === 'function')
-      return await loadModuleAsync(moduleName);
-    m[moduleName.replaceAll('/', '_')] = module;
+    // Is the module currently being processed?
+    if(module + '' === '[object Promise]')
+      return await module;
+    // Otherwise, the module must be ready to be used
     return module;
   }
 
@@ -495,16 +476,27 @@ const t = (function() {
       return object;
     });
 
+  const makePromise = () => {
+    const promise = {};
+    promise.promise = new Promise((succeed, fail) => {
+      promise.succeed = succeed;
+      promise.fail = fail;
+    });
+    return promise;
+  };
+
   return/* Exports */{
     disable,
     enable,
     log,
     warn,
     assert,
+    isShape,
     shape,
     freeze,
     mutable,
     trampoline,
+    trampolineAsync,
     module,
     requireAsync,
     requireModulesAsync,
@@ -512,9 +504,10 @@ const t = (function() {
     escapeHTML,
     repeat,
     table,
+    makePromise,
 
     // Expose root (from perspective of tame.js)
-    root: currentLocation,
+    root: rootFolder,
 
     // Shortcuts for use in the console
     l: log,
