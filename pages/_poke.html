@@ -1,0 +1,219 @@
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    global,
+  } = await t.requireModulesAsync({
+    global: 'global',
+  });
+
+  // Config
+  const POKE_RELEASE_LENGTH = 150;
+  const START_HEALTH = 100;
+  const POKE_ATTACK_DAMAGE = 10;
+  const CHARGE_RATE = 3;
+  const keys = {
+    LEFT_POKE: {
+      key: 'u',
+      isDown: false,
+    },
+    LEFT_CHARGE: {
+      key: 'e',
+      isDown: false,
+    },
+    RIGHT_POKE: {
+      key: 'h',
+      isDown: false,
+    },
+    RIGHT_CHARGE: {
+      key: 't',
+      isDown: false,
+    },
+  };
+
+  // UI
+  const {
+    root,
+    refs: {
+      leftPokeLight,
+      leftChargeLight,
+      leftHealthIndicator,
+      leftEnergyIndicator,
+      rightPokeLight,
+      rightChargeLight,
+      rightHealthIndicator,
+      rightEnergyIndicator,
+    },
+  } = t.createComponent(`
+    <div class='game'>
+      <div class='player'>
+        <div data-ref='leftPokeLight' class='poke'></div>
+        <div data-ref='leftChargeLight' class='charge'></div>
+        <p data-ref='leftHealthIndicator' class='health'>${START_HEALTH}</p>
+        <p data-ref='leftEnergyIndicator' class='energy'>0</p>
+      </div>
+      <div class='player'>
+        <div data-ref='rightPokeLight' class='poke'></div>
+        <div data-ref='rightChargeLight' class='charge'></div>
+        <p data-ref='rightHealthIndicator' class='health'>${START_HEALTH}</p>
+        <p data-ref='rightEnergyIndicator' class='energy'>0</p>
+      </div>
+    </div>
+  `);
+  document.body.appendChild(root);
+
+  // Events
+  window.addEventListener('keydown', e => {
+    for(const name in keys) {
+      const input = keys[name];
+      if(input.key === e.key) {
+        e.preventDefault();
+        input.isDown = true;
+      }
+    }
+  });
+  window.addEventListener('keyup', e => {
+    for(const name in keys) {
+      const input = keys[name];
+      if(input.key === e.key) {
+        e.preventDefault();
+        input.isDown = false;
+      }
+    }
+  });
+
+  // Loop
+  let time = Date.now();
+  // Left
+  let leftHealth = START_HEALTH;
+  let leftEnergy = 0;
+  let leftWasPoking = false;
+  let timeOfLeftPoke = 0;
+  // Right
+  let rightHealth = START_HEALTH;
+  let rightEnergy = 0;
+  let rightWasPoking = false;
+  let timeOfRightPoke = 0;
+  function loop() {
+    const now = Date.now();
+    const dt = (now - time) / 1000;
+    window.requestAnimationFrame(loop);
+
+    // Logic
+
+    // Left is poking?
+    if(keys.LEFT_POKE.isDown)
+      timeOfLeftPoke = now;
+    const leftIsPoking = now - timeOfLeftPoke <= POKE_RELEASE_LENGTH;
+    if(leftIsPoking !== leftWasPoking) {
+      if(leftIsPoking)
+        leftPokeLight.classList.add('lit');
+      else
+        leftPokeLight.classList.remove('lit');
+    }
+    const leftIsAttacking = leftIsPoking && !leftWasPoking;
+
+    // Right is poking?
+    if(keys.RIGHT_POKE.isDown)
+      timeOfRightPoke = now;
+    const rightIsPoking = now - timeOfRightPoke <= POKE_RELEASE_LENGTH;
+    if(rightIsPoking !== rightWasPoking) {
+      if(rightIsPoking)
+        rightPokeLight.classList.add('lit');
+      else
+        rightPokeLight.classList.remove('lit');
+    }
+    const rightIsAttacking = rightIsPoking && !rightWasPoking;
+
+    // Vulnerability to pokes
+    const leftIsVulnerable = leftIsPoking || keys.LEFT_CHARGE.isDown;
+    const rightIsVulnerable = rightIsPoking || keys.RIGHT_CHARGE.isDown;
+
+    // Deal poke damage
+    if(leftIsAttacking && rightIsVulnerable) {
+      rightHealth -= POKE_ATTACK_DAMAGE;
+      rightHealthIndicator.innerText = Math.round(rightHealth);
+    }
+    if(rightIsAttacking && leftIsVulnerable) {
+      leftHealth -= POKE_ATTACK_DAMAGE;
+      leftHealthIndicator.innerText = Math.round(leftHealth);
+    }
+
+    // Charging
+    if(keys.LEFT_CHARGE.isDown) {
+      leftEnergy += CHARGE_RATE * dt;
+      leftEnergyIndicator.innerText = Math.round(leftEnergy);
+      leftChargeLight.classList.add('lit');
+    }
+    else leftChargeLight.classList.remove('lit');
+    if(keys.RIGHT_CHARGE.isDown) {
+      rightEnergy += CHARGE_RATE * dt;
+      rightEnergyIndicator.innerText = Math.round(rightEnergy);
+      rightChargeLight.classList.add('lit');
+    }
+    else rightChargeLight.classList.remove('lit');
+
+    // Charge attacks
+    if(keys.LEFT_CHARGE.isDown && keys.LEFT_POKE.isDown) {
+      const attackStrength = leftEnergy;
+      leftEnergy = 0;
+      leftEnergyIndicator.innerText = Math.round(leftEnergy);
+      if(!keys.RIGHT_CHARGE.isDown) {
+        rightHealth -= attackStrength;
+        rightHealthIndicator.innerText = Math.round(rightHealth);
+      }
+    }
+    if(keys.RIGHT_CHARGE.isDown && keys.RIGHT_POKE.isDown) {
+      const attackStrength = rightEnergy;
+      rightEnergy = 0;
+      rightEnergyIndicator.innerText = Math.round(rightEnergy);
+      if(!keys.LEFT_CHARGE.isDown) {
+        leftHealth -= attackStrength;
+        leftHealthIndicator.innerText = Math.round(leftHealth);
+      }
+    }
+
+    // Prepare for next loop
+    time = now;
+    leftWasPoking = leftIsPoking;
+    rightWasPoking = rightIsPoking;
+  }
+  loop();
+  
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+.game {
+  display: flex;
+}
+.player {
+  border: 1px solid black;
+  border-radius: 3px;
+  padding: 10px;
+}
+.poke {
+  width: 20px;
+  height: 20px;
+}
+.poke.lit {
+  background-color: red;
+}
+.charge {
+  width: 20px;
+  height: 20px;
+}
+.charge.lit {
+  background-color: blue;
+}
+.health {
+  color: darkgreen;
+}
+.energy {
+  color: darkblue;
+}
+
+</style>
