@@ -114,7 +114,7 @@ const t = (function() {
       if(typeof value !== shape)
         return `Expected ${path} to be '${shape}', but it was '${typeof value}'.`;
     } else if(typeof shape === 'function') {
-      const result = shape(value);
+      const result = isShape(value);
       if(result === null) return null;
       else return `${path} failed a custom shape check: ${result}`;
     } else if(typeof shape === 'object') {
@@ -134,7 +134,7 @@ const t = (function() {
         if(typeof value !== 'object')
           return `Expected ${path} to be an object, but it was a '${typeof value}'.`;
         for(const key in shape) {
-          const result = shape(value[key], shape[key], path + '.' + key);
+          const result = isShape(value[key], shape[key], path + '.' + key);
           if(result) return result;
         }
         return null;
