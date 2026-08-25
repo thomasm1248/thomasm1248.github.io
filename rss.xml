@@ -16,7 +16,7 @@
     <title>foo</title>
     <description>foo</description>
     <link>foo</link>
-    <pubDate>Tue, 11 Aug 2026 16:15:00 MDT</pubDate>
+    <pubDate>Tue, 25 Aug 2026 8:19:00 MDT</pubDate>
     <category>foo</category>
   </item>
 
@@ -29,8 +29,17 @@
   Websites
     Tools
   Feeds
+  Politics
 
   INSERT AFTER HERE -->
+  
+  <item>
+    <title>FairVote</title>
+    <description>An organization of people doing whatever they can accross the country to implement voting systems that prevent corruption instead of fueling it as our current systems do.</description>
+    <link>https://fairvote.org/</link>
+    <pubDate>Tue, 25 Aug 2026 8:19:00 MDT</pubDate>
+    <category>Politics</category>
+  </item>
   
   <item>
     <title>See You Again - Tyler, The Creator</title>
