@@ -31,14 +31,14 @@
         <option value='test'>Tests (Add or Fix)</option>
         <option value='docs'>Docs</option>
         <option value='build'>Build Configuration</option>
-      </select><br>
-      <input data-ref='scope' placeholder='Scope'/><br>
-      <input data-ref='message' placeholder='Applying this commit will...'/><br>
-      <textarea data-ref='motivation' placeholder='What motivated this commit?'></textarea><br>
-      <textarea data-ref='explanation' placeholder='Why did you choose this solution?'></textarea><br>
-      <button data-ref='submit'>Generate</button><br>
+      </select>
+      <input data-ref='scope' placeholder='Scope'/>
+      <input data-ref='message' placeholder='Applying this commit will...'/>
+      <textarea data-ref='motivation' placeholder='What motivated this commit?'></textarea>
+      <textarea data-ref='explanation' placeholder='Why did you choose this solution?'></textarea>
+      <button data-ref='submit'>Generate</button>
       <p data-ref='output' class='output hide'></p>
-      <button data-ref='reset' class='hide'>Reset</button><br>
+      <button data-ref='reset' class='hide'>Reset</button>
     </div>
   `);
   document.body.appendChild(root);
@@ -91,6 +91,13 @@ ${explanation.value}`;
 
 <!-- Style -->
 <style>
+
+.app-container {
+  padding-top: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .app-container input,
 .app-container textarea,
