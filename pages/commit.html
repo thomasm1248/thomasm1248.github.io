@@ -1,0 +1,125 @@
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    global,
+  } = await t.requireModulesAsync({
+    global: 'global',
+  });
+
+  const {
+    root,
+    refs: {
+      type,
+      scope,
+      message,
+      motivation,
+      explanation,
+      submit,
+      output,
+      reset,
+    },
+  } = t.createComponent(`
+    <div class='app-container'>
+      <select data-ref='type'>
+        <option value='feat'>Feature (Add/Adjust/Remove)</option>
+        <option value='fix'>Fix</option>
+        <option value='refactor'>Refactor</option>
+        <option value='perf'>Performance (Refactor)</option>
+        <option value='style'>Code Style</option>
+        <option value='test'>Tests (Add or Fix)</option>
+        <option value='docs'>Docs</option>
+        <option value='build'>Build Configuration</option>
+      </select><br>
+      <input data-ref='scope' placeholder='Scope'/><br>
+      <input data-ref='message' placeholder='Applying this commit will...'/><br>
+      <textarea data-ref='motivation' placeholder='What motivated this commit?'></textarea><br>
+      <textarea data-ref='explanation' placeholder='Why did you choose this solution?'></textarea><br>
+      <button data-ref='submit'>Generate</button><br>
+      <p data-ref='output' class='output hide'></p>
+      <button data-ref='reset' class='hide'>Reset</button><br>
+    </div>
+  `);
+  document.body.appendChild(root);
+  scope.focus();
+
+  submit.onclick = () => {
+    output.innerText = `${scope.value}: [${type.value}] ${message.value}
+
+What motivated this commit?
+${motivation.value}
+
+Why was this solution chosen?
+${explanation.value}`;
+
+    output.classList.remove('hide');
+    reset.classList.remove('hide');
+    reset.focus();
+    selectText(output);
+  };
+
+  reset.onclick = () => {
+    type.value = 'feat';
+    message.value = '';
+    motivation.value = '';
+    explanation.value = '';
+    output.classList.add('hide');
+    reset.classList.add('hide');
+    scope.focus();
+  };
+
+  function selectText(node) {
+    if (document.body.createTextRange) {
+      const range = document.body.createTextRange();
+      range.moveToElementText(node);
+      range.select();
+    } else if (window.getSelection) {
+      const selection = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      selection.removeAllRanges();
+      selection.addRange(range);
+    } else {
+      console.warn("Could not select text in node: Unsupported browser.");
+    }
+  }
+  
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+.app-container input,
+.app-container textarea,
+.app-container button,
+.app-container select {
+  margin: 3px;
+  width: 300px;
+}
+
+.app-container input,
+.app-container select,
+.app-container button {
+  height: 25px;
+}
+
+.app-container textarea {
+  height: 100px;
+  padding: 3px;
+}
+
+.output {
+  border: 1px solid black;
+  padding: 3px;
+  width: 293px;
+  margin: 3px;
+}
+
+.hide {
+  display: none;
+}
+
+</style>
