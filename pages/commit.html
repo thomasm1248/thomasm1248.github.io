@@ -48,7 +48,10 @@
     output.innerText = `${scope.value}: [${type.value}] ${message.value}
 
 What motivated this commit?
-${motivation.value}
+${motivation.value}`;
+    
+    if(explanation.value !== '')
+      output.innerText += `
 
 Why was this solution chosen?
 ${explanation.value}`;
