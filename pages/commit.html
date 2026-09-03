@@ -50,13 +50,10 @@
     output.innerText = `${scope.value}: [${type.value}] ${message.value}
 
 What motivated this commit?
-${motivation.value}`;
-    
-    if(explanation.value !== '')
-      output.innerText += `
+${motivation.value}${explanation.value === '' ? '' : `
 
 Why was this solution chosen?
-${explanation.value}`;
+${explanation.value}`}`;
 
     output.classList.remove('hide');
     reset.classList.remove('hide');
