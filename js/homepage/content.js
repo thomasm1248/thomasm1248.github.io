@@ -7,8 +7,8 @@ t
 Welcome to my website! I hope you find something worth your time here.
 
 h
-5255
-4686
+2755
+2186
 348
 Productivity
 
@@ -23,12 +23,12 @@ j
 220
 7
 Click Me!
-5000
-5000
+2500
+2500
 
 h
-4929
-4977
+2429
+2477
 0
 Welcome.
 
@@ -40,8 +40,8 @@ t
 I built this website as a design experiment. It's like a giant map that others can explore. This is still a work in progress, but it will slowly fill up as my life continues. I recommend starting at the center. Use the jump button to the right to teleport there.
 
 c
-4613
-5114
+2113
+2614
 350
 347
 barbershop-thumbnail.png
@@ -49,8 +49,8 @@ Barbershop - Wizard battle game. Read the How To Play page. Good luck figuring o
 https://www.thomasmason.us/barbershop/barbershop.html
 
 c
-5007
-5170
+2507
+2670
 450
 5
 lightsaber-brawl-thumbnail.png
@@ -58,8 +58,8 @@ Lightsaber Brawl - You can have up to 4 players (WASD, IJKL, Arrow Keys, Num Pad
 https://www.thomasmason.us/Lightsaber-Brawl/lightsaberBrawl.html
 
 c
-4770
-5474
+2270
+2974
 250
 353
 flick-soccer-thumbnail.png
@@ -67,15 +67,15 @@ Flick Soccer - The goal is to get the white ball to the other side. If you cause
 https://www.thomasmason.us/flick-soccer/index.html
 
 t
-4747
-4814
+2247
+2314
 200
 5
 I've written some posts about some things I've learned. You can click on any of these to read the full articles.
 
 p
-5928
-2359
+2528
+459
 200
 2
 Writing in cursive is better
@@ -89,53 +89,53 @@ i
 logo.png
 
 p
-4498
-4850
+1998
+2350
 200
 355
 What to do with gift money
 what-to-do-with-gift-money.html
 
 p
-4616
-4956
+2116
+2456
 200
 5
 Best lifehack for keeping tidy
 clutter-box-method.html
 
 p
-5807
-2565
+2407
+665
 200
 355
 Use notebooks instead of apps
 why-use-paper-instead-of-digital.html
 
 t
-4995
-5050
+2495
+2550
 340
 357
 Back in high-school, I made lots of little games and toys using HTML and Javascript. Here are the best games I made.
 
 p
-5308
-4566
+2808
+2066
 200
 6
 Boredom is healthy and beneficial
 boredom-is-good.html
 
 h
-4206
-5393
+1706
+2893
 4
 << YouTube Finds
 
 c
-3771
-5411
+1271
+2911
 300
 2
 dynamicland-2024-report.png
@@ -143,8 +143,8 @@ The recent report on the progress of Dynamicland, a project intending to develop
 https://youtu.be/5Q9r-AEzRMA?si=nEix0LfsjUa-oNNW
 
 c
-3438
-5267
+938
+2767
 300
 357
 breakdown-chicken-video.png
@@ -152,44 +152,44 @@ The best video out there about saving money and eating better by breaking down a
 https://youtu.be/Dw9vRSVUZgs?si=ZafO8FClK-8_a-G0
 
 p
-4509
-4738
+2009
+2238
 200
 4
 Don't make wishlists
 wishlists-are-bad.html
 
 h
-5464
-4975
+2964
+2475
 13
 Ongoing DIY Card Game Project >>
 
 t
-6105
-5017
+3605
+2517
 400
 354
 For the past 5 years or so, I've been trying to develop a set of core rules for a game in which the players themselves are the ones who come up with and create all the cards. I'm inspired by games such as 1000 Blank White Cards (every card is created by players, almost no rules) and TCG's (thousands of different cards, but they are all compatible with each other). I've been through several re-hauls of the system, and have learned a lot from the playtests I've done so far. I'll be providing more information about the process I've been through and the current state of the project. Stay tuned...
 
 p
-6130
-5354
+3630
+2854
 150
 2
 Version history
 diy-card-game-timeline.html
 
 t
-5066
-5853
+2566
+3353
 250
 2
 I'd like to provide more links to content from other wesites and blogs that have inspired me, but this is all I've got for now:
 
 c
-5207
-5996
+2707
+3496
 200
 349
 internet-phonebook-post.jpg
@@ -197,30 +197,30 @@ An inspiring post from one of my favorite blogs. It's about the corner of the in
 https://pketh.org/internet-phonebook.html
 
 j
-5028
-4894
+2528
+2394
 356
 I like using paper
-5904
-2492
+2504
+592
 
 h
-5784
-2473
+2384
+573
 1
 I like using paper
 
 p
-5622
-2308
+2222
+408
 200
 -6
 How to use paper as a thinking tool without cluttering a notebook
 thinking-on-paper-without-filling-notebook-with-junk.html
 
 i
-5555
-2469
+2155
+569
 200
 4
 paper-notepad-stock-image-by-steve-johnson.jpg
@@ -276,8 +276,8 @@ images/normalize-email-banner.png
 mailto:thomasm1248@gmail.com
 
 j
-5134
-4966
+2634
+2466
 4
 I like to code
 0
@@ -285,34 +285,34 @@ I like to code
 
 h
 82
-9766
+4766
 345
 Coding Corner
 
 t
 365
-9706
+4706
 250
 353
 I've done quite a bit of coding, so I'll plan to put coding-related stuff here for those who are also interested in coding for some reason, or who are willing to explore my more boring/unfinished projects.
 
 j
-5179
-4836
+2679
+2336
 4
 Weird / Random Interests
 10000
 10000
 
 h
-9291
-9858
+4291
+4858
 14
 Weird / Random Interests
 
 c
-9685
-9213
+4685
+4213
 200
 5
 toki-pona-logo.png
@@ -320,8 +320,8 @@ Toki Pona is a miniature language with only ~130 words in its dictionary. That m
 https://tokipona.org/
 
 c
-6088
-2492
+2688
+592
 300
 4
 wallet-on-amazon.png
@@ -351,15 +351,15 @@ Hw
 <script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
 
 t
-9296
-9500
+4296
+4500
 300
 -4
 Gemini - An alternative to HTTP. Currently, websites are all served to users with HTTP, but it's not the only option. There's also Gemini, which is a much more minimalist way of hosting a website (instead of pages, there's just text and files), but very few people actually use it. One reason it goes mostly unused is that web-browsers generally don't support it. If Gemini had more support, this whole website would probably be made for Gemini instead of HTML + HTTP.
 
 c
 52
-9350
+4350
 300
 2
 utah-thumbnail.png
@@ -368,7 +368,7 @@ https://thomasmason.us/utah/utah.html
 
 c
 676
-9634
+4634
 300
 5
 tilebots-thumbnail.png
@@ -377,7 +377,7 @@ https://thomasmason.us/Tilebots/Tilebots.html
 
 c
 436
-9191
+4191
 300
 -2
 cookie-coin-thumbnail.png
@@ -386,7 +386,7 @@ https://thomasmason.us/Cookie-Coin/CookieCoin.html
 
 c
 33
-9006
+4006
 150
 -1
 circle-generator-thumbnail.png
@@ -395,7 +395,7 @@ https://thomasmason.us/circle-generator/circle-generator.html
 
 c
 834
-9148
+4148
 300
 3
 gladiators.png
@@ -404,7 +404,7 @@ https://thomasmason.us/gladiators/
 
 c
 290
-8867
+3867
 200
 7
 car-sim.png
@@ -436,8 +436,8 @@ My Internet Journal (RSS)
 rss.xml
 
 c
-3778
-5144
+1278
+2644
 300
 -3
 hidari.png

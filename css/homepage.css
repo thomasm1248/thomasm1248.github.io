@@ -4,8 +4,8 @@ body, * {
   padding: 0;
 }
 body {
-  width: 10000px;
-  height: 10000px;
+  width: 5000px;
+  height: 5000px;
 }
 
 #background {
