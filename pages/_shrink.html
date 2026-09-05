@@ -1,0 +1,94 @@
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    content,
+  } = await t.requireModulesAsync({
+    content: 'js/homepage/old-content',
+  });
+
+  /* Use the home page's background to visually select areas of the website:
+
+    #background {
+      background-image: url('../files/homepage-assets/images/stippled-background.jpg');
+      background-repeat: repeat;
+      position: absolute;
+      left: 1000px;
+      height: 1000px;
+      width: 1000px;
+      height: 1000px;
+    }
+
+  */
+
+  const {
+    root,
+    refs: {
+      output,
+    },
+  } = t.createComponent(`
+    <div>
+      <textarea data-ref='output'></textarea>
+    </div>
+  `);
+  document.body.appendChild(root);
+  
+  output.style.width = '400px';
+  output.style.height = '500px';
+
+  function convert(x, y) {
+    if(x > 3000 && x < 7000 &&
+       y > 4000 && y < 7000) {
+      x -= 2500;
+      y -= 2500;
+    }
+    if(x > 0 && x < 2000 &&
+       y > 8000 && y < 10000) {
+      y -= 5000;
+    }
+    if(x > 9000 && x < 10000 &&
+       y > 9000 && y < 10000) {
+      x -= 5000;
+      y -= 5000;
+    }
+    if(x > 5000 && x < 7000 &&
+       y > 2000 && y < 3000) {
+      x -= 3400;
+      y -= 1900;
+    }
+    return { x, y };
+  }
+
+  output.value = content
+    .trimStart()
+    .split(/\r?\n\r?\n/)
+    .map(chunk => {
+      const parts = chunk.split('\n');
+      const x = parts[1] * 1;
+      const y = parts[2] * 1;
+      const { x: newX, y: newY } = convert(x, y);
+      parts[1] = newX + '';
+      parts[2] = newY + '';
+      if(parts[0] === 'j') {
+        const jx = parts[5] * 1;
+        const jy = parts[6] * 1;
+        const { x: newJX, y: newJY } = convert(jx, jy);
+        parts[5] = newJX + '';
+        parts[6] = newJY + '';
+      }
+      return parts.join('\n');
+    })
+    .join('\n\n');
+  output.focus();
+
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+/* Make the page look good */
+
+</style>
