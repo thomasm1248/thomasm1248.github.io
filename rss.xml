@@ -16,12 +16,14 @@
     <title>foo</title>
     <description>foo</description>
     <link>foo</link>
-    <pubDate>Tue, 25 Aug 2026 8:19:00 MDT</pubDate>
+    <pubDate>Sat, 5 Sep 2026 10:15:00 MDT</pubDate>
     <category>foo</category>
   </item>
 
   Music
   Videos
+    Instagram
+      Funny
     Youtube
       Short Films
       Wellbeing
@@ -32,6 +34,14 @@
   Politics
 
   INSERT AFTER HERE -->
+  
+  <item>
+    <title>Stupid Instagram Reel</title>
+    <description>My brother sent me this.</description>
+    <link>https://www.instagram.com/reel/DcJIYCPIQ2D/?igsi=MWZ1MG40cGdpdmJwZw==</link>
+    <pubDate>Sat, 5 Sep 2026 10:15:00 MDT</pubDate>
+    <category>Videos/Instagram/Funny</category>
+  </item>
   
   <item>
     <title>FairVote</title>
