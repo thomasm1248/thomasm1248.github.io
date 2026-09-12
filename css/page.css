@@ -35,6 +35,8 @@ a {
 img {
   display: block;
   margin: 20px auto;
+  max-width: 500px;
+  max-height: 300px;
 }
 
 .night-time h1,

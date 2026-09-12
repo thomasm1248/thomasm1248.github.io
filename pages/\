@@ -1,4 +1,16 @@
 t.module(`
+h
+2755
+2186
+348
+Productivity
+
+h
+2429
+2477
+0
+Welcome.
+
 c
 2507
 2670
@@ -17,6 +29,44 @@ flick-soccer-thumbnail.png
 Flick Soccer - The goal is to get the white ball to the other side. If you cause any balls to touch the edges, the other person gets to put them wherever.
 https://www.thomasmason.us/flick-soccer/index.html
 
+t
+2247
+2314
+200
+5
+I've written some posts about some things I've learned. You can click on any of these to read the full articles.
+
+p
+2528
+459
+200
+2
+Writing in cursive is better
+cursive-is-better.html
+
+i
+45
+56
+100
+349
+logo.png
+
+p
+1998
+2350
+200
+355
+What to do with gift money
+what-to-do-with-gift-money.html
+
+p
+2116
+2456
+200
+5
+Best lifehack for keeping tidy
+clutter-box-method.html
+
 p
 2407
 665
@@ -24,6 +74,27 @@ p
 355
 Use notebooks instead of apps
 why-use-paper-instead-of-digital.html
+
+t
+2495
+2550
+340
+357
+Back in high-school, I made lots of little games and toys using HTML and Javascript. Here are the best games I made.
+
+p
+2808
+2066
+200
+6
+Boredom is healthy and beneficial
+boredom-is-good.html
+
+h
+1706
+2893
+4
+<< YouTube Finds
 
 c
 1271
@@ -42,6 +113,14 @@ c
 breakdown-chicken-video.png
 The best video out there about saving money and eating better by breaking down a chicken. This guy has collected all the best tips and tricks for breaking down a chicken quickly and easily!
 https://youtu.be/Dw9vRSVUZgs?si=ZafO8FClK-8_a-G0
+
+p
+2009
+2238
+200
+4
+Don't make wishlists
+wishlists-are-bad.html
 
 h
 2964
@@ -64,6 +143,13 @@ p
 Version history
 diy-card-game-timeline.html
 
+t
+2566
+3353
+250
+2
+I'd like to provide more links to content from other wesites and blogs that have inspired me, but this is all I've got for now:
+
 c
 2707
 3496
@@ -72,6 +158,20 @@ c
 internet-phonebook-post.jpg
 An inspiring post from one of my favorite blogs. It's about the corner of the internet in which websites like mine live: personal blogs and websites. This post inspired me to keep working on my own website.
 https://pketh.org/internet-phonebook.html
+
+j
+2528
+2394
+356
+I like using paper
+2504
+592
+
+h
+2384
+573
+1
+I like using paper
 
 p
 2222
@@ -87,6 +187,12 @@ i
 200
 4
 paper-notepad-stock-image-by-steve-johnson.jpg
+
+h
+592
+448
+354
+Buttons & Banners
 
 b
 611
@@ -132,6 +238,20 @@ b
 images/normalize-email-banner.png
 mailto:thomasm1248@gmail.com
 
+j
+2634
+2466
+4
+I like to code
+0
+10000
+
+h
+82
+4766
+345
+Coding Corner
+
 t
 365
 4706
@@ -147,6 +267,28 @@ c
 wallet-on-amazon.png
 Want to carry around a pocket-sized notebook with you? I recommend getting this inexpensive leather passport wallet. It can fit several standard sizes of pocket-sized notebooks, particularly the super-cheap notebooks that Wallmart sells, as well as the more expensive Field Note inserts.
 https://www.amazon.com/New-Item-Leather-Passport-Blocking/dp/B07JMW1WQL/ref=sr_1_9?crid=1YF53HK5NE7UV&dib=eyJ2IjoiMSJ9.5A8xddDyk2NEb4NQmWhkw7C3S6bPJ-FxhcTnRoCZqFp6de4Cnkn-cGC8F1tY75wR5qaEL3Z1pA_SbF90PgEQIwqmgIwAig4xeqQePL61uqxzENlBhyIlQ5esHfL0O3rV1dx5F-qZvoU1OHPUV1qiU-ADQtaej_8eXThu5dXcNj0vh5UTO-Tv2kretVLMKvOWDypmZiT0NY4Yf99zmqEY0e_WUAHDPaw7jOGWZ2FuWwcvwEpTUm_OvMK_4xhXRJkcCAOwc1yMd-QYGFEbA9tDMzJTD5CR7SoDIHKMno4tZs0.nEVS7O917gQVNWRiM1d7YhK-zXBf574xOBdqk-e0WJs&dib_tag=se&keywords=leather%2Bpassport%2Bwallet&qid=1773517196&sprefix=leather%2Bpassport%2Bwalle%2Caps%2C250&sr=8-9&th=1
+
+h
+642
+59
+357
+Webrings
+
+H
+632
+125
+<div id="nabeel-valley-webring">
+  <a href="https://webring.nabeelvalley.co.za"><em>Nabeel Valley's Webring</em></a>
+  <br>
+  <a href="https://webring.nabeelvalley.co.za/previous">Previous</a>
+  <a href="https://webring.nabeelvalley.co.za/random">Random</a>
+  <a href="https://webring.nabeelvalley.co.za/next">Next</a>
+</div> 
+
+Hw
+856
+41
+<script class="content-script" src="https://mechagic.pages.gay/1stylescripts/webring/gitgudring.js"></script>
 
 t
 4296
@@ -232,4 +374,13 @@ c
 rss-icon.png
 My Internet Journal (RSS)
 rss.xml
+
+c
+1278
+2644
+300
+-3
+hidari.png
+HIDARI (Pilot Film) - The Stop-Motion Samurai Film
+https://www.youtube.com/watch?v=DpefYPLH67A
 `);
