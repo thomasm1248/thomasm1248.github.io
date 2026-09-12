@@ -23,8 +23,18 @@ body {
   color: gray; /* make sure it isn't overridden */
 }
 
-p, li {
+p, li, a {
   font-size: 1.2em;
+}
+
+a {
+  display: block;
+  margin: 10px 0;
+}
+
+img {
+  display: block;
+  margin: 20px auto;
 }
 
 .night-time h1,

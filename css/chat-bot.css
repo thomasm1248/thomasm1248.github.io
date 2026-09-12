@@ -1,0 +1,49 @@
+/* Demon Bear Chat Bot */
+
+#demon-chat-bot {
+  max-width: 300px;
+  padding: 10px;
+  background-color: black;
+}
+
+#demon-chat-bot img {
+  width: 280px;
+}
+
+#demon-chat-bot p, #demon-chat-bot ul li {
+  margin: 0;
+  padding: 3px;
+  cursor: pointer;
+  background-color: #4b2929;
+  color: red;
+}
+
+#demon-chat-bot ul {
+  list-style-type: disclosure-closed;
+  padding-left: 15px;
+  margin: 0;
+}
+
+#demon-chat-bot ul li {
+  margin: 5px;
+}
+
+#demon-chat-bot ul li:hover {
+  background-color: #6d2222;
+}
+
+#demon-chat-bot ul li:active {
+  background-color: lightblue;
+}
+
+#demon-chat-bot input {
+  background-color: #4b2929;
+  margin: 5px 0 0 0;
+  color: red;
+  padding: 3px;
+  font-family: serif;
+  font-size: 1em;
+}
+#demon-chat-bot input.hidden {
+  display: none;
+}

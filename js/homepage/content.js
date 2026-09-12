@@ -1,11 +1,4 @@
 t.module(`
-t
-176
-103
-300
--5
-Welcome to my website! I hope you find something worth your time here.
-
 h
 2755
 2186
@@ -13,31 +6,10 @@ h
 Productivity
 
 h
-170
-25
-4
-Hello!
-
-j
-364
-220
-7
-Click Me!
-2500
-2500
-
-h
 2429
 2477
 0
 Welcome.
-
-t
-101
-214
-200
-355
-I built this website as a design experiment. It's like a giant map that others can explore. This is still a work in progress, but it will slowly fill up as my life continues. I recommend starting at the center. Use the jump button to the right to teleport there.
 
 c
 2113
