@@ -16,7 +16,7 @@ body {
   color: #3eb4ff;
 }
 
-.date {
+.sub, .date {
   color: gray; /* TODO replace with brand color? */
 }
 .night-time .date {
