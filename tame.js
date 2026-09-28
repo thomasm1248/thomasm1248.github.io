@@ -264,12 +264,8 @@ const t = (function() {
 
   const importScriptTagAsync = async moduleName => {
     // Create a promise that we can control locally
-    let completePromise;
-    let failPromise;
-    const promise = new Promise((resolve, reject) => {
-      completePromise = resolve;
-      failPromise = reject;
-    });
+    const { promise, resolve: completePromise, reject: failPromise } =
+      Promise.withResolvers();
 
     // Create the script tag
     const scriptTag = document.createElement('script');
@@ -315,7 +311,7 @@ const t = (function() {
       // Begin importing script tag
       const importPromise = importScriptTagAsync(moduleName);
       // Prepare to give other requesters the final module
-      const finalModulePromise = makePromise();
+      const finalModulePromise = Promise.withResolvers();
       modules[moduleName] = finalModulePromise.promise;
       // When script tag loads, route it here
       finalModulePromise.promise.__putRawModuleHere = null;
@@ -329,7 +325,7 @@ const t = (function() {
       const rawModule = finalModulePromise.promise.__putRawModuleHere;
       if(!rawModule) {
         warn(`Module ${moduleName} is missing.`);
-        finalModulePromise.succeed(undefined);
+        finalModulePromise.resolve(undefined);
         return undefined;
       }
       // Unpack the module
@@ -337,7 +333,7 @@ const t = (function() {
       freeze(finalModule);
       // Make it so others can access the module
       modules[moduleName] = finalModule;
-      finalModulePromise.succeed(finalModule);
+      finalModulePromise.resolve(finalModule);
       m[moduleName.replaceAll('/', '_')] = finalModule;
       return finalModule;
     }
@@ -476,15 +472,6 @@ const t = (function() {
       return object;
     });
 
-  const makePromise = () => {
-    const promise = {};
-    promise.promise = new Promise((succeed, fail) => {
-      promise.succeed = succeed;
-      promise.fail = fail;
-    });
-    return promise;
-  };
-
   return/* Exports */{
     disable,
     enable,
@@ -504,7 +491,6 @@ const t = (function() {
     escapeHTML,
     repeat,
     table,
-    makePromise,
 
     // Expose root (from perspective of tame.js)
     root: rootFolder,
