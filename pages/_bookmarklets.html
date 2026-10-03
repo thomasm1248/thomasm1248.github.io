@@ -1,0 +1,13 @@
+<h1>Bookmarklets</h1>
+
+Use <a href='https://openformatter.com/html-escape'>this tool</a> to add new bookmarklets to this page.
+
+<h2>Copy DOM</h2>
+<code>
+javascript:(async()=&gt;{const html=&#39;&lt;!doctype html&gt;\n&#39;+document.documentElement.outerHTML;try{await navigator.clipboard.writeText(html);alert(`Captured live DOM: ${(html.length/1024/1024).toFixed(2)} MB. Paste it into your tool.`)}catch(e){const t=document.createElement(&#39;textarea&#39;);t.value=html;t.style.cssText=&#39;position:fixed;left:-9999px;top:0&#39;;document.body.append(t);t.select();document.execCommand(&#39;copy&#39;);t.remove();alert(&#39;Captured live DOM. Paste it into your tool.&#39;)}})();
+</code>
+
+<h2>Rename Tab</h2>
+<code>
+javascript: (function(){document.title=prompt(&quot;Enter name&quot;);})()
+</code>
