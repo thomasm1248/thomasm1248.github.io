@@ -1,2 +1,2 @@
 *.swp
-pages/*.p.html
+pages/**/*.p.html
