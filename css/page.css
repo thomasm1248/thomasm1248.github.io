@@ -55,3 +55,7 @@ img {
 li {
     margin-top: .5em;
 }
+
+code {
+  white-space: pre;
+}
