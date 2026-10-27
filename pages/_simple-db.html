@@ -1,0 +1,24 @@
+<!-- Scripts -->
+<script src='../tame.js'></script>
+<script>(async () => {
+  // Load modules
+  const {
+    global,
+    simpleDb,
+  } = await t.requireModulesAsync({
+    global: 'global',
+    simpleDb: 'js/simpleDb',
+  });
+
+  const db = await simpleDb.open();
+  
+})();</script>
+
+
+
+<!-- Style -->
+<style>
+
+/* Make the page look good */
+
+</style>
