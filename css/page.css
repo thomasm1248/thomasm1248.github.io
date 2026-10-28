@@ -1,30 +1,16 @@
 body {
-  padding: 30px;
-  max-width: 500px;
-  margin: 20px auto 300px;
-}
-.night-time {
-  background-color: black;
-}
-
-#home-link {
-  position: absolute;
-  left: 20px;
-  top: 20px;
-}
-.night-time #home-link {
-  color: #3eb4ff;
+  padding: 3rem;
+  max-width: 35rem;
+  margin: 2rem auto 30rem;
 }
 
 .sub, .date {
-  color: gray; /* TODO replace with brand color? */
-}
-.night-time .date {
-  color: gray; /* make sure it isn't overridden */
+  color: gray;
+  margin-left: 1rem;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  margin-top: 50px;
+  margin-top: 2rem;
 }
 
 p, li, a {
@@ -33,27 +19,19 @@ p, li, a {
 
 a {
   display: block;
-  margin: 10px 0;
+  margin-top: -.8rem;
+  margin-bottom: 1.8rem;
 }
 
 img {
   display: block;
-  margin: 20px auto;
-  max-width: 500px;
-  max-height: 300px;
-}
-
-.night-time h1,
-.night-time h2,
-.night-time h3,
-.night-time h4,
-.night-time p,
-.night-time li {
-  color: white;
+  margin: 1.5rem auto;
+  max-width: 35rem;
+  max-height: 20rem;
 }
 
 li {
-    margin-top: .5em;
+    margin-top: 1rem;
 }
 
 code {
