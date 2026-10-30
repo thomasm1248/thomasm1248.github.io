@@ -1,7 +1,13 @@
+:root {
+  color-scheme: light dark;
+}
+
 body {
   padding: 3rem;
   max-width: 35rem;
   margin: 2rem auto 30rem;
+  background-color: light-dark(white, #202020);
+  color: light-dark(black, lightgray);
 }
 
 .sub, .date {
