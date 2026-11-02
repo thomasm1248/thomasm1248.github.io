@@ -1,0 +1,75 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href='../../css/page.css' rel='stylesheet'>
+
+<a href="https://thomasmason.us">
+  <img src='../../files/homepage-assets/images/logo.png'/>
+</a>
+
+<h1>Fighting Card Game</h1>
+
+<p>I'm trying to make a fighting game (like Super Smash Bros) as a card game. Not sure why, but it seems like an interesting concept, so I'm going for it. The best part about it would be that the players can make new characters and abilities just by making paper cards.</p>
+
+<h2>Rules v1</h2>
+<p class='date'>November 2, 2026</p>
+
+<h3>Overview</h3>
+<p>On the table, there will be a grid that represents a side-view platform map (like in most fighting videogames). There will be a piece on the board showing the location of each player. Each player will have a piece of paper they use to track their health, as well as a deck of cards representing the capabilities of the character they chose. Players take turns playing actions until there's only one character left on the map.</p>
+
+<h3>Setup</h3>
+<ol>
+  <li>Players each choose a character, taking the move deck for the character they chose, and drawing the health grid for their character.</li>
+  <li>Players follow any additional setup instructions for their character (if any).</li>
+  <li>Players begin taking turns.</li>
+</ol>
+<p>On your first turn, you may place your game piece wherever you want on the map. You may not play any cards, but you may prepare for your next turn by arranging your deck however you wish and placing it face-down in front of you.</p>
+
+<h3>On your turn</h3>
+<p>In most games, you decide what to do and then do it. In this game, you decide what to do on your next turn, and then you do the thing you decided to do on your previous turn. Here's how it works:</p>
+<ol>
+  <li>Flip your deck face-up.</li>
+  <li>Play the card that is now face-up, and discard it face-down next to your deck.</li>
+  <li>During the process of playing the card, you may end up playing or skipping other cards. All these cards are discarded face-down in a pile on top of the first card without changing their order.</li>
+  <li>Take the remaining cards in your deck and arrange them however you want.</li>
+  <li>Place those cards face-down on the table, and stack the discarded cards on top of them.</li>
+  <li>You may not rearrange your deck until your next turn.</li>
+  <li>Finally, if your game piece is not supported by a platform of some sort, or by another player, move your piece one space down (because of gravity).</li>
+</ol>
+<p>Notice that any cards that are discarded during your turn cannot be placed at the bottom of the deck for your next turn. This prevents players from doing the same thing each turn (generally).</p>
+
+<h3>Card types</h3>
+<p>There are several types of cards:</p>
+<ul>
+  <li>Regular - Do something.</li>
+  <li>Free - Do something, then play another card.</li>
+  <li>A - Do something, then play the next card too if it's a B card (not optional).</li>
+  <li>B - Do something. Activated for free if it comes after an A card.</li>
+  <li>Trap - Do nothing. We'll get to this in a sec.</li>
+</ul>
+<p>Examples of possible cards:</p>
+<ul>
+  <li>(Regular) Attack a player immediately above you with an L-shape of damage</li>
+  <li>(Regular) Skip a certain number of cards and then play another card</li>
+  <li>(A) Attack, followed by (B) Move</li>
+  <li>(Free) You may skip the next card (and play the card after it instead)</li>
+  <li>(Regular) Jump up 4 squares</li>
+</ul>
+
+<h3>Damage</h3>
+<p>Rather than simply keeping track of a number for health-points, each player will draw a grid on a piece of paper. Their character card specifies how big the grid should be, which squares on the grid need to start out empty, and which need to start out full. When damage is dealt, the card will show a picture of a shape made of squares. The player doing the damage will decide where to place the shape on the target player's grid (rotating and flipping the shape is fine) so that it covers as many empty spots as possible. All spots covered by the shape are then filled in. When the last empty square is filled, that player is K.O'd. Their game-piece is removed from the game board and they are done playing.</p>
+<ul>
+  <li>Some squares are marked with a shield. Damage shapes are not allowed to be placed on a shield. This can make it tricky to deal damage in certain cases. Since shield squares cannot be filled in, they don't count towards the total of empty squares.</li>
+  <li>Some squares are marked with a star. When a star square is filled in, the player who got damaged is stunned.</li>
+</ul>
+<h4>Stunning</h4>
+<p>When a player is stunned, their turn ends (if they're currently taking their turn), and their deck is placed face-up to indicate that they've been stunned. On their next turn, they don't get to play any cards (but they can still organize their deck so that they can play a card next turn).</p>
+
+<h3>Trap Cards</h3>
+<p>When someone is about to be damaged, they can flip their deck face-up to reveal a trap card (if they have a trap card on the bottom of their deck). The trap card determines what happens. Trap cards always get the final say about what happens. Making cards that say something like, "Do damage to the player even if they reveal a trap card" is not allowed.</p>
+<p>Trap cards are useful for:</p>
+<ul>
+  <li>Blocking damage</li>
+  <li>Reflecting damage back to the player who's do it</li>
+  <li>Gaining energy tokens (or something) according to the damage taken</li>
+  <li>Somehow punishing the player that dealt the damage (stun, end their turn, etc)</li>
+  <li>Whatever else you can think of</li>
+</ul>
