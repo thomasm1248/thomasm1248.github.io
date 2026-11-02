@@ -1,0 +1,48 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href='../../css/page.css' rel='stylesheet'>
+
+<a href="https://thomasmason.us">
+  <img src='../../files/homepage-assets/images/logo.png'/>
+</a>
+
+<h1>Exhibit Net</h1>
+
+<p>Exhibit Net will be a collection of interlinked webpages that use a particular protocol to pass information from one page to the next as the user explores the network. This protocol will be especially good for making RPG text adventures, but it could also be used for a lot more. To make it easy for people to create pages for this network, I'm building a tool for generating simple Exhibit Net pages.</p>
+<a href='../adventure-builder.html'>Adventure Builder</a>
+
+<p>If you would like to contribute to Exhibit Net, you will need to have the ability to host arbitrary HTML pages on the web. If you don't know how, perhaps you should learn about GitHub Pages to find out how.</p>
+
+<h2>Protocol Specification</h2>
+
+<p>Each individual page on Exhibit Net is called an "exhibit".</p>
+
+<p>When one exhibit sends the user to another exhibit (via hyperlink or automatic redirect), a packet of information is encoded in the URL address and parsed by the destination exhibit. This allows the exhibits to behave differently depending on the choices the user makes and the path they take as they explore the Exhibit Net.</p>
+
+<p>The information packet is attached to the end of the URL using a hash ('#'). This is already a well-supported feature that web-browsers have. The information after the hash is not sent to the server, but can be read by the Javascript running on the page. The information is encoded as a list of individual items separated by ampersands('&amp;'). The first item should be the URL of the exhibit the user is leaving, and the rest of the items are the "facts". Each fact is a URL-safe piece of text (doesn't contain ampersands, for example).</p>
+
+<p>For example, lets say the user is currently viewing the exhibit at https://website.com/exhibit1.html, and they click something that takes them to another exhibit at https://joe.com/exhibit2.html, and the user currently has the following facts: 'is-poisoned' and 'has-sword', the link that takes them from the first exhibit to the second exhibit should be structured as follows:</p>
+<pre>
+Destination exhibit: https://joe.com/exhibit2.html
+
+Items:
+- Leaving exhibit: https://website.com/exhibit1.html
+- Fact 1: is-poisoned
+- Fact 2: has-sword
+
+URL: https://joe.com/exhibit2.html#https://website.com/exhibit1.html&amp;is-poisoned&amp;has-sword
+</pre>
+<p>This allows the destination exhibit to know which exhibit the user came from as well as any other additional pieces of information that needs to be passed from one exhibit to the other.</p>
+
+<h2>Considerations</h2>
+
+<p>There are some things developers should keep in mind as they make their own exhibits:</p>
+<ul>
+  <li>Don't put URL-escaped characters in the facts because then it will look like garbled text if the user ever tries to read their current fact list.</li>
+  <li>Instead of spaces, use dashes. You might be tempted to use underscores, but those require the shift key to be pressed when typing, so let's just use dashes, okay?</li>
+  <li>Generally, facts should be phrased in a way that would allow them to finish the following sentence: "The user ___". For example, "has-___", "is-___", or "&lt;verbed&gt;-the-___". You get the point.</li>
+  <li>If a user visiting your exhibit has facts that your exhibit doesn't recognize, don't delete them. Just pass them along as-is.</li>
+  <li>Don't remove duplicate facts. Duplicates are the most straightforward way to record how many of a certain item an RPG character has. For example, if the character has two potions, they might have two facts: 'has-potion' and another 'has-potion'.</li>
+  <li>When using Javascript to build a link to another exhibit, and you're including the current URL as the first item at the end of the destination URL, be sure to remove the old hash portion of the current URL.</li>
+  <li>You might want to include a link to a suitable email address in each of your exhibits so that visitors can freely contact you about issues they experience when visiting your exhibit and so that other exhibitors can contact you about collaboration, such as wanting you to link your exhibit to their exhibit.</li>
+  <li>You may want to provide a link to documentation about what facts your exhibit is expecting, what facts it creates, and any other considerations you'd like other exhibitors to be aware of when trying to link their exhibits to yours.</li>
+</ul>

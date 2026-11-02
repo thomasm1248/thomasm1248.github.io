@@ -43,3 +43,7 @@ li {
 code {
   white-space: pre;
 }
+
+pre {
+  text-wrap-mode: wrap;
+}

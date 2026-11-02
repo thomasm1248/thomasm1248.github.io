@@ -1,0 +1,179 @@
+<title>Adventure Builder</title>
+<h1>Adventure Builder</h1>
+
+<script src='../tame.js'></script>
+<script>
+  const {
+    root: appRoot,
+    refs: {
+      saveBtn,
+      loadBtn,
+      title,
+      imageUrl,
+      email,
+      description,
+      actionList,
+      newActionBtn,
+    },
+  } = t.createComponent(`
+    <div class='builder'>
+      <button data-ref='saveBtn'>Save</button>
+      <button data-ref='loadBtn'>Load</button>
+      <br>
+      <input data-ref='title' placeholder='Title'/><br>
+      <input data-ref='imageUrl' placeholder='URL to image'/><br>
+      <input data-ref='email' placeholder='email'/><br>
+      <textarea data-ref='description'></textarea>
+      <div data-ref='actionList'>
+        <h2>Actions</h2>
+      </div>
+      <button data-ref='newActionBtn'>New Action</button>
+    </div>
+  `);
+  document.body.appendChild(appRoot);
+  saveBtn.onclick = async () => {
+    const data = gatherSceneData();
+    const html = await generateSceneHtml(data);
+    saveFile(`${data.title}.html`, html);
+  };
+  loadBtn.onclick = async () => {
+    const html = await openAndReadFile();
+    const json = scrapeDataFromExhibit(html);
+    if(!json) {
+      alert('Please open an exhibit file.');
+      return;
+    }
+    const data = JSON.parse(json);
+    displayData(data);
+  };
+  newActionBtn.onclick = () => {
+    createActionComponent();
+  };
+
+  function createActionComponent(actionDefinition = null) {
+    const {
+      root: actionRoot,
+      refs,
+    } = t.createComponent(`
+      <div class='action'>
+        <input data-ref='label' placeholder='Text to display...'/><br>
+        <label>Only if user has these facts:</label><br>
+        <textarea data-ref='trueFactsList'></textarea><br>
+        <label>Only if user has none of these facts:</label><br>
+        <textarea data-ref='falseFactsList'></textarea><br>
+        <label>Add these facts:</label><br>
+        <textarea data-ref='addFactsList'></textarea><br>
+        <label>Remove these facts:</label><br>
+        <textarea data-ref='removeFactsList'></textarea><br>
+        <input data-ref='jumpTo' placeholder='Jump to this link (optional)'/><br>
+        <input type='checkbox' data-ref='isAutomatic'>Automatic</input>
+      </div>
+    `);
+    if(actionDefinition) {
+      refs.label.value = actionDefinition.label;
+      refs.trueFactsList.value = joinIntoFactString(actionDefinition.trueFacts);
+      refs.falseFactsList.value = joinIntoFactString(actionDefinition.falseFacts);
+      refs.addFactsList.value = joinIntoFactString(actionDefinition.addFacts);
+      refs.removeFactsList.value = joinIntoFactString(actionDefinition.removeFacts);
+      refs.jumpTo = actionDefinition.jumpTo ?? '';
+      refs.isAutomatic.checked = actionDefinition.auto;
+    }
+    actionList.appendChild(actionRoot);
+    actionRoot.actionHandle = refs;
+  }
+  async function generateSceneHtml(data) {
+    const templating = await t.requireAsync('js/templating/simpleTemplating');
+    let html = await t.requireAsync('js/exhibitNet/pageTemplate');
+    html = templating.replace('TITLE', t.escapeHTML(data.title), html);
+    html = templating.replace('DESC', t.escapeHTML(data.description), html);
+    html = templating.replace('$DATA$', JSON.stringify(data), html);
+    html = templating.replace('IMGURL', data.image, html);
+    html = templating.replace('EMAIL', data.email, html);
+    return html;
+  }
+  function gatherSceneData() {
+    return {
+      title: title.value,
+      email: email.value,
+      version: 1,
+      image: imageUrl.value,
+      description: description.value,
+      actions: actionList.querySelectorAll('.action').values().map(action => {
+        const handle = action.actionHandle;
+        const data =
+          {
+            label: handle.label.value,
+            trueFacts: splitIntoFactList(handle.trueFactsList.value),
+            falseFacts: splitIntoFactList(handle.falseFactsList.value),
+            addFacts: splitIntoFactList(handle.addFactsList.value),
+            removeFacts: splitIntoFactList(handle.removeFactsList.value),
+            auto: handle.isAutomatic.checked,
+          };
+        const jumpTo = handle.jumpTo.value;
+        if(jumpTo !== '')
+          data.jumpTo = jumpTo;
+        return data;
+      }).toArray(),
+      acklinks: [ // the owner is aware that these scenes link to this scene
+      ],
+      ackfacts: [ // this scene supports the following facts
+      ],
+    };
+  }
+  function splitIntoFactList(text) {
+    return text
+      .split('\n')
+      .filter(f => f !== '')
+      .map(f => f.replaceAll(' ', '-'));
+  }
+  function joinIntoFactString(list) {
+    return list
+      .map(fact => fact.replaceAll('-', ' '))
+      .join('\n');
+  }
+  function saveFile(fileName, content) {
+    const file = new Blob([content], {type: 'text/plain'});
+
+    window.URL = window.URL || window.webkitURL;
+    const dlBtn = document.createElement('a');
+
+    dlBtn.setAttribute("href", window.URL.createObjectURL(file));
+    dlBtn.setAttribute("download", fileName);
+    dlBtn.click();
+  }
+  function openAndReadFile() {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.html';
+    return new Promise((resolve, reject) => {
+      fileInput.onchange = async e => {
+        const file = fileInput.files[0];
+        const content = await file.text();
+        resolve(content);
+      };
+      fileInput.click();
+    });
+  }
+  function scrapeDataFromExhibit(html) {
+    const match = html.match('// DATASTART\nconst data = (.*);\n// DATAEND');
+    return match ? match[1] : null;
+  }
+  function displayData(data) {
+    title.value = data.title;
+    imageUrl.value = data.image;
+    email.value = data.email;
+    description.value = data.description;
+    actionList.innerHtml = '';
+    data.actions.forEach(createActionComponent);
+  }
+
+</script>
+
+<style>
+.builder div {
+  border: 1px solid black;
+}
+.action {
+  display: inline-block;
+  border: 1px solid black;
+</style>
