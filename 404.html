@@ -1,0 +1,25 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Not Found</title>
+<link rel='stylesheet' type='text/css' href='css/page.css'>
+
+<a href="https://thomasmason.us">
+  <img src='files/homepage-assets/images/logo.png'/>
+</a>
+
+<h1>That page doesn't exist</h1>
+<p>This could be due to one of the following reasons:</p>
+<ul>
+  <li>I deleted the page.</li>
+  <li>I moved the page to another location.</li>
+  <li>The page never existed in the first place.</li>
+</ul>
+<p>Click my logo to browse my website. Hope you find the page you were looking for!</p>
+<p>If you have a spare moment, I'd like it if you could use the following link to alert me about this problem:</p>
+<a id='report-link' href='#'>Report incident</a>
+
+<script>
+
+const reportLink = document.getElementById('report-link');
+reportLink.href = `mailto:thomasm1248@gmail.com?subject=404%20Report&body=Not%20found:%20${document.URL}%0A%0AGo%20ahead%20and%20click%20Send.`;
+
+</script>
