@@ -1,5 +1,5 @@
 'use strict';
-t.module('modules/music/theoryHelpers', () => {
+t.module(() => {
 
   const e = {};
 
