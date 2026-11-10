@@ -36,6 +36,10 @@ img {
   max-height: 20rem;
 }
 
+ul, ol {
+  margin-bottom: 2rem;
+}
+
 li {
     margin-top: 1rem;
 }
