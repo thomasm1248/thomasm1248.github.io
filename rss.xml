@@ -16,7 +16,7 @@
     <title>foo</title>
     <description>foo</description>
     <link>foo</link>
-    <pubDate>Sat, 5 Sep 2026 10:15:00 MDT</pubDate>
+    <pubDate>Mon, 10 Nov 2026 14:16:00 MDT</pubDate>
     <category>foo</category>
   </item>
 
@@ -34,6 +34,12 @@
   Politics
 
   INSERT AFTER HERE -->
+  
+  <item>
+    <title>Discontinued</title>
+    <description>I'm no longer maintaining this RSS feed. I'm switching away from feed-based content to interlinked-web-based content. This is because I realized that I generally prefer to explore the web at my own pace than to consume feeds. I'm going to be making my website more friendly for exploration, and more friendly for regular people who don't know how to use RSS.</description>
+    <pubDate>Mon, 10 Nov 2026 14:16:00 MDT</pubDate>
+  </item>
   
   <item>
     <title>Stupid Instagram Reel</title>
