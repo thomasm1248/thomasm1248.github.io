@@ -2,46 +2,57 @@
 
 <script src='../tame.js'></script>
 <script>
+  // Edit these lists to change the colors or preset buttons.
+  const chunkTypes = [
+    { name: 'Focused', color: '#77b4ff' },
+    { name: 'Mixed', color: '#add2ff' },
+    { name: 'Rest', color: '#adffb4' },
+    { name: 'Distracted', color: '#f9b26b' },
+  ];
+  const DEFAULT_TYPE = 0;
+  const presets = [
+    { title: 'Pomodoro', minutes: 25, type: 'Focused' },
+    { title: 'Rest', minutes: 5, type: 'Rest'},
+    { title: 'Long rest', minutes: 15, type: 'Rest' },
+  ];
+  const pixelsPerMinute = 3;
+  const DEBUG = false;
 
   const {
     root: ui,
     refs: {
-      log,
-      panel,
-      countdown,
-      instructions,
-      startPanel,
-      task,
-      start,
-      runningPanel,
-      preReport,
-      restart,
-      abort,
-      reportPanel,
-      report,
-      finishReport,
+      log, timeline, countdown, instructions,
+      startPanel, task, minutes, start, presetButtons,
+      runningPanel, preReport, end,
+      reportPanel, report, reportColors, finishReport,
     },
   } = t.createComponent(`
     <div class='focus-timer-container'>
-      <div data-ref='log' class='log'></div>
-      <div data-ref='panel' class='panel'>
+      <div data-ref='log' class='log'>
+        <div data-ref='timeline' class='timeline'
+             role='img' aria-label='Time chunks; height is proportional to elapsed time'></div>
+      </div>
+      <div class='panel'>
         <p data-ref='countdown' class='countdown'>0:00</p>
         <p data-ref='instructions' class='instructions'></p>
         <div data-ref='startPanel'>
-          <input data-ref='task' placeholder='What will you do?'></input><br>
+          <input data-ref='task' placeholder='What will you do?' aria-label='Original intent'><br>
+          <div data-ref='presetButtons' class='presets'></div>
+          <label class='duration'>
+            <input data-ref='minutes' type='number' min='0.1' step='any'
+                   value='25' aria-label='Planned minutes'> min
+          </label>
           <button data-ref='start'>Start</button>
         </div>
         <div data-ref='runningPanel' class='hidden'>
-          <textarea data-ref='preReport' placeholder='Track what you're doing...'
-                    cols='40' rows='15'>
-          </textarea><br>
-          <button data-ref='restart'>Restart</button>
-          <button data-ref='abort'>Abort</button>
+          <textarea data-ref='preReport' placeholder="Track what you're doing..."
+                    aria-label='Notes during the chunk' cols='40' rows='15'></textarea><br>
+          <button data-ref='end'>End</button>
         </div>
         <div data-ref='reportPanel' class='hidden'>
           <textarea data-ref='report' placeholder='What happened?'
-                    cols='40' rows='15'>
-          </textarea><br>
+                    aria-label='What actually happened' cols='40' rows='15' required></textarea><br>
+          <div data-ref='reportColors' class='colors' role='group' aria-label='Actual color'></div>
           <button data-ref='finishReport'>Submit</button>
         </div>
       </div>
@@ -49,137 +60,205 @@
   `);
   document.getElementById('app').appendChild(ui);
 
-  // Bind UI
-  start.onclick = _ => {
-    if(currentState.start)
-      currentState.start();
-  };
-  task.onkeydown = e => {
-    if(e.key !== 'Enter') return;
-    if(currentState.start)
-      currentState.start();
-    e.preventDefault();
-  };
-  restart.onclick = _ => {
-    if(currentState.restart)
-      currentState.restart();
-  };
-  abort.onclick = _ => {
-    if(currentState.abort)
-      currentState.abort();
-  };
-  finishReport.onclick = _ => {
-    if(currentState.finish)
-      currentState.finish();
-  };
-  report.onkeydown = e => {
-    if(e.key !== 'Enter') return;
-    if(e.shiftKey) return;
-    if(currentState.finish)
-      currentState.finish();
-    e.preventDefault();
-  };
+  function addColors(container, name) {
+    for (const [index, type] of chunkTypes.entries()) {
+      const label = document.createElement('label');
+      label.className = 'color';
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = name;
+      input.value = index;
+      input.setAttribute('aria-label', type.name);
+      const swatch = document.createElement('span');
+      swatch.style.backgroundColor = type.color;
+      label.append(input, swatch);
+      container.appendChild(label);
+    }
+  }
+  function selectedColor(container) {
+    const selected = container.querySelector('input:checked');
+    return selected ? Number(selected.value) : null;
+  }
+  function selectColor(container, index) {
+    container.querySelectorAll('input').forEach(input => {
+      input.checked = Number(input.value) === index;
+    });
+  }
+  addColors(reportColors, 'actual-color');
 
   let currentState = null;
+  start.onclick = () => currentState?.start?.();
+  task.onkeydown = e => {
+    if(e.key !== 'Enter' || e.isComposing) return;
+    e.preventDefault();
+    currentState?.start?.();
+  };
+  end.onclick = () => currentState?.end?.();
+  finishReport.onclick = () => currentState?.finish?.();
+  report.oninput = () => report.setCustomValidity('');
+  report.onkeydown = e => {
+    if(e.key !== 'Enter' || e.shiftKey || e.isComposing) return;
+    e.preventDefault();
+    currentState?.finish?.();
+  };
+  for(const preset of presets) {
+    const button = document.createElement('button');
+    button.textContent = `${preset.title} (${preset.minutes})`;
+    button.onclick = () => currentState?.start?.(preset);
+    presetButtons.appendChild(button);
+  }
 
   async function init() {
     const beep = await t.requireAsync('js/utils/beep');
+    const chunks = [];
+    let timelineStart = null;
+
+    function formatTime(milliseconds) {
+      const totalSeconds = Math.floor(Math.abs(milliseconds) / 1000);
+      const seconds = String(totalSeconds % 60).padStart(2, '0');
+      return `${milliseconds < 0 ? '+' : ''}${Math.floor(totalSeconds / 60)}:${seconds}`;
+    }
+
+    function drawTimeline() {
+      if(timelineStart === null) return;
+      const now = Date.now();
+      const scale = pixelsPerMinute / 60000;
+      const nearBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 30;
+      // Absolute positioning gives short chunks their true height, without a minimum size.
+      const elapsedTime = Math.max(0, now - timelineStart)
+        * (DEBUG ? 100 : 1);
+      timeline.style.height = `${elapsedTime * scale}px`;
+      for(const chunk of chunks) {
+        chunk.element.style.top = `${(chunk.startedAt - timelineStart) * scale * (DEBUG ? 100 : 1)}px`;
+        chunk.element.style.height = `${Math.max(0, (chunk.endedAt ?? now) - chunk.startedAt) * scale * (DEBUG ? 100 : 1)}px`;
+        chunk.element.style.backgroundColor = chunkTypes[chunk.type].color;
+      }
+      if(nearBottom) log.scrollTop = log.scrollHeight;
+    }
+
+    function createChunk(title, plannedMinutes, type) {
+      const startedAt = Date.now();
+      if(timelineStart === null) timelineStart = startedAt;
+      const element = document.createElement('div');
+      element.className = 'chunk current';
+      const titleElement = document.createElement('p');
+      titleElement.className = 'task-name';
+      titleElement.textContent = title;
+      const descriptionElement = document.createElement('p');
+      descriptionElement.className = 'task-report';
+      element.append(titleElement, descriptionElement);
+      timeline.appendChild(element);
+      const chunk = {
+        title, plannedMinutes, intendedType: type, type,
+        startedAt, endedAt: null, description: '', element, descriptionElement,
+      };
+      chunks.push(chunk);
+      drawTimeline();
+      return chunk;
+    }
 
     function startState() {
-      t.log('start state');
       document.title = 'Focus Timer';
+      countdown.innerText = '0:00';
+      instructions.innerText = '';
       task.value = '';
+      // A new chunk requires an explicit color choice.
       startPanel.classList.remove('hidden');
       task.focus();
       return {
-        start: () => {
+        start: preset => {
+          let type = DEFAULT_TYPE;
+          if(preset) {
+            minutes.value = preset.minutes;
+            type = chunkTypes
+              .findIndex(t => t.name === preset.type);
+          }
+          if(!minutes.reportValidity()) return;
+          const plannedMinutes = Number(minutes.value);
+          if(!Number.isFinite(plannedMinutes) || plannedMinutes <= 0) {
+            minutes.focus();
+            return;
+          }
+          const title = task.value.trim() || preset?.title || 'Untitled';
+          const chunk = createChunk(title, plannedMinutes, type);
           startPanel.classList.add('hidden');
-          currentState = runningState(task.value);
+          currentState = runningState(chunk);
         },
       };
     }
 
-    function runningState(task) {
-      t.log('running state');
-      const time = 25 * 60 * 1000;
-      let endTime = Date.now() + time;
+    function runningState(chunk) {
+      const reminderAt = chunk.startedAt + chunk.plannedMinutes * 60000
+        / (DEBUG ? 100 : 1);
+      let rang = false;
       function displayTime() {
-        const now = Date.now();
-        if(now >= endTime) {
-          beep.playBeep();
-          runningPanel.classList.add('hidden');
-          countdown.innerText = '0:00';
-          currentState = reportingState();
-          return;
+        const remaining = reminderAt - Date.now();
+        if(remaining <= 0 && !rang) {
+          rang = true;
+          // The reminder never ends the chunk, even if sound playback fails.
+          try { beep.playBeep(); } catch(error) { console.warn(error); }
+          instructions.innerText = `${chunk.title} — planned time reached`;
         }
-        const remainingSeconds = Math.floor((endTime - now) / 1000);
-        const minutes = Math.floor(remainingSeconds / 60);
-        const seconds = remainingSeconds % 60;
-        let secondsText = '' + seconds;
-        if(secondsText.length < 2)
-          secondsText = '0' + secondsText;
-        const text = `${minutes}:${secondsText}`;
+        const text = formatTime(remaining * (DEBUG ? 100 : 1));
         countdown.innerText = text;
-        document.title = text;
+        document.title = `${text} — ${chunk.title}`;
       }
-      displayTime();
-      instructions.innerText = task;
+      instructions.innerText = chunk.title;
       preReport.value = '';
       runningPanel.classList.remove('hidden');
       preReport.focus();
+      displayTime();
       return {
         tick: displayTime,
-        restart: () => {
-          endTime = Date.now() + time;
-          displayTime();
-        },
-        abort: () => {
+        end: () => {
+          // Freeze the chunk here, not when the report is submitted.
+          chunk.endedAt = Date.now();
+          chunk.element.classList.remove('current');
           runningPanel.classList.add('hidden');
-          countdown.innerText = '0:00';
-          instructions.innerText = '';
-          currentState = startState();
+          countdown.innerText = formatTime((chunk.endedAt - chunk.startedAt)
+            * (DEBUG ? 100 : 1));
+          currentState = reportingState(chunk);
+          drawTimeline();
         },
       };
     }
 
-    function reportingState() {
-      t.log('reporting state');
+    function reportingState(chunk) {
+      document.title = 'Report — Focus Timer';
       report.value = preReport.value;
+      report.setCustomValidity('');
+      selectColor(reportColors, chunk.type);
       reportPanel.classList.remove('hidden');
       report.focus();
       return {
         finish: () => {
-          const task = instructions.innerText;
-          const reportText = report.value;
-          const { root: logEntry } = t.createComponent(`
-            <div>
-              <p class='task-name'>${t.escapeHTML(task)}</p>
-              <p class='task-report'>${t.escapeHTML(reportText)}</p>
-            </div>
-          `);
-          log.appendChild(logEntry);
-          instructions.innerText = '';
+          chunk.description = report.value.trim();
+          chunk.type = selectedColor(reportColors);
+          chunk.descriptionElement.textContent = chunk.description;
           reportPanel.classList.add('hidden');
           currentState = startState();
+          drawTimeline();
         },
       };
     }
 
-    function startItem(index) {
-      currentScheduleIndex = index;
-      endTime = Date.now() + schedule[index].minutes * 60 * 1000;
-    }
-
     currentState = startState();
-
     setInterval(() => {
-      if(currentState.tick)
-        currentState.tick();
-    }, 1000);
+      currentState?.tick?.();
+      drawTimeline();
+    }, 250);
+    document.addEventListener('visibilitychange', () => {
+      if(!document.hidden) {
+        currentState?.tick?.();
+        drawTimeline();
+      }
+    });
   }
 
-  init();
-
+  init().catch(error => {
+    console.error(error);
+    instructions.innerText = 'Could not load the timer. Check that ../tame.js and the beep module are available.';
+  });
 </script>
 
 <style>
@@ -190,20 +269,24 @@ body {
 }
 #app, .focus-timer-container {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 .focus-timer-container {
   display: flex;
 }
 .log {
   width: 300px;
-  flex: 0 0 1;
+  flex: 0 0 300px;
   border-right: 1px solid black;
+  overflow-y: scroll;
 }
 .panel {
   margin: 50px 0 0 0;
   text-align: center;
   flex: 1 1 0;
+  min-width: 0;
+  overflow-y: auto;
+  padding-bottom: 30px;
 }
 .countdown {
   font-size: 5em;
@@ -212,12 +295,21 @@ body {
 .panel input {
   font-size: 1.3em;
 }
+.duration {
+  display: block;
+  margin-top: 12px;
+}
+.duration input {
+  width: 75px;
+}
 .instructions {
   font-size: 1.3em;
   margin: 1em;
 }
 .panel textarea {
   padding: 5px;
+  max-width: 90%;
+  box-sizing: border-box;
 }
 .panel button {
   display: block;
@@ -234,22 +326,68 @@ body {
 .panel button:active {
   background-color: #c7c7c7;
 }
+.presets button {
+  display: inline-block;
+  font-size: 1em;
+  margin: 15px 3px 0;
+}
 .hidden {
   display: none;
   align-items: stretch;
 }
-.log {
-  overflow-y: scroll;
+.colors {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
 }
-.log div {
-  margin: 5px;
+.color {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.color input {
+  position: absolute;
+  opacity: 0;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+}
+.color span {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
+.color input:checked + span {
+  outline: 2px solid black;
+  outline-offset: 2px;
+}
+.color input:focus-visible + span {
+  outline: 2px dashed black;
+  outline-offset: 4px;
+}
+.timeline {
+  position: relative;
+}
+.timeline .chunk {
+  position: absolute;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+}
+.timeline .chunk.current {
+  opacity: 0.7;
 }
 .log .task-name {
-  margin: 0;
+  margin: 0 5px;
   font-weight: bold;
+  overflow-wrap: anywhere;
 }
 .log .task-report {
-  margin: 0;
-  color: gray;
+  margin: 0 5px;
+  color: #444;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 </style>
